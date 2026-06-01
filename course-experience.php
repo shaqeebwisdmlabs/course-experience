@@ -1,19 +1,19 @@
 <?php
 /**
- * Plugin Name:       Course Experience
- * Plugin URI:        https://example.com/course-experience
- * Description:       Provides a seamless course viewing experience within WordPress by integrating with Moodle.
+ * Plugin Name:       Edwiser Bridge - Course Experience
+ * Plugin URI:        https://edwiser.org/bridge-wordpress-moodle-integration/
+ * Description:       An Edwiser Bridge extension that provides a seamless course viewing experience within WordPress by integrating with Moodle.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
- * Author:            Culinary Medicine
- * Author URI:        http://culinarymedicine.org/
+ * Author:            WisdmLabs
+ * Author URI:        https://edwiser.org/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       course-exp
+ * Text Domain:       eb-course-exp
  * Domain Path:       /languages
  *
- * @package Course_Experience
+ * @package EB_Course_Experience
  */
 
 // If this file is called directly, abort.
@@ -71,7 +71,7 @@ register_deactivation_hook( __FILE__, 'courseexp_deactivate' );
  */
 function courseexp_init(): void {
 	// Load text domain for translations.
-	load_plugin_textdomain( 'course-exp', false, dirname( COURSEEXP_PLUGIN_BASENAME ) . '/languages' );
+	load_plugin_textdomain( 'eb-course-exp', false, dirname( COURSEEXP_PLUGIN_BASENAME ) . '/languages' );
 
 	// Include core files.
 	require_once COURSEEXP_PLUGIN_DIR . 'includes/class-core.php';

@@ -1,0 +1,21 @@
+{
+  "editor.tabSize": 4,
+  "editor.useTabStops": true,
+  "editor.insertSpaces": false,
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+  "[php]": {
+    "editor.defaultFormatter": "valeryanm.vscode-phpsab",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "phpcs.standard": "${workspaceFolder}/phpcs.xml",
+  "phpcs.executablePath": "${workspaceFolder}/vendor/bin/phpcs",
+  "phpcbf.executablePath": "${workspaceFolder}/vendor/bin/phpcbf",
+  "phpcbf.standard": "${workspaceFolder}/phpcs.xml"
+}

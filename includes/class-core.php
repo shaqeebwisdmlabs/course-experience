@@ -2,13 +2,13 @@
 /**
  * Core plugin class
  *
- * @package Course_Experience
+ * @package EB_Course_Experience
  */
 
 /**
  * Main plugin class.
  *
- * @package Course_Experience
+ * @package EB_Course_Experience
  */
 class CourseExp_Core {
 
@@ -18,52 +18,12 @@ class CourseExp_Core {
 	 * @return void
 	 */
 	public function init(): void {
-		// Admin hooks.
-		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
-		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
 		// Public hooks.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
 		add_filter( 'template_include', array( $this, 'load_course_template' ) );
 
 		// AJAX handlers.
 		add_action( 'wp_ajax_courseexp_load_activity', array( $this, 'ajax_load_activity' ) );
-	}
-
-	/**
-	 * Add admin menu.
-	 *
-	 * @return void
-	 */
-	public function add_admin_menu(): void {
-		add_menu_page(
-			__( 'Course Experience', 'course-exp' ),
-			__( 'Course Experience', 'course-exp' ),
-			'manage_options',
-			'course-experience',
-			array( $this, 'render_admin_page' ),
-			'dashicons-welcome-learn-more',
-			30
-		);
-	}
-
-	/**
-	 * Register settings.
-	 *
-	 * @return void
-	 */
-	public function register_settings(): void {
-		register_setting( 'courseexp_settings', 'courseexp_moodle_url', 'esc_url_raw' );
-		register_setting( 'courseexp_settings', 'courseexp_api_token', 'sanitize_text_field' );
-	}
-
-	/**
-	 * Render admin page.
-	 *
-	 * @return void
-	 */
-	public function render_admin_page(): void {
-		include COURSEEXP_PLUGIN_DIR . 'templates/admin-settings.php';
 	}
 
 	/**

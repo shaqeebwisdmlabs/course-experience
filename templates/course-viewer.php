@@ -2,9 +2,9 @@
 /**
  * Course viewer template
  *
- * Override this by copying to your-theme/course-experience/course-viewer.php
+ * Override this by copying to your-theme/eb-course-exp/course-viewer.php
  *
- * @package Course_Experience
+ * @package EB_Course_Experience
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
