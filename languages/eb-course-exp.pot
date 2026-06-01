@@ -1,0 +1,91 @@
+# Copyright (C) 2026 WisdmLabs
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Edwiser Bridge - Course Experience 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/course-experience\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-06-01T12:29:57+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: eb-course-exp\n"
+
+#. Plugin Name of the plugin
+#: course-experience.php
+msgid "Edwiser Bridge - Course Experience"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: course-experience.php
+msgid "https://edwiser.org/bridge-wordpress-moodle-integration/"
+msgstr ""
+
+#. Description of the plugin
+#: course-experience.php
+msgid "An Edwiser Bridge extension that provides a seamless course viewing experience within WordPress by integrating with Moodle."
+msgstr ""
+
+#. Author of the plugin
+#: course-experience.php
+msgid "WisdmLabs"
+msgstr ""
+
+#. Author URI of the plugin
+#: course-experience.php
+msgid "https://edwiser.org/"
+msgstr ""
+
+#: includes/class-api-client.php:52
+#: includes/class-api-client.php:81
+#: includes/class-api-client.php:110
+msgid "Edwiser Bridge connection helper not available"
+msgstr ""
+
+#: includes/class-core.php:74
+msgid "Activity loaded"
+msgstr ""
+
+#: templates/course-experience.php:40
+msgid "Course Not Found"
+msgstr ""
+
+#: templates/course-experience.php:43
+msgid "Debug Information"
+msgstr ""
+
+#: templates/course-experience.php:44
+msgid "Course Slug:"
+msgstr ""
+
+#: templates/course-experience.php:45
+msgid "WordPress Post ID:"
+msgstr ""
+
+#: templates/course-experience.php:45
+msgid "Not found"
+msgstr ""
+
+#: templates/course-experience.php:46
+msgid "Moodle Course ID:"
+msgstr ""
+
+#: templates/course-experience.php:47
+msgid "Moodle User ID:"
+msgstr ""
+
+#: templates/course-experience.php:51
+msgid "Course Structure API Response"
+msgstr ""
+
+#: templates/course-experience.php:54
+#: templates/course-experience.php:67
+msgid "Error:"
+msgstr ""
+
+#: templates/course-experience.php:64
+msgid "User Progress API Response"
+msgstr ""

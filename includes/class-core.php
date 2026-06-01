@@ -18,12 +18,23 @@ class CourseExp_Core {
 	 * @return void
 	 */
 	public function init(): void {
-		// Public hooks.
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
-		add_filter( 'template_include', array( $this, 'load_course_template' ) );
+		$this->includes();
 
-		// AJAX handlers.
+		$router = new CourseExp_Course_Router();
+		$router->init();
+
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
 		add_action( 'wp_ajax_courseexp_load_activity', array( $this, 'ajax_load_activity' ) );
+	}
+
+	/**
+	 * Include required files
+	 *
+	 * @return void
+	 */
+	private function includes(): void {
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-course-router.php';
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-api-client.php';
 	}
 
 	/**
@@ -32,28 +43,24 @@ class CourseExp_Core {
 	 * @return void
 	 */
 	public function enqueue_public_assets(): void {
-		if ( ! is_singular( 'eb_course' ) ) {
-			return;
+		if ( get_query_var( 'eb_course_exp' ) || $this->is_my_courses_page() ) {
+			wp_enqueue_style( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/css/public.css', array(), COURSEEXP_VERSION );
+			wp_enqueue_script( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/js/public.js', array( 'jquery' ), COURSEEXP_VERSION, true );
 		}
-
-		wp_enqueue_style( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/css/public.css', array(), COURSEEXP_VERSION );
-		wp_enqueue_script( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/js/public.js', array( 'jquery' ), COURSEEXP_VERSION, true );
 	}
 
 	/**
-	 * Load custom template for courses.
+	 * Check if current page is My Courses page
 	 *
-	 * @param string $template Current template.
-	 * @return string
+	 * @return bool
 	 */
-	public function load_course_template( string $template ): string {
-		if ( is_singular( 'eb_course' ) ) {
-			$custom_template = COURSEEXP_PLUGIN_DIR . 'templates/course-viewer.php';
-			if ( file_exists( $custom_template ) ) {
-				return $custom_template;
-			}
+	private function is_my_courses_page(): bool {
+		$post = get_post();
+		if ( $post && has_shortcode( $post->post_content, 'eb_my_courses' ) ) {
+			return true;
 		}
-		return $template;
+
+		return false;
 	}
 
 	/**
@@ -64,8 +71,6 @@ class CourseExp_Core {
 	public function ajax_load_activity(): void {
 		check_ajax_referer( 'courseexp_nonce', 'nonce' );
 
-		// Your AJAX handling code here.
-
-		wp_send_json_success( array( 'message' => 'Activity loaded' ) );
+		wp_send_json_success( array( 'message' => __( 'Activity loaded', 'eb-course-exp' ) ) );
 	}
 }
