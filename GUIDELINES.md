@@ -193,6 +193,31 @@ public function enqueue_assets(): void {
 }
 ```
 
+### CSS Methodology
+
+**Mobile-First Approach**
+- Base styles (no media query) target mobile ≤768px
+- Use `min-width` queries only for progressive enhancement
+- Never use `max-width` queries (except ≤600px for WP admin bar static behavior)
+- Sidebar: off-screen by default on mobile, `.is-open` toggles it in
+- Layout elements start with `margin-left: 0` on mobile
+
+**MedDiet Theme Compatibility**
+- Header selectors must always include `.site-navbar` alongside generic tags:
+  ```css
+  body.courseexp-page header,
+  body.courseexp-page .site-header,
+  body.courseexp-page #masthead,
+  body.courseexp-page .site-navbar { ... }
+  ```
+- Use these CSS variable colors (match MedDiet palette):
+  - `--courseexp-primary-green: #7cc146`
+  - `--courseexp-accent-orange: #ea7813`
+  - `--courseexp-sidebar-text: #333333`
+  - `--courseexp-sidebar-border: #e0e0e0`
+- Footer selectors: `footer`, `.site-footer`, `.footer-section` (meddiet uses `.footer-section`)
+- Do not modify files in `assets/meddiet-theme/`
+
 ## Documentation
 
 ### Comments Policy
