@@ -10,12 +10,41 @@ plugin-name/
 │   ├── class-core.php       # Main initialization
 │   └── class-*.php          # Feature classes
 ├── templates/               # Template files
+│   └── parts/               # Template parts (feature-wise)
 ├── assets/                  # CSS, JS, images
 │   ├── css/
 │   └── js/
 ├── languages/               # Translation files
 └── guidelines.md            # This file
 ```
+
+### Feature-Wise File Organization
+Organize files by feature, not by type. This keeps all related code together:
+
+```
+assets/
+├── css/
+│   ├── public.css           # Global styles only
+│   ├── sidebar.css          # All sidebar styles
+│   └── forms.css            # All form styles
+├── js/
+│   ├── public.js            # Global scripts only
+│   ├── sidebar.js           # All sidebar functionality
+│   └── forms.js             # All form functionality
+templates/
+├── course-experience.php    # Main template
+└── parts/
+    ├── sidebar.php          # All sidebar HTML
+    └── form-login.php       # All login form HTML
+```
+
+Benefits:
+- All related code is in one place
+- Easier to maintain and debug
+- Can work on a feature without touching multiple folders
+- Clear separation of concerns
+
+Never split a feature across multiple small files (e.g., sidebar-state.js, sidebar-toggle.js, sidebar-utils.js). Keep all related code in one file.
 
 ### Naming Conventions
 - **Classes**: `PluginName_Class_Name` (prefix with unique plugin slug)
@@ -165,6 +194,37 @@ public function enqueue_assets(): void {
 ```
 
 ## Documentation
+
+### Comments Policy
+
+Use comments only when necessary. Code should be self-explanatory through clear naming and structure.
+
+**Good comments:**
+```php
+// Calculate tax after discount is applied
+$tax = ($price - $discount) * $tax_rate;
+
+// WordPress admin bar is 32px high, adjust accordingly
+$top_offset = is_admin_bar_showing() ? 32 : 0;
+```
+
+**Bad comments (decorative):**
+```php
+// ==========================================================================
+// Sidebar Component
+// ==========================================================================
+
+/**
+ * Initialize the sidebar
+ */
+function initSidebar() { ... }
+```
+
+Never use:
+- Section dividers with `===` or `---`
+- Decorative boxes or ASCII art
+- Obvious comments that repeat the code
+- Comments that state what is already clear from the function/variable name
 
 ### File Headers
 ```php

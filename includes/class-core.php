@@ -45,7 +45,8 @@ class CourseExp_Core {
 	public function enqueue_public_assets(): void {
 		if ( get_query_var( 'eb_course_exp' ) || $this->is_my_courses_page() ) {
 			wp_enqueue_style( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/css/public.css', array(), COURSEEXP_VERSION );
-			wp_enqueue_script( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/js/public.js', array( 'jquery' ), COURSEEXP_VERSION, true );
+			wp_enqueue_style( 'courseexp-sidebar', COURSEEXP_PLUGIN_URL . 'assets/css/sidebar.css', array(), COURSEEXP_VERSION );
+			wp_enqueue_script( 'courseexp-sidebar', COURSEEXP_PLUGIN_URL . 'assets/js/sidebar.js', array(), COURSEEXP_VERSION, true );
 		}
 	}
 

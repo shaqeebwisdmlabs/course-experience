@@ -4,9 +4,9 @@
  * @package Course_Experience
  */
 
-(function ($) {
+(function () {
 	'use strict';
 
 	// Your JavaScript here.
 
-})(jQuery);
+})();
