@@ -63,6 +63,19 @@ Never split a feature across multiple small files (e.g., sidebar-state.js, sideb
 - Escape all outputs with `esc_*()` functions
 - Use prepared statements for database queries
 
+### JavaScript
+- Wrap each feature file in an IIFE with `'use strict';`
+- Toggle CSS classes for state and visibility — never set `element.style.*`
+  inline. Use a utility class (e.g. `.courseexp-is-hidden`) to hide/show.
+- Drive icon swaps and similar visual state from a single state class on the
+  parent; let CSS handle which child shows
+- Keep user-facing strings out of JS. Pass translatable text from the template
+  via `data-*` attributes and read them with `element.dataset.*`
+- Decouple modules with `CustomEvent` (e.g. `courseexp:activitySelected`) instead
+  of direct cross-module calls
+- Guard `localStorage` access in `try/catch`; degrade silently when unavailable
+- Keep ARIA in sync with state (`aria-expanded`, `aria-pressed`, `hidden`)
+
 ### Hooks
 ```php
 // Actions
@@ -198,9 +211,45 @@ public function enqueue_assets(): void {
 **Mobile-First Approach**
 - Base styles (no media query) target mobile ≤768px
 - Use `min-width` queries only for progressive enhancement
-- Never use `max-width` queries (except ≤600px for WP admin bar static behavior)
+- Avoid `max-width` queries. The only allowed exceptions are the WordPress
+  admin-bar breakpoints, used solely to adjust fixed-element top offsets:
+  - `≤600px` — admin bar becomes non-fixed
+  - `≤782px` — admin bar grows to 46px (nested inside a `min-width` block)
 - Sidebar: off-screen by default on mobile, `.is-open` toggles it in
 - Layout elements start with `margin-left: 0` on mobile
+
+**BEM Naming & Low Specificity**
+- Use BEM: `.courseexp-block`, `.courseexp-block__element`, `.courseexp-block--modifier`
+- Prefer single-class selectors (0,1,0 specificity). Do **not** qualify a class
+  with an element (`h2.courseexp-sidebar__title` → `.courseexp-sidebar__title`)
+- Avoid IDs in CSS and `!important` outside utility classes
+- Use `is-*` state classes (`.is-open`, `.is-expanded`, `.is-active`) for runtime
+  state, toggled from JS
+
+**Design Tokens (required)**
+- Declare every color, radius, spacing and transition value as a `:root` custom
+  property prefixed `--courseexp-*`. Rule bodies reference tokens — **no raw hex,
+  radius or spacing literals outside `:root`**.
+- Shared scale tokens:
+  - `--courseexp-radius: 5px` (MedDiet's standard corner radius)
+  - `--courseexp-space-sm`, `--courseexp-space-md` for padding/gaps
+- Colors prefer the active theme's presets and fall back to the MedDiet palette,
+  so the component matches MedDiet here but adapts to any theme:
+  ```css
+  --courseexp-primary-green: var(--wp--preset--color--primary, #7cc146);
+  --courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
+  --courseexp-sidebar-text:  var(--wp--preset--color--foreground, #333333);
+  --courseexp-sidebar-border: var(--wp--preset--color--border, #e0e0e0);
+  ```
+- Text rendered over a brand color uses an on-accent token (`--courseexp-on-accent`)
+
+**Accessibility**
+- Use `:focus-visible` (not `:focus`) for keyboard outlines; outline color is the
+  accent orange
+- Wrap non-essential motion in `@media (prefers-reduced-motion: reduce)` (disable
+  shimmer/transition animations)
+- Manage focus for overlay UI: move focus into a drawer on open, restore it to the
+  trigger on close
 
 **MedDiet Theme Compatibility**
 - Header selectors must always include `.site-navbar` alongside generic tags:
@@ -210,11 +259,6 @@ public function enqueue_assets(): void {
   body.courseexp-page #masthead,
   body.courseexp-page .site-navbar { ... }
   ```
-- Use these CSS variable colors (match MedDiet palette):
-  - `--courseexp-primary-green: #7cc146`
-  - `--courseexp-accent-orange: #ea7813`
-  - `--courseexp-sidebar-text: #333333`
-  - `--courseexp-sidebar-border: #e0e0e0`
 - Footer selectors: `footer`, `.site-footer`, `.footer-section` (meddiet uses `.footer-section`)
 - Do not modify files in `assets/meddiet-theme/`
 
@@ -222,7 +266,10 @@ public function enqueue_assets(): void {
 
 ### Comments Policy
 
-Use comments only when necessary. Code should be self-explanatory through clear naming and structure.
+Applies to PHP, JS and CSS alike. Use comments only when necessary — to explain
+*why*, not *what*. Code should be self-explanatory through clear naming and
+structure. In CSS, do not add group-label comments that merely restate token
+names (e.g. `/* Skeleton loader */` above `--courseexp-skeleton-*`).
 
 **Good comments:**
 ```php
@@ -297,6 +344,9 @@ Before committing:
 - [ ] Capability checks for admin actions
 - [ ] Works with WP_DEBUG enabled
 - [ ] No console errors in browser
+- [ ] CSS uses `:root` tokens (no raw hex/radius/spacing in rule bodies)
+- [ ] No inline styles in markup or set via JS (`element.style.*`)
+- [ ] Keyboard focus visible (`:focus-visible`) and `prefers-reduced-motion` respected
 
 ## Anti-Patterns (Never Do)
 
@@ -306,8 +356,12 @@ Before committing:
 4. **Use `$_POST`/`$_GET`** directly without sanitization
 5. **Global variables** without namespacing
 6. **Inline CSS/JS** - always enqueue
-7. **Hardcoded paths** - use `plugin_dir_path()`, `plugin_dir_url()`
-8. **Mixed concerns** - separate logic from presentation
+7. **Inline styles via JS** (`element.style.x = ...`) - toggle a CSS class instead
+8. **Raw color/radius/spacing values in CSS rule bodies** - reference `:root` tokens
+9. **Element-qualified or ID selectors in CSS** - use single BEM classes
+10. **User-facing strings hardcoded in JS** - pass via `data-*` from the template
+11. **Hardcoded paths** - use `plugin_dir_path()`, `plugin_dir_url()`
+12. **Mixed concerns** - separate logic from presentation
 
 ## Quick Reference
 
