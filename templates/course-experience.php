@@ -32,8 +32,12 @@ if ( $moodle_course_id > 0 && $moodle_user_id > 0 ) {
 	$progress_data = $api_client->get_user_progress( $moodle_user_id, array( $moodle_course_id ) );
 }
 
+$course_title = $course_post ? $course_post->post_title : '';
+
 get_header();
 
+set_query_var( 'course_title', $course_title );
+set_query_var( 'course_data', $course_data );
 load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 ?>
 

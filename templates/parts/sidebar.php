@@ -8,6 +8,16 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+$course_title = isset( $course_title ) ? $course_title : '';
+$course_data  = isset( $course_data ) ? $course_data : array();
+
+if ( is_object( $course_data ) ) {
+	$course_data = json_decode( wp_json_encode( $course_data ), true );
+}
+
+$has_data = ! empty( $course_data ) && ! is_wp_error( $course_data );
+$sections = $has_data && isset( $course_data['sections'] ) ? $course_data['sections'] : array();
 ?>
 
 <button
@@ -16,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	aria-label="<?php esc_attr_e( 'Open course menu', 'eb-course-exp' ); ?>"
 	aria-controls="courseexp-sidebar"
 >
-	<span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-open-icon lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></span>
+	<span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></span>
 </button>
 
 <button
@@ -26,27 +36,128 @@ if ( ! defined( 'ABSPATH' ) ) {
 	aria-controls="courseexp-sidebar"
 	aria-expanded="false"
 >
-	<span class="courseexp-floating-toggle__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-open-icon lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></span>
+	<span class="courseexp-floating-toggle__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg></span>
 </button>
 
 <div class="courseexp-sidebar-overlay" id="courseexp-sidebar-overlay"></div>
 
 <aside class="courseexp-sidebar" id="courseexp-sidebar" role="navigation" aria-label="<?php esc_attr_e( 'Course content navigation', 'eb-course-exp' ); ?>">
 	<div class="courseexp-sidebar__header">
-		<h2 class="courseexp-sidebar__title"><?php esc_html_e( 'Course Content', 'eb-course-exp' ); ?></h2>
-		<button
-			class="courseexp-sidebar__toggle"
-			id="courseexp-sidebar-toggle"
-			aria-expanded="true"
-			aria-controls="courseexp-sidebar"
-			aria-label="<?php esc_attr_e( 'Collapse sidebar', 'eb-course-exp' ); ?>"
-		>
-			<span class="courseexp-sidebar__toggle-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-close-icon lucide-panel-left-close"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg></span>
-		</button>
+		<?php if ( ! empty( $course_title ) ) : ?>
+			<h2 class="courseexp-sidebar__title"><?php echo esc_html( $course_title ); ?></h2>
+		<?php else : ?>
+			<h2 class="courseexp-sidebar__title"><?php esc_html_e( 'Course Content', 'eb-course-exp' ); ?></h2>
+		<?php endif; ?>
+		<div class="courseexp-sidebar__actions">
+			<button
+				class="courseexp-sidebar__action-btn"
+				id="courseexp-accordion-toggle"
+				aria-label="<?php esc_attr_e( 'Expand all sections', 'eb-course-exp' ); ?>"
+				aria-pressed="false"
+				title="<?php esc_attr_e( 'Expand/Collapse All', 'eb-course-exp' ); ?>"
+				data-label-expand="<?php esc_attr_e( 'Expand all sections', 'eb-course-exp' ); ?>"
+				data-label-collapse="<?php esc_attr_e( 'Collapse all sections', 'eb-course-exp' ); ?>"
+				data-title-expand="<?php esc_attr_e( 'Expand All', 'eb-course-exp' ); ?>"
+				data-title-collapse="<?php esc_attr_e( 'Collapse All', 'eb-course-exp' ); ?>"
+			>
+				<span class="courseexp-accordion-toggle__icon-expand" aria-hidden="true">
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-chevrons-up-down-icon lucide-list-chevrons-up-down"><path d="M3 5h8"/><path d="M3 12h8"/><path d="M3 19h8"/><path d="m15 8 3-3 3 3"/><path d="m15 16 3 3 3-3"/></svg>
+				</span>
+				<span class="courseexp-accordion-toggle__icon-collapse" aria-hidden="true">
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list-chevrons-down-up-icon lucide-list-chevrons-down-up"><path d="M3 5h8"/><path d="M3 12h8"/><path d="M3 19h8"/><path d="m15 5 3 3 3-3"/><path d="m15 19 3-3 3 3"/></svg>
+				</span>
+			</button>
+			<button
+				class="courseexp-sidebar__action-btn"
+				id="courseexp-sidebar-toggle"
+				aria-expanded="true"
+				aria-controls="courseexp-sidebar"
+				aria-label="<?php esc_attr_e( 'Collapse sidebar', 'eb-course-exp' ); ?>"
+				title="<?php esc_attr_e( 'Collapse Sidebar', 'eb-course-exp' ); ?>"
+			>
+				<span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+			</button>
+		</div>
 	</div>
+
 	<div class="courseexp-sidebar__content">
-		<nav class="courseexp-course-nav">
-			<p class="courseexp-placeholder-text"><?php esc_html_e( 'Course sections and activities will appear here.', 'eb-course-exp' ); ?></p>
-		</nav>
+		<?php if ( $has_data && ! empty( $sections ) ) : ?>
+			<nav class="courseexp-accordion" id="courseexp-accordion" aria-label="<?php esc_attr_e( 'Course sections', 'eb-course-exp' ); ?>">
+				<?php foreach ( $sections as $section_index => $section ) : ?>
+					<?php
+					if ( is_object( $section ) ) {
+						$section = json_decode( wp_json_encode( $section ), true );
+					}
+					$section_id       = isset( $section['id'] ) ? $section['id'] : $section_index;
+					$activities       = isset( $section['activities'] ) ? $section['activities'] : array();
+					$section_unique   = 'courseexp-section-' . esc_attr( $section_id );
+					$is_first_section = 0 === $section_index;
+					if ( isset( $section['name'] ) ) {
+						$section_name = $section['name'];
+					} else {
+						/* translators: %d: section number (1-based index) used as a fallback when the section has no name. */
+						$section_name = sprintf( __( 'Section %d', 'eb-course-exp' ), $section_index + 1 );
+					}
+					?>
+					<div class="courseexp-section<?php echo $is_first_section ? ' is-expanded' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
+						<button
+							type="button"
+							class="courseexp-section__header"
+							aria-expanded="<?php echo $is_first_section ? 'true' : 'false'; ?>"
+							aria-controls="<?php echo esc_attr( $section_unique ); ?>"
+							id="<?php echo esc_attr( $section_unique . '-header' ); ?>"
+						>
+							<span class="courseexp-section__title"><?php echo esc_html( $section_name ); ?></span>
+							<span class="courseexp-section__icon" aria-hidden="true">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+							</span>
+						</button>
+						<div
+							class="courseexp-section__content"
+							id="<?php echo esc_attr( $section_unique ); ?>"
+							role="region"
+							aria-labelledby="<?php echo esc_attr( $section_unique . '-header' ); ?>"
+							<?php echo $is_first_section ? '' : 'hidden'; ?>
+						>
+							<?php if ( ! empty( $activities ) ) : ?>
+								<ul class="courseexp-activities">
+									<?php foreach ( $activities as $activity ) : ?>
+										<?php
+										if ( is_object( $activity ) ) {
+											$activity = json_decode( wp_json_encode( $activity ), true );
+										}
+										$activity_id   = isset( $activity['id'] ) ? $activity['id'] : 0;
+										$activity_name = isset( $activity['name'] ) ? $activity['name'] : '';
+										$activity_type = isset( $activity['type'] ) ? $activity['type'] : 'activity';
+										?>
+										<li class="courseexp-activity" data-activity-id="<?php echo esc_attr( $activity_id ); ?>" data-activity-type="<?php echo esc_attr( $activity_type ); ?>">
+											<a href="#activity-<?php echo esc_attr( $activity_id ); ?>" class="courseexp-activity__link">
+												<?php echo esc_html( $activity_name ); ?>
+											</a>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+							<?php else : ?>
+								<p class="courseexp-section__empty"><?php esc_html_e( 'No activities in this section.', 'eb-course-exp' ); ?></p>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</nav>
+		<?php elseif ( is_wp_error( $course_data ) ) : ?>
+			<div class="courseexp-error">
+				<p><?php esc_html_e( 'Unable to load course content. Please try again later.', 'eb-course-exp' ); ?></p>
+			</div>
+		<?php else : ?>
+			<div class="courseexp-skeleton" id="courseexp-skeleton" aria-busy="true" aria-label="<?php esc_attr_e( 'Loading course content', 'eb-course-exp' ); ?>">
+				<?php for ( $i = 0; $i < 4; $i++ ) : ?>
+					<div class="courseexp-skeleton__section">
+						<div class="courseexp-skeleton__header">
+							<div class="courseexp-skeleton__text courseexp-skeleton__text--long"></div>
+						</div>
+					</div>
+				<?php endfor; ?>
+			</div>
+		<?php endif; ?>
 	</div>
 </aside>
