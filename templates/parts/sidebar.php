@@ -126,13 +126,46 @@ $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['secti
 										if ( is_object( $activity ) ) {
 											$activity = json_decode( wp_json_encode( $activity ), true );
 										}
-										$activity_id   = isset( $activity['id'] ) ? $activity['id'] : 0;
+
+										$activity_id   = isset( $activity['cmid'] ) ? intval( $activity['cmid'] ) : 0;
 										$activity_name = isset( $activity['name'] ) ? $activity['name'] : '';
-										$activity_type = isset( $activity['type'] ) ? $activity['type'] : 'activity';
+										$indent        = isset( $activity['indent'] ) ? intval( $activity['indent'] ) : 0;
+										$available     = isset( $activity['available'] ) ? (bool) $activity['available'] : true;
+
+										$completion       = isset( $activity['completion'] ) ? $activity['completion'] : array();
+										$is_tracked       = isset( $completion['tracked'] ) ? (bool) $completion['tracked'] : false;
+										$is_complete      = isset( $completion['isoverallcomplete'] ) ? (bool) $completion['isoverallcomplete'] : false;
+										$show_status_icon = $is_tracked;
+										$status_complete  = $is_complete;
+
+										$activity_classes = array( 'courseexp-activity' );
+										if ( ! $available ) {
+											$activity_classes[] = 'is-locked';
+										}
+										$activity_class = implode( ' ', array_map( 'sanitize_html_class', $activity_classes ) );
+
 										?>
-										<li class="courseexp-activity" data-activity-id="<?php echo esc_attr( $activity_id ); ?>" data-activity-type="<?php echo esc_attr( $activity_type ); ?>">
+										<li class="<?php echo esc_attr( $activity_class ); ?>" data-activity-id="<?php echo esc_attr( $activity_id ); ?>" data-indent="<?php echo esc_attr( $indent ); ?>">
 											<a href="#activity-<?php echo esc_attr( $activity_id ); ?>" class="courseexp-activity__link">
-												<?php echo esc_html( $activity_name ); ?>
+												<span class="courseexp-activity__status">
+													<?php if ( $show_status_icon ) : ?>
+														<?php if ( $status_complete ) : ?>
+															<!-- Completed: Green checkmark -->
+															<svg class="courseexp-activity__icon courseexp-activity__icon--complete" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+														<?php else : ?>
+															<!-- Tracked but not complete: Empty circle -->
+															<svg class="courseexp-activity__icon courseexp-activity__icon--incomplete" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+														<?php endif; ?>
+													<?php endif; ?>
+												</span>
+												<span class="courseexp-activity__label">
+													<span class="courseexp-activity__name"><?php echo esc_html( $activity_name ); ?></span>
+													<?php if ( ! $available ) : ?>
+														<span class="courseexp-activity__lock" title="<?php esc_attr_e( 'Locked', 'eb-course-exp' ); ?>">
+															<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock-keyhole-icon lucide-lock-keyhole"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+														</span>
+													<?php endif; ?>
+												</span>
 											</a>
 										</li>
 									<?php endforeach; ?>
