@@ -7,7 +7,7 @@
 plugin-name/
 ├── plugin-name.php          # Main plugin file
 ├── includes/                # Core classes
-│   ├── class-core.php       # Main initialization
+│   ├── class-courseexp-core.php       # Main initialization
 │   └── class-*.php          # Feature classes
 ├── templates/               # Template files
 │   └── parts/               # Template parts (feature-wise)
@@ -195,7 +195,7 @@ public function enqueue_assets(): void {
         array(),
         PLUGIN_VERSION
     );
-    
+
     wp_enqueue_script(
         'pluginname-handle',
         PLUGIN_URL . 'assets/js/script.js',
@@ -379,7 +379,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Activation hook
 register_activation_hook( __FILE__, 'pluginname_activate' );
 
-// Deactivation hook  
+// Deactivation hook
 register_deactivation_hook( __FILE__, 'pluginname_deactivate' );
 
 // Load text domain

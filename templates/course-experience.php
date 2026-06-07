@@ -43,44 +43,9 @@ load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 
 <div class="courseexp-layout">
 	<main class="courseexp-main" id="courseexp-main">
-		<div class="courseexp-main__header">
-			<h1><?php echo $course_post ? esc_html( $course_post->post_title ) : esc_html__( 'Course Not Found', 'eb-course-exp' ); ?></h1>
-		</div>
+		<?php load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/course-header.php', false ); ?>
 
 		<div class="courseexp-main__content">
-			<div class="courseexp-debug-info">
-				<h2><?php esc_html_e( 'Debug Information', 'eb-course-exp' ); ?></h2>
-				<p><strong><?php esc_html_e( 'Course Slug:', 'eb-course-exp' ); ?></strong> <?php echo esc_html( $course_slug ); ?></p>
-				<p><strong><?php esc_html_e( 'WordPress Post ID:', 'eb-course-exp' ); ?></strong> <?php echo $course_post ? esc_html( $course_post->ID ) : esc_html__( 'Not found', 'eb-course-exp' ); ?></p>
-				<p><strong><?php esc_html_e( 'Moodle Course ID:', 'eb-course-exp' ); ?></strong> <?php echo esc_html( $moodle_course_id ); ?></p>
-				<p><strong><?php esc_html_e( 'Moodle User ID:', 'eb-course-exp' ); ?></strong> <?php echo esc_html( $moodle_user_id ); ?></p>
-			</div>
-
-			<div class="courseexp-api-data">
-				<h2><?php esc_html_e( 'Course Structure API Response', 'eb-course-exp' ); ?></h2>
-				<?php
-				if ( is_wp_error( $course_data ) ) {
-					echo '<p class="courseexp-error">' . esc_html__( 'Error:', 'eb-course-exp' ) . ' ' . esc_html( $course_data->get_error_message() ) . '</p>';
-				} else {
-					echo '<pre>';
-					var_dump( $course_data );
-					echo '</pre>';
-				}
-				?>
-			</div>
-
-			<div class="courseexp-progress-data">
-				<h2><?php esc_html_e( 'User Progress API Response', 'eb-course-exp' ); ?></h2>
-				<?php
-				if ( is_wp_error( $progress_data ) ) {
-					echo '<p class="courseexp-error">' . esc_html__( 'Error:', 'eb-course-exp' ) . ' ' . esc_html( $progress_data->get_error_message() ) . '</p>';
-				} else {
-					echo '<pre>';
-					var_dump( $progress_data );
-					echo '</pre>';
-				}
-				?>
-			</div>
 		</div>
 	</main>
 </div>

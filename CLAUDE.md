@@ -11,7 +11,7 @@ This is a WordPress plugin that extends Edwiser Bridge to provide a seamless cou
 ### Code Quality
 ```bash
 # Check PHP syntax
-php -l includes/class-core.php
+php -l includes/class-courseexp-core.php
 
 # Run WordPress Coding Standards
 ./vendor/bin/phpcs includes/
@@ -67,7 +67,7 @@ The plugin communicates with Moodle through Edwiser Bridge's connection helper:
 
 ## Key Files and Responsibilities
 
-- `includes/class-core.php` - Plugin bootstrap, asset enqueueing (only on relevant pages), AJAX handler registration
+- `includes/class-courseexp-core.php` - Plugin bootstrap, asset enqueueing (only on relevant pages), AJAX handler registration
 - `includes/class-course-router.php` - URL rewriting, query var registration, template hijacking, My Courses URL modification
 - `includes/class-api-client.php` - Moodle web service client using Edwiser Bridge's connection infrastructure
 - `templates/course-experience.php` - Debug template displaying raw API responses (currently var_dump only)

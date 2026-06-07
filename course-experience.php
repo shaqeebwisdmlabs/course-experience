@@ -74,7 +74,7 @@ function courseexp_init(): void {
 	load_plugin_textdomain( 'eb-course-exp', false, dirname( COURSEEXP_PLUGIN_BASENAME ) . '/languages' );
 
 	// Include core files.
-	require_once COURSEEXP_PLUGIN_DIR . 'includes/class-core.php';
+	require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-core.php';
 
 	// Initialize the main class.
 	$core = new CourseExp_Core();

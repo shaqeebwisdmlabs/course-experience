@@ -1,9 +1,152 @@
-/**
- * Course Experience - Public Styles
- *
- * @package Course_Experience
- */
+:root {
+	--courseexp-header-height: 80px;
+	--courseexp-sidebar-width: 320px;
+	--courseexp-transition-speed: 0.25s;
 
-.courseexp-course-viewer {
-	/* Your styles here */
+	/* MedDiet's standard corner radius. */
+	--courseexp-radius: 5px;
+
+	--courseexp-space-sm: 8px;
+	--courseexp-space-md: 12px;
+
+	/* Colors prefer the active theme's presets and fall back to the MedDiet palette. */
+	--courseexp-primary-green: var(--wp--preset--color--primary, #7cc146);
+	--courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
+	--courseexp-accent-orange-hover: #c76610;
+	--courseexp-on-accent: #fff;
+	--courseexp-surface-bg: var(--wp--preset--color--background, #fff);
+	--courseexp-surface-border: var(--wp--preset--color--border, #e0e0e0);
+	--courseexp-text: var(--wp--preset--color--foreground, #333333);
+	--courseexp-text-muted: #666;
+	--courseexp-text-subtle: #888;
+
+	/* Neutral canvas behind the white content cards. */
+	--courseexp-page-bg: #f4f5f7;
+	--courseexp-card-bg: var(--courseexp-surface-bg);
+
+	--courseexp-error-bg: #fef2f2;
+	--courseexp-error-border: #fecaca;
+	--courseexp-error-text: #991b1b;
+}
+
+.courseexp-is-hidden {
+	display: none !important;
+}
+
+.courseexp-layout,
+body.courseexp-page footer,
+body.courseexp-page .site-footer,
+body.courseexp-page .footer-section {
+	margin-left: 0;
+	transition: margin-left var(--courseexp-transition-speed) ease;
+}
+
+.courseexp-layout {
+	width: 100%;
+	min-height: 100vh;
+	background: var(--courseexp-page-bg);
+}
+
+.courseexp-main {
+	padding: 32px 24px;
+	min-height: 100vh;
+	max-width: 1240px;
+	margin: 0 auto;
+}
+
+.courseexp-error {
+	padding: var(--courseexp-space-md);
+	background: var(--courseexp-error-bg);
+	border: 1px solid var(--courseexp-error-border);
+	border-radius: var(--courseexp-radius);
+	margin: 0;
+}
+
+.courseexp-error p {
+	margin: 0;
+	font-size: 14px;
+	color: var(--courseexp-error-text);
+}
+
+@media (min-width: 769px) {
+	body.courseexp-page header,
+	body.courseexp-page .site-header,
+	body.courseexp-page #masthead,
+	body.courseexp-page .site-navbar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 9;
+		margin-top: 0;
+	}
+
+	body.courseexp-page {
+		padding-top: var(--courseexp-header-height);
+	}
+
+	body.courseexp-page.admin-bar header,
+	body.courseexp-page.admin-bar .site-header,
+	body.courseexp-page.admin-bar #masthead,
+	body.courseexp-page.admin-bar .site-navbar {
+		top: 32px;
+	}
+
+	body.courseexp-page.admin-bar {
+		padding-top: calc(var(--courseexp-header-height) + 32px);
+	}
+
+	@media (max-width: 782px) {
+		body.courseexp-page.admin-bar header,
+		body.courseexp-page.admin-bar .site-header,
+		body.courseexp-page.admin-bar #masthead,
+		body.courseexp-page.admin-bar .site-navbar {
+			top: 46px;
+		}
+
+		body.courseexp-page.admin-bar {
+			padding-top: calc(var(--courseexp-header-height) + 46px);
+		}
+	}
+
+	.courseexp-layout,
+	body.courseexp-page footer,
+	body.courseexp-page .site-footer,
+	body.courseexp-page .footer-section {
+		margin-left: var(--courseexp-sidebar-width);
+	}
+
+	body.courseexp-sidebar-collapsed .courseexp-layout,
+	body.courseexp-sidebar-collapsed footer,
+	body.courseexp-sidebar-collapsed .site-footer,
+	body.courseexp-sidebar-collapsed .footer-section {
+		margin-left: 0;
+	}
+
+	body.courseexp-page:not(.courseexp-sidebar-collapsed) footer,
+	body.courseexp-page:not(.courseexp-sidebar-collapsed) .site-footer,
+	body.courseexp-page:not(.courseexp-sidebar-collapsed) .footer-section {
+		width: calc(100% - var(--courseexp-sidebar-width));
+	}
+
+	.courseexp-main {
+		padding: 40px 24px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.courseexp-layout,
+	body.courseexp-page footer,
+	body.courseexp-page .site-footer,
+	body.courseexp-page .footer-section {
+		transition: none;
+	}
+}
+
+
+.courseexp-page #content .ast-container {
+	width: 100%;
+	max-width: 100%;
+	margin: 0;
+	padding: 0;
 }
