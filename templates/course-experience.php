@@ -46,6 +46,7 @@ load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 		<?php load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/course-header.php', false ); ?>
 
 		<div class="courseexp-main__content">
+			<?php load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sections.php', false ); ?>
 		</div>
 	</main>
 </div>

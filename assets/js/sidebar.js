@@ -264,8 +264,8 @@
 			});
 			document.dispatchEvent(event);
 
-			// On mobile the drawer overlays content, so dismiss it after a choice.
-			if (window.innerWidth < 769) {
+			// On mobile/tablet the drawer overlays content, so dismiss it after a choice.
+			if (window.innerWidth < 1024) {
 				const sidebar = document.getElementById('courseexp-sidebar');
 				const overlay = document.getElementById('courseexp-sidebar-overlay');
 				const body = document.body;

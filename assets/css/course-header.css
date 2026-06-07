@@ -3,8 +3,8 @@
 	--courseexp-header-title: var(--courseexp-text);
 	--courseexp-header-track-bg: var(--courseexp-surface-border);
 	--courseexp-header-fill: var(--courseexp-primary-green);
-	--courseexp-header-space: 24px;
-	--courseexp-header-progress-width: 200px;
+	--courseexp-header-space: 40px;
+	--courseexp-header-progress-width: 220px;
 	--courseexp-header-track-height: 8px;
 }
 
@@ -12,7 +12,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: var(--courseexp-header-space);
+	gap: 16px;
 	margin: 0 0 var(--courseexp-header-space);
 }
 
@@ -39,7 +39,6 @@
 
 .courseexp-course-header__progress {
 	width: 100%;
-	max-width: var(--courseexp-header-progress-width);
 	flex-shrink: 0;
 }
 
@@ -87,7 +86,7 @@
 	border-radius: var(--courseexp-radius);
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
 	.courseexp-course-header {
 		flex-direction: row;
 		align-items: center;
@@ -100,6 +99,10 @@
 
 	.courseexp-course-header__title {
 		font-size: 34px;
+	}
+
+	.courseexp-course-header__progress {
+		max-width: var(--courseexp-header-progress-width);
 	}
 }
 

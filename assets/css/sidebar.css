@@ -5,17 +5,11 @@
 	--courseexp-accordion-border: var(--courseexp-surface-border);
 	--courseexp-activity-hover: #f8f9fa;
 
-	--courseexp-toggle-bg: #fff;
-	--courseexp-toggle-border: #dee2e6;
-	--courseexp-toggle-hover-bg: #f0f7eb;
-	--courseexp-floating-btn-bg: #fff;
 	--courseexp-floating-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
 	--courseexp-skeleton-bg: #e8e8e8;
 	--courseexp-skeleton-shimmer: #f5f5f5;
 
-	/* Indentation for nested activities. */
-	--courseexp-indent-base: var(--courseexp-space-md);
 	--courseexp-indent-step: 16px;
 }
 
@@ -34,8 +28,15 @@
 	transition: transform var(--courseexp-transition-speed) ease;
 }
 
+/* WP admin bar is 32px tall above 782px and 46px at/below it. */
 body.admin-bar .courseexp-sidebar {
-	top: 46px;
+	top: 32px;
+}
+
+@media (max-width: 782px) {
+	body.admin-bar .courseexp-sidebar {
+		top: 46px;
+	}
 }
 
 @media (max-width: 600px) {
@@ -99,7 +100,8 @@ body.courseexp-sidebar-collapsed .courseexp-sidebar {
 	background: var(--courseexp-activity-hover);
 }
 
-.courseexp-sidebar__action-btn:focus-visible {
+.courseexp-sidebar__action-btn:focus-visible,
+.courseexp-sidebar__action-btn:focus {
 	outline: 2px solid var(--courseexp-accent-orange);
 	outline-offset: 2px;
 }
@@ -170,8 +172,16 @@ body.courseexp-sidebar-collapsed .courseexp-sidebar {
 	z-index: 1001;
 }
 
+/* header-height + admin bar (32px) + 16px gap. */
 body.admin-bar .courseexp-mobile-toggle {
-	top: calc(var(--courseexp-header-height) + 62px);
+	top: calc(var(--courseexp-header-height) + 48px);
+}
+
+/* Admin bar grows to 46px at/below 782px. */
+@media (max-width: 782px) {
+	body.admin-bar .courseexp-mobile-toggle {
+		top: calc(var(--courseexp-header-height) + 62px);
+	}
 }
 
 body.courseexp-sidebar-open .courseexp-mobile-toggle {
@@ -363,11 +373,12 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 }
 
 .courseexp-activity__link:hover {
-	color: var(--courseexp-primary-green);
+	color: var(--courseexp-accent-orange);
 	background: var(--courseexp-activity-hover);
 }
 
-.courseexp-activity__link:focus-visible {
+.courseexp-activity__link:focus-visible,
+.courseexp-activity__link:focus {
 	outline: 2px solid var(--courseexp-accent-orange);
 	outline-offset: -2px;
 }
@@ -432,21 +443,16 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	font-weight: 600;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1024px) {
 	.courseexp-sidebar {
 		top: calc(var(--courseexp-header-height) + 2px);
 		transform: translateX(0);
 		z-index: 100;
 	}
 
+	/* Above 1024px the admin bar is always 32px tall. */
 	body.admin-bar .courseexp-sidebar {
 		top: calc(var(--courseexp-header-height) + 32px);
-	}
-
-	@media (max-width: 782px) {
-		body.admin-bar .courseexp-sidebar {
-			top: calc(var(--courseexp-header-height) + 46px);
-		}
 	}
 
 	body.courseexp-sidebar-collapsed .courseexp-sidebar {
@@ -481,12 +487,6 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 
 	body.admin-bar .courseexp-floating-toggle {
 		top: calc(var(--courseexp-header-height) + 48px);
-	}
-
-	@media (max-width: 782px) {
-		body.admin-bar .courseexp-floating-toggle {
-			top: calc(var(--courseexp-header-height) + 62px);
-		}
 	}
 
 	body.courseexp-sidebar-collapsed .courseexp-floating-toggle {
