@@ -388,7 +388,7 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 }
 ?>
 
-<div class="courseexp-sections">
+<div class="courseexp-sections" id="courseexp-sections">
 	<?php if ( $has_data && ! empty( $sections ) ) : ?>
 		<?php foreach ( $sections as $section_index => $section ) : ?>
 			<?php
@@ -398,6 +398,10 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 			$summary    = isset( $section['summary'] ) ? $section['summary'] : '';
 			$is_visible = ! isset( $section['visible'] ) || (bool) $section['visible'];
 			$is_current = ! empty( $section['current'] );
+			$is_first   = ( 0 === $section_index );
+			$body_id    = 'courseexp-section-body-' . $section_id;
+			$toggle_id  = 'courseexp-section-toggle-' . $section_id;
+			$title_id   = 'courseexp-section-title-' . $section_id;
 
 			if ( isset( $section['name'] ) && '' !== trim( (string) $section['name'] ) ) {
 				$section_name = $section['name'];
@@ -413,30 +417,60 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 			if ( $is_current ) {
 				$section_classes[] = 'is-current';
 			}
+			if ( $is_first ) {
+				$section_classes[] = 'is-expanded';
+			}
 			$section_class = implode( ' ', array_map( 'sanitize_html_class', $section_classes ) );
 			?>
-			<section class="<?php echo esc_attr( $section_class ); ?>" id="section-<?php echo esc_attr( $section_id ); ?>" aria-label="<?php echo esc_attr( $section_name ); ?>">
+			<section class="<?php echo esc_attr( $section_class ); ?>" id="section-<?php echo esc_attr( $section_id ); ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
 				<div class="courseexp-section-block__header">
-					<h2 class="courseexp-section-block__title"><?php echo esc_html( $section_name ); ?></h2>
+					<button
+						type="button"
+						class="courseexp-section-block__toggle"
+						id="<?php echo esc_attr( $toggle_id ); ?>"
+						aria-expanded="<?php echo $is_first ? 'true' : 'false'; ?>"
+						aria-controls="<?php echo esc_attr( $body_id ); ?>"
+						aria-labelledby="<?php echo esc_attr( $title_id ); ?>"
+					>
+						<span class="courseexp-section-block__toggle-icon" aria-hidden="true">
+							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+						</span>
+					</button>
+					<h2 class="courseexp-section-block__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo esc_html( $section_name ); ?></h2>
+
+					<?php if ( $is_first ) : ?>
+						<button
+							type="button"
+							class="courseexp-section-block__expand-all"
+							id="courseexp-sections-expand-all"
+							aria-pressed="false"
+							data-label-expand="<?php esc_attr_e( 'Expand all', 'eb-course-exp' ); ?>"
+							data-label-collapse="<?php esc_attr_e( 'Collapse all', 'eb-course-exp' ); ?>"
+						>
+							<span class="courseexp-section-block__expand-all-text"><?php esc_html_e( 'Expand all', 'eb-course-exp' ); ?></span>
+						</button>
+					<?php endif; ?>
 				</div>
 
-				<?php if ( ! $is_visible ) : ?>
-					<p class="courseexp-section-block__stub-note"><?php esc_html_e( 'Not available', 'eb-course-exp' ); ?></p>
-				<?php else : ?>
-					<?php if ( '' !== trim( (string) $summary ) ) : ?>
-						<div class="courseexp-section-block__summary">
-							<?php courseexp_render_trusted_html( $summary ); ?>
-						</div>
-					<?php endif; ?>
-
-					<?php if ( ! empty( $activities ) ) : ?>
-						<div class="courseexp-section-block__items">
-							<?php courseexp_render_section_items( $activities, $courseexp_ctx ); ?>
-						</div>
+				<div class="courseexp-section-block__body" id="<?php echo esc_attr( $body_id ); ?>"<?php echo $is_first ? '' : ' hidden'; ?>>
+					<?php if ( ! $is_visible ) : ?>
+						<p class="courseexp-section-block__stub-note"><?php esc_html_e( 'Not available', 'eb-course-exp' ); ?></p>
 					<?php else : ?>
-						<p class="courseexp-section-block__empty"><?php esc_html_e( 'No content in this section yet.', 'eb-course-exp' ); ?></p>
+						<?php if ( '' !== trim( (string) $summary ) ) : ?>
+							<div class="courseexp-section-block__summary">
+								<?php courseexp_render_trusted_html( $summary ); ?>
+							</div>
+						<?php endif; ?>
+
+						<?php if ( ! empty( $activities ) ) : ?>
+							<div class="courseexp-section-block__items">
+								<?php courseexp_render_section_items( $activities, $courseexp_ctx ); ?>
+							</div>
+						<?php else : ?>
+							<p class="courseexp-section-block__empty"><?php esc_html_e( 'No content in this section yet.', 'eb-course-exp' ); ?></p>
+						<?php endif; ?>
 					<?php endif; ?>
-				<?php endif; ?>
+				</div>
 			</section>
 		<?php endforeach; ?>
 	<?php elseif ( is_wp_error( $course_data ) ) : ?>

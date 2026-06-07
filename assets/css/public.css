@@ -37,6 +37,17 @@
 	--courseexp-dropdown-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
+.courseexp-page h1,
+.courseexp-page h2,
+.courseexp-page h3,
+.courseexp-page h4 {
+	margin-bottom: 0;
+}
+
+.courseexp-page p {
+	margin-bottom: 12px;
+}
+
 .courseexp-is-hidden {
 	display: none !important;
 }
@@ -144,12 +155,4 @@ body.courseexp-page .footer-section {
 	max-width: 100%;
 	margin: 0;
 	padding: 0;
-}
-
-.courseexp-page h1,
-.courseexp-page h2,
-.courseexp-page h3,
-.courseexp-page h4,
-.courseexp-page p {
-  margin-block-end: 0.75rem;
 }

@@ -1,6 +1,122 @@
 (function () {
 	'use strict';
 
+	var SECTIONS_STORAGE_KEY = 'courseexp-sections-state';
+
+	function getSectionsState() {
+		try {
+			var saved = localStorage.getItem(SECTIONS_STORAGE_KEY);
+			return saved ? JSON.parse(saved) : {};
+		} catch (e) {
+			return {};
+		}
+	}
+
+	function saveSectionsState(state) {
+		try {
+			localStorage.setItem(SECTIONS_STORAGE_KEY, JSON.stringify(state));
+		} catch (e) {}
+	}
+
+	function initSectionAccordion() {
+		var container = document.getElementById('courseexp-sections');
+		if (!container) {
+			return;
+		}
+
+		var sections = container.querySelectorAll('.courseexp-section-block');
+		if (!sections.length) {
+			return;
+		}
+
+		var expandAllBtn = document.getElementById('courseexp-sections-expand-all');
+		var state = getSectionsState();
+
+		// Single source of truth: keeps class, ARIA and body visibility in sync,
+		// and optionally records the new value in the persisted store.
+		function setExpanded(section, expanded, persist) {
+			var toggle = section.querySelector('.courseexp-section-block__toggle');
+			var body = section.querySelector('.courseexp-section-block__body');
+			var id = section.dataset.sectionId;
+
+			section.classList.toggle('is-expanded', expanded);
+			if (toggle) {
+				toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+			}
+			if (body) {
+				if (expanded) {
+					body.removeAttribute('hidden');
+				} else {
+					body.setAttribute('hidden', '');
+				}
+			}
+			if (persist && id) {
+				state[id] = expanded;
+			}
+		}
+
+		function areAllExpanded() {
+			return Array.prototype.every.call(sections, function (section) {
+				return section.classList.contains('is-expanded');
+			});
+		}
+
+		// Label text comes from the template's data-* attributes so it stays
+		// translatable; the control reflects the collective state.
+		function updateExpandAll() {
+			if (!expandAllBtn) {
+				return;
+			}
+			var allExpanded = areAllExpanded();
+			var data = expandAllBtn.dataset;
+			var text = expandAllBtn.querySelector('.courseexp-section-block__expand-all-text');
+
+			expandAllBtn.setAttribute('aria-pressed', allExpanded ? 'true' : 'false');
+			if (text) {
+				text.textContent = allExpanded ? (data.labelCollapse || '') : (data.labelExpand || '');
+			}
+		}
+
+		function setAll(expanded) {
+			Array.prototype.forEach.call(sections, function (section) {
+				setExpanded(section, expanded, true);
+			});
+			saveSectionsState(state);
+			updateExpandAll();
+		}
+
+		Array.prototype.forEach.call(sections, function (section) {
+			var toggle = section.querySelector('.courseexp-section-block__toggle');
+			if (toggle) {
+				toggle.addEventListener('click', function () {
+					setExpanded(section, !section.classList.contains('is-expanded'), true);
+					saveSectionsState(state);
+					updateExpandAll();
+				});
+			}
+
+			// Restore from stored state; otherwise keep the server-rendered default.
+			var id = section.dataset.sectionId;
+			if (id && state.hasOwnProperty(id)) {
+				setExpanded(section, state[id], false);
+			}
+		});
+
+		if (expandAllBtn) {
+			expandAllBtn.addEventListener('click', function () {
+				setAll(!areAllExpanded());
+			});
+		}
+
+		updateExpandAll();
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initSectionAccordion);
+	} else {
+		initSectionAccordion();
+	}
+
 	function closeOutside(target) {
 		var open = document.querySelectorAll('details.courseexp-todo[open]');
 		Array.prototype.forEach.call(open, function (todo) {
