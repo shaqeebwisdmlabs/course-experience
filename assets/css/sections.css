@@ -138,12 +138,14 @@
 	width: var(--courseexp-section-toggle-size);
 	height: var(--courseexp-section-toggle-size);
 	border-radius: var(--courseexp-radius);
-	background: var(--courseexp-section-toggle-bg);
 	color: var(--courseexp-accent-orange);
-	transition: color var(--courseexp-transition-speed) ease;
+	transition:
+		background-color var(--courseexp-transition-speed) ease,
+		color var(--courseexp-transition-speed) ease;
 }
 
 .courseexp-section-block__arrow:hover {
+	background: var(--courseexp-accent-tint);
 	color: var(--courseexp-accent-orange-hover);
 }
 
@@ -406,7 +408,7 @@
 	border-left: 2px solid var(--courseexp-surface-border);
 }
 
-.courseexp-subsection__title {
+body.courseexp-page .courseexp-subsection__title {
 	margin: 0 0 var(--courseexp-space-sm);
 	font-size: 1rem;
 	color: var(--courseexp-text);

@@ -6,7 +6,4 @@
 
 (function () {
 	'use strict';
-
-	// Your JavaScript here.
-
 })();

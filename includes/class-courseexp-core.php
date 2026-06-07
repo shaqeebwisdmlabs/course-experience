@@ -24,6 +24,7 @@ class CourseExp_Core {
 		$router->init();
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
+		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'wp_ajax_courseexp_load_activity', array( $this, 'ajax_load_activity' ) );
 	}
 
@@ -43,7 +44,7 @@ class CourseExp_Core {
 	 * @return void
 	 */
 	public function enqueue_public_assets(): void {
-		if ( get_query_var( 'eb_course_exp' ) || $this->is_my_courses_page() ) {
+		if ( $this->is_courseexp_context() ) {
 			wp_enqueue_style( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/css/public.css', array(), COURSEEXP_VERSION );
 			wp_enqueue_style( 'courseexp-sidebar', COURSEEXP_PLUGIN_URL . 'assets/css/sidebar.css', array(), COURSEEXP_VERSION );
 			wp_enqueue_style( 'courseexp-course-header', COURSEEXP_PLUGIN_URL . 'assets/css/course-header.css', array(), COURSEEXP_VERSION );
@@ -54,17 +55,29 @@ class CourseExp_Core {
 	}
 
 	/**
-	 * Check if current page is My Courses page
+	 * Add the page-scope body class on course experience and section pages.
+	 *
+	 * @param array $classes Existing body classes.
+	 * @return array
+	 */
+	public function add_body_class( array $classes ): array {
+		if ( $this->is_courseexp_context() ) {
+			$classes[] = 'courseexp-page';
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * Whether the current request is a course experience or section page.
+	 *
+	 * The eb_course_exp query var is set by the COURSEEXP_SLUG rewrite rules
+	 * for both the course page and a single-section page.
 	 *
 	 * @return bool
 	 */
-	private function is_my_courses_page(): bool {
-		$post = get_post();
-		if ( $post && has_shortcode( $post->post_content, 'eb_my_courses' ) ) {
-			return true;
-		}
-
-		return false;
+	private function is_courseexp_context(): bool {
+		return (bool) get_query_var( 'eb_course_exp' );
 	}
 
 	/**

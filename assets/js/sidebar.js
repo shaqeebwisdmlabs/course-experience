@@ -92,7 +92,6 @@
 				overlay.classList.add('is-visible');
 			}
 			setState(false);
-			// Move focus into the drawer so keyboard and AT users land inside it.
 			if (closeBtn) {
 				closeBtn.focus();
 			}
@@ -105,7 +104,6 @@
 				overlay.classList.remove('is-visible');
 			}
 			setState(true);
-			// Return focus to the control that opened the drawer.
 			if (mobileToggle) {
 				mobileToggle.focus();
 			}
@@ -137,16 +135,14 @@
 		const sections = accordion.querySelectorAll('.courseexp-section');
 		const accordionState = getAccordionState();
 
-		// Single source of truth: keeps class, ARIA, content visibility and the
-		// persisted store in sync for one section.
 		function setSectionExpanded(section, expanded, persist) {
-			const header = section.querySelector('.courseexp-section__header');
+			const toggle = section.querySelector('.courseexp-section__toggle');
 			const content = section.querySelector('.courseexp-section__content');
 			const sectionId = section.dataset.sectionId;
 
 			section.classList.toggle('is-expanded', expanded);
-			if (header) {
-				header.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+			if (toggle) {
+				toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 			}
 			if (content) {
 				if (expanded) {
@@ -170,8 +166,6 @@
 			return allExpanded;
 		}
 
-		// Icon swap is CSS-driven via the state class; labels come from the
-		// template's data attributes so they stay translatable.
 		function updateToggleButton() {
 			if (!accordionToggleBtn) {
 				return;
@@ -204,9 +198,9 @@
 		}
 
 		sections.forEach(function (section) {
-			const header = section.querySelector('.courseexp-section__header');
-			if (header) {
-				header.addEventListener('click', function () {
+			const toggle = section.querySelector('.courseexp-section__toggle');
+			if (toggle) {
+				toggle.addEventListener('click', function () {
 					const expanded = section.classList.contains('is-expanded');
 					setSectionExpanded(section, !expanded, true);
 					saveAccordionState(accordionState);
@@ -214,7 +208,6 @@
 				});
 			}
 
-			// Restore from stored state; otherwise keep the server-rendered default.
 			const sectionId = section.dataset.sectionId;
 			if (sectionId && accordionState.hasOwnProperty(sectionId)) {
 				setSectionExpanded(section, accordionState[sectionId], false);
@@ -254,7 +247,6 @@
 			});
 			activityItem.classList.add('is-active');
 
-			// Let other modules react to the selection without coupling to this file.
 			const event = new CustomEvent('courseexp:activitySelected', {
 				detail: {
 					activityId: activityId,
@@ -264,7 +256,6 @@
 			});
 			document.dispatchEvent(event);
 
-			// On mobile/tablet the drawer overlays content, so dismiss it after a choice.
 			if (window.innerWidth < 1024) {
 				const sidebar = document.getElementById('courseexp-sidebar');
 				const overlay = document.getElementById('courseexp-sidebar-overlay');
@@ -298,13 +289,86 @@
 		}
 	}
 
+	function initScrollSpy() {
+		const sidebar = document.getElementById('courseexp-sidebar');
+		const content = document.querySelector('.courseexp-main__content');
+
+		if (!sidebar || !content || typeof IntersectionObserver === 'undefined') {
+			return;
+		}
+
+		function setActive(items, attr, id) {
+			Array.prototype.forEach.call(items, function (el) {
+				el.classList.toggle('is-active', el.getAttribute(attr) === id);
+			});
+		}
+
+		function spy(targets, attr, onActive) {
+			if (!targets.length) {
+				return;
+			}
+
+			const visible = [];
+			const observer = new IntersectionObserver(
+				function (entries) {
+					entries.forEach(function (entry) {
+						const index = visible.indexOf(entry.target);
+						if (entry.isIntersecting && index === -1) {
+							visible.push(entry.target);
+						} else if (!entry.isIntersecting && index !== -1) {
+							visible.splice(index, 1);
+						}
+					});
+
+					let best = null;
+					let bestTop = Infinity;
+					visible.forEach(function (el) {
+						const top = el.getBoundingClientRect().top;
+						if (top < bestTop) {
+							bestTop = top;
+							best = el;
+						}
+					});
+
+					if (best) {
+						onActive(best.getAttribute(attr));
+					}
+				},
+				{ rootMargin: '-15% 0px -70% 0px', threshold: 0 }
+			);
+
+			Array.prototype.forEach.call(targets, function (target) {
+				observer.observe(target);
+			});
+		}
+
+		const sidebarSections = sidebar.querySelectorAll('.courseexp-section[data-section-id]');
+		const sidebarActivities = sidebar.querySelectorAll('.courseexp-activity[data-activity-id]');
+
+		spy(
+			content.querySelectorAll('.courseexp-section-block[data-section-id]'),
+			'data-section-id',
+			function (id) {
+				setActive(sidebarSections, 'data-section-id', id);
+			}
+		);
+
+		spy(
+			content.querySelectorAll('[data-activity-id]'),
+			'data-activity-id',
+			function (id) {
+				setActive(sidebarActivities, 'data-activity-id', id);
+			}
+		);
+	}
+
 	function init() {
-		document.body.classList.add('courseexp-page');
 		initSidebar();
 		initMobileSidebar();
 		initAccordion();
 		initActivities();
 		initSkeleton();
+		initScrollSpy();
 	}
 
 	if (document.readyState === 'loading') {

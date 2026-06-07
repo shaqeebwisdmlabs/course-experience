@@ -18,6 +18,9 @@ if ( is_object( $course_data ) ) {
 
 $has_data = ! empty( $course_data ) && ! is_wp_error( $course_data );
 $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['sections'] : array();
+
+$course_slug = (string) get_query_var( 'course_slug' );
+$course_url  = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' ) : '';
 ?>
 
 <button
@@ -44,7 +47,13 @@ $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['secti
 <aside class="courseexp-sidebar" id="courseexp-sidebar" role="navigation" aria-label="<?php esc_attr_e( 'Course content navigation', 'eb-course-exp' ); ?>">
 	<div class="courseexp-sidebar__header">
 		<?php if ( ! empty( $course_title ) ) : ?>
-			<h2 class="courseexp-sidebar__title"><?php echo esc_html( $course_title ); ?></h2>
+			<h2 class="courseexp-sidebar__title">
+				<?php if ( $course_url ) : ?>
+					<a class="courseexp-sidebar__title-link" href="<?php echo esc_url( $course_url ); ?>"><?php echo esc_html( $course_title ); ?></a>
+				<?php else : ?>
+					<?php echo esc_html( $course_title ); ?>
+				<?php endif; ?>
+			</h2>
 		<?php else : ?>
 			<h2 class="courseexp-sidebar__title"><?php esc_html_e( 'Course Content', 'eb-course-exp' ); ?></h2>
 		<?php endif; ?>
@@ -92,6 +101,7 @@ $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['secti
 					$activities       = isset( $section['activities'] ) ? $section['activities'] : array();
 					$section_unique   = 'courseexp-section-' . esc_attr( $section_id );
 					$is_first_section = 0 === $section_index;
+					$section_url      = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) : '';
 					if ( isset( $section['name'] ) ) {
 						$section_name = $section['name'];
 					} else {
@@ -100,23 +110,32 @@ $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['secti
 					}
 					?>
 					<div class="courseexp-section<?php echo $is_first_section ? ' is-expanded' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
-						<button
-							type="button"
-							class="courseexp-section__header"
-							aria-expanded="<?php echo $is_first_section ? 'true' : 'false'; ?>"
-							aria-controls="<?php echo esc_attr( $section_unique ); ?>"
-							id="<?php echo esc_attr( $section_unique . '-header' ); ?>"
-						>
-							<span class="courseexp-section__title"><?php echo esc_html( $section_name ); ?></span>
-							<span class="courseexp-section__icon" aria-hidden="true">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
-							</span>
-						</button>
+						<div class="courseexp-section__header">
+							<?php if ( $section_url ) : ?>
+								<a class="courseexp-section__title-link" id="<?php echo esc_attr( $section_unique . '-title' ); ?>" href="<?php echo esc_url( $section_url ); ?>">
+									<span class="courseexp-section__title"><?php echo esc_html( $section_name ); ?></span>
+								</a>
+							<?php else : ?>
+								<span class="courseexp-section__title" id="<?php echo esc_attr( $section_unique . '-title' ); ?>"><?php echo esc_html( $section_name ); ?></span>
+							<?php endif; ?>
+							<button
+								type="button"
+								class="courseexp-section__toggle"
+								aria-expanded="<?php echo $is_first_section ? 'true' : 'false'; ?>"
+								aria-controls="<?php echo esc_attr( $section_unique ); ?>"
+								id="<?php echo esc_attr( $section_unique . '-toggle' ); ?>"
+								aria-label="<?php /* translators: %s: section name. */ printf( esc_attr__( 'Toggle %s', 'eb-course-exp' ), esc_attr( $section_name ) ); ?>"
+							>
+								<span class="courseexp-section__icon" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+								</span>
+							</button>
+						</div>
 						<div
 							class="courseexp-section__content"
 							id="<?php echo esc_attr( $section_unique ); ?>"
 							role="region"
-							aria-labelledby="<?php echo esc_attr( $section_unique . '-header' ); ?>"
+							aria-labelledby="<?php echo esc_attr( $section_unique . '-title' ); ?>"
 							<?php echo $is_first_section ? '' : 'hidden'; ?>
 						>
 							<?php if ( ! empty( $activities ) ) : ?>
@@ -150,10 +169,8 @@ $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['secti
 												<span class="courseexp-activity__status">
 													<?php if ( $show_status_icon ) : ?>
 														<?php if ( $status_complete ) : ?>
-															<!-- Completed: Green checkmark -->
 															<svg class="courseexp-activity__icon courseexp-activity__icon--complete" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
 														<?php else : ?>
-															<!-- Tracked but not complete: Empty circle -->
 															<svg class="courseexp-activity__icon courseexp-activity__icon--incomplete" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
 														<?php endif; ?>
 													<?php endif; ?>

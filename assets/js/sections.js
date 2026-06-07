@@ -32,8 +32,6 @@
 		var expandAllBtn = document.getElementById('courseexp-sections-expand-all');
 		var state = getSectionsState();
 
-		// Single source of truth: keeps class, ARIA and body visibility in sync,
-		// and optionally records the new value in the persisted store.
 		function setExpanded(section, expanded, persist) {
 			var toggle = section.querySelector('.courseexp-section-block__toggle');
 			var body = section.querySelector('.courseexp-section-block__body');
@@ -61,8 +59,6 @@
 			});
 		}
 
-		// Label text comes from the template's data-* attributes so it stays
-		// translatable; the control reflects the collective state.
 		function updateExpandAll() {
 			if (!expandAllBtn) {
 				return;
@@ -95,7 +91,6 @@
 				});
 			}
 
-			// Restore from stored state; otherwise keep the server-rendered default.
 			var id = section.dataset.sectionId;
 			if (id && state.hasOwnProperty(id)) {
 				setExpanded(section, state[id], false);

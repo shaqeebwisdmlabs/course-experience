@@ -35,6 +35,9 @@ $layouttype  = isset( $courseformat['layouttype'] ) ? $courseformat['layouttype'
 $is_paged    = ( 'onesectionperpage' === $layouttype );
 $course_slug = (string) get_query_var( 'course_slug' );
 
+$detail_section = (string) get_query_var( 'courseexp_detail_section' );
+$is_detail      = ( '' !== $detail_section );
+
 $courseexp_ctx = array(
 	'enable_completion'   => ! empty( $completion_settings['enablecompletion'] ),
 	'show_conditions'     => ! empty( $completion_settings['showcompletionconditions'] ),
@@ -220,7 +223,7 @@ if ( ! function_exists( 'courseexp_render_inline_content' ) ) {
 		}
 		$inline_class = implode( ' ', array_map( 'sanitize_html_class', $inline_classes ) );
 		?>
-		<div class="<?php echo esc_attr( $inline_class ); ?>">
+		<div class="<?php echo esc_attr( $inline_class ); ?>" data-activity-id="<?php echo esc_attr( $cmid ); ?>">
 			<?php if ( $show_control ) : ?>
 				<div class="courseexp-inline-content__header">
 					<?php courseexp_render_completion_control( $completion, $cmid, $ctx ); ?>
@@ -509,7 +512,32 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 ?>
 
 <div class="courseexp-sections" id="courseexp-sections" data-layout="<?php echo esc_attr( $layouttype ); ?>">
-	<?php if ( $has_data && ! empty( $sections ) ) : ?>
+	<?php if ( $is_detail ) : ?>
+		<?php
+		$target_section = null;
+		if ( $has_data ) {
+			foreach ( $sections as $section_index => $section ) {
+				$section = (array) $section;
+				$sid     = isset( $section['id'] ) ? (int) $section['id'] : (int) $section_index;
+				if ( (string) $sid === $detail_section ) {
+					$target_section = $section;
+					break;
+				}
+			}
+		}
+		?>
+		<?php if ( null !== $target_section ) : ?>
+			<section class="courseexp-section-block" id="section-<?php echo esc_attr( $detail_section ); ?>" data-section-id="<?php echo esc_attr( $detail_section ); ?>">
+				<div class="courseexp-section-block__body">
+					<?php courseexp_render_section_body_inner( $target_section, $courseexp_ctx ); ?>
+				</div>
+			</section>
+		<?php else : ?>
+			<div class="courseexp-sections__empty">
+				<p><?php esc_html_e( 'Section not found.', 'eb-course-exp' ); ?></p>
+			</div>
+		<?php endif; ?>
+	<?php elseif ( $has_data && ! empty( $sections ) ) : ?>
 		<?php foreach ( $sections as $section_index => $section ) : ?>
 			<?php
 			$section    = (array) $section;
@@ -608,7 +636,13 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
 							</span>
 						</button>
-						<h2 class="courseexp-section-block__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo esc_html( $section_name ); ?></h2>
+						<h2 class="courseexp-section-block__title" id="<?php echo esc_attr( $title_id ); ?>">
+							<?php if ( $section_url ) : ?>
+								<a class="courseexp-section-block__title-link" href="<?php echo esc_url( $section_url ); ?>"><?php echo esc_html( $section_name ); ?></a>
+							<?php else : ?>
+								<?php echo esc_html( $section_name ); ?>
+							<?php endif; ?>
+						</h2>
 
 						<?php if ( $is_first ) : ?>
 							<button

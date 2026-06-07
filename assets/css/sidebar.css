@@ -1,5 +1,4 @@
 :root {
-	--courseexp-accent-tint: rgba(234, 120, 19, 0.08);
 	--courseexp-accordion-header-bg: #f8f9fa;
 	--courseexp-accordion-header-hover: #f0f7eb;
 	--courseexp-accordion-border: var(--courseexp-surface-border);
@@ -75,6 +74,21 @@ body.courseexp-sidebar-collapsed .courseexp-sidebar {
 	text-overflow: ellipsis;
 }
 
+.courseexp-sidebar__title-link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.courseexp-sidebar__title-link:hover {
+	color: var(--courseexp-accent-orange);
+	text-decoration: underline;
+}
+
+.courseexp-sidebar__title-link:focus-visible {
+	outline: 2px solid var(--courseexp-accent-orange);
+	outline-offset: 2px;
+}
+
 .courseexp-sidebar__actions {
 	display: flex;
 	align-items: center;
@@ -105,7 +119,6 @@ body.courseexp-sidebar-collapsed .courseexp-sidebar {
 	outline-offset: 2px;
 }
 
-/* Expand/collapse-all icon visibility, driven by the toggle's state class. */
 .courseexp-accordion-toggle__icon-collapse {
 	display: none;
 }
@@ -118,7 +131,6 @@ body.courseexp-sidebar-collapsed .courseexp-sidebar {
 	display: inline-flex;
 }
 
-/* Thin custom scrollbar for sidebar content */
 .courseexp-sidebar__content::-webkit-scrollbar {
 	width: 6px;
 }
@@ -265,54 +277,82 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 }
 
 .courseexp-section__header {
-	width: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	gap: var(--courseexp-space-sm);
 	padding: var(--courseexp-space-md);
 	background: var(--courseexp-accordion-header-bg);
-	border: none;
 	border-radius: var(--courseexp-radius);
-	cursor: pointer;
-	text-align: left;
 	transition: background-color 0.2s ease;
 }
 
 .courseexp-section.is-expanded .courseexp-section__header {
-	background: var(--courseexp-accordion-header-bg);
 	border-radius: var(--courseexp-radius) var(--courseexp-radius) 0 0;
 }
 
-.courseexp-section__header:hover {
+.courseexp-section__header:hover,
+.courseexp-section.is-active .courseexp-section__header {
 	background: var(--courseexp-accordion-header-hover);
 }
 
-.courseexp-section__header:focus-visible, .courseexp-section__header:focus {
-	background: var(--courseexp-accordion-header-hover);
+.courseexp-section__toggle:focus-visible,
+.courseexp-section__toggle:focus,
+.courseexp-section__title-link:focus-visible {
 	outline: none;
 }
 
-.courseexp-section:has(.courseexp-section__header:focus-visible), .courseexp-section:has(.courseexp-section__header:focus) {
+.courseexp-section:has(.courseexp-section__toggle:focus-visible),
+.courseexp-section:has(.courseexp-section__toggle:focus),
+.courseexp-section:has(.courseexp-section__title-link:focus-visible),
+.courseexp-section.is-active {
 	outline: 2px solid var(--courseexp-accent-orange);
 	outline-offset: -2px;
 }
 
+.courseexp-section__title-link {
+	min-width: 0;
+	text-decoration: none;
+	color: inherit;
+}
+
+.courseexp-section__title-link:hover .courseexp-section__title {
+	color: var(--courseexp-accent-orange);
+}
+
 .courseexp-section__title {
+	flex: 1;
+	min-width: 0;
 	font-family: inherit;
 	font-size: 16px;
 	font-weight: 600;
 	color: var(--courseexp-text);
 	line-height: 1.4;
-	flex: 1;
-	padding-right: 12px;
+}
+
+.courseexp-section__toggle {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px;
+	border: none;
+	border-radius: var(--courseexp-radius);
+	background: none;
+	color: var(--courseexp-text-muted);
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.courseexp-section__toggle:hover {
+	background: var(--courseexp-accent-tint);
+	color: var(--courseexp-text);
 }
 
 .courseexp-section__icon {
-	flex-shrink: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--courseexp-text-muted);
 	transition: transform 0.2s ease;
 }
 
@@ -394,7 +434,6 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	display: block;
 }
 
-/* Complete: green checkmark */
 .courseexp-activity__icon--complete {
 	color: var(--courseexp-primary-green);
 }
@@ -435,7 +474,6 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 }
 
 .courseexp-activity.is-active .courseexp-activity__link {
-	border-left-color: var(--courseexp-accent-orange);
 	background: var(--courseexp-accent-tint);
 	color: var(--courseexp-accent-orange);
 	font-weight: 600;
@@ -520,6 +558,7 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	.courseexp-sidebar-overlay,
 	.courseexp-floating-toggle,
 	.courseexp-section__header,
+	.courseexp-section__toggle,
 	.courseexp-section__icon,
 	.courseexp-activity__link,
 	.courseexp-sidebar__action-btn {

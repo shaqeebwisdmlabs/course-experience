@@ -3,14 +3,12 @@
 	--courseexp-sidebar-width: 320px;
 	--courseexp-transition-speed: 0.25s;
 
-	/* MedDiet's standard corner radius. */
 	--courseexp-radius: 5px;
 
 	--courseexp-space-sm: 8px;
 	--courseexp-space-md: 12px;
 	--courseexp-space-lg: 20px;
 
-	/* Colors prefer the active theme's presets and fall back to the MedDiet palette. */
 	--courseexp-primary-green: var(--wp--preset--color--primary, #7cc146);
 	--courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
 	--courseexp-accent-orange-hover: #c76610;
@@ -21,7 +19,6 @@
 	--courseexp-text-muted: #666;
 	--courseexp-text-subtle: #888;
 
-	/* Neutral canvas behind the white content cards. */
 	--courseexp-page-bg: #f4f5f7;
 	--courseexp-card-bg: var(--courseexp-surface-bg);
 
@@ -31,20 +28,21 @@
 
 	--courseexp-success: var(--courseexp-primary-green);
 	--courseexp-success-bg: #f0f8e9;
+	--courseexp-accent-tint: rgba(234, 120, 19, 0.08);
 	--courseexp-row-hover: #f8f9fa;
 	--courseexp-locked-bg: rgba(0, 0, 0, 0.02);
 	--courseexp-lock-bg: #fff4e5;
 	--courseexp-dropdown-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-.courseexp-page h1,
-.courseexp-page h2,
-.courseexp-page h3,
-.courseexp-page h4 {
+body.courseexp-page h1,
+body.courseexp-page h2,
+body.courseexp-page h3,
+body.courseexp-page h4 {
 	margin-bottom: 0;
 }
 
-.courseexp-page p {
+body.courseexp-page p {
 	margin-bottom: 12px;
 }
 
@@ -71,6 +69,46 @@ body.courseexp-page .footer-section {
 	min-height: 100vh;
 	max-width: 1240px;
 	margin: 0 auto;
+}
+
+.courseexp-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--courseexp-space-sm);
+	margin-bottom: var(--courseexp-space-sm);
+	font-size: 0.875rem;
+}
+
+.courseexp-breadcrumb__link {
+	color: var(--courseexp-accent-orange);
+	text-decoration: none;
+}
+
+.courseexp-breadcrumb__link:hover {
+	color: var(--courseexp-accent-orange-hover);
+	text-decoration: underline;
+}
+
+.courseexp-breadcrumb__link:focus-visible {
+	outline: 2px solid var(--courseexp-accent-orange);
+	outline-offset: 2px;
+}
+
+.courseexp-breadcrumb__sep {
+	display: inline-flex;
+	color: var(--courseexp-text-subtle);
+}
+
+.courseexp-breadcrumb__current {
+	color: var(--courseexp-text-subtle);
+}
+
+body.courseexp-page .courseexp-section-page__title {
+	margin: 0 0 var(--courseexp-space-lg);
+	font-size: 2rem;
+	line-height: 1.3;
+	color: var(--courseexp-text);
 }
 
 .courseexp-error {

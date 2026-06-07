@@ -29,16 +29,18 @@ class CourseExp_Course_Router {
 	 * @return void
 	 */
 	public function add_rewrite_rules(): void {
-		add_rewrite_rule(
-			COURSEEXP_SLUG . '/([^/]+)/?$',
-			'index.php?eb_course_exp=1&course_slug=$matches[1]',
-			'top'
+		$rules = array(
+			COURSEEXP_SLUG . '/([^/]+)/([^/]+)/?$' => 'index.php?eb_course_exp=1&course_slug=$matches[1]&course_section=$matches[2]',
+			COURSEEXP_SLUG . '/([^/]+)/?$'         => 'index.php?eb_course_exp=1&course_slug=$matches[1]',
 		);
+
+		foreach ( $rules as $regex => $redirect ) {
+			add_rewrite_rule( $regex, $redirect, 'top' );
+		}
 
 		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
 
-		// Re-flush when either the version or the endpoint slug changes.
-		$rewrite_signature = COURSEEXP_VERSION . ':' . COURSEEXP_SLUG;
+		$rewrite_signature = COURSEEXP_VERSION . ':' . md5( (string) wp_json_encode( $rules ) );
 		if ( get_option( 'courseexp_flush_rewrite_rules' ) !== $rewrite_signature ) {
 			flush_rewrite_rules();
 			update_option( 'courseexp_flush_rewrite_rules', $rewrite_signature );
@@ -54,6 +56,7 @@ class CourseExp_Course_Router {
 	public function register_query_vars( array $vars ): array {
 		$vars[] = 'eb_course_exp';
 		$vars[] = 'course_slug';
+		$vars[] = 'course_section';
 		return $vars;
 	}
 
@@ -88,7 +91,11 @@ class CourseExp_Course_Router {
 	 */
 	public function load_course_experience_template( string $template ): string {
 		if ( get_query_var( 'eb_course_exp' ) ) {
-			$custom_template = COURSEEXP_PLUGIN_DIR . 'templates/course-experience.php';
+			$template_file = '' !== (string) get_query_var( 'course_section' )
+				? 'templates/section-experience.php'
+				: 'templates/course-experience.php';
+
+			$custom_template = COURSEEXP_PLUGIN_DIR . $template_file;
 			if ( file_exists( $custom_template ) ) {
 				return $custom_template;
 			}

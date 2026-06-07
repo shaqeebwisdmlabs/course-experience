@@ -16,7 +16,6 @@
  * @package EB_Course_Experience
  */
 
-// If this file is called directly, abort.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -56,7 +55,6 @@ define( 'COURSEEXP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
  * @return void
  */
 function courseexp_activate(): void {
-	// Activation code here.
 	flush_rewrite_rules();
 }
 
@@ -66,7 +64,6 @@ function courseexp_activate(): void {
  * @return void
  */
 function courseexp_deactivate(): void {
-	// Deactivation code here.
 	flush_rewrite_rules();
 }
 
@@ -79,13 +76,10 @@ register_deactivation_hook( __FILE__, 'courseexp_deactivate' );
  * @return void
  */
 function courseexp_init(): void {
-	// Load text domain for translations.
 	load_plugin_textdomain( 'eb-course-exp', false, dirname( COURSEEXP_PLUGIN_BASENAME ) . '/languages' );
 
-	// Include core files.
 	require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-core.php';
 
-	// Initialize the main class.
 	$core = new CourseExp_Core();
 	$core->init();
 }
