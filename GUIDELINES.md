@@ -244,11 +244,8 @@ public function enqueue_assets(): void {
 - Text rendered over a brand color uses an on-accent token (`--courseexp-on-accent`)
 
 **Accessibility**
-- Pair `:focus-visible` with `:focus` for focus outlines; outline color is the
-  accent orange. `:focus-visible` alone covers keyboard nav, but some themes
-  suppress or restyle native focus on mouse click, so include `:focus` to
-  guarantee a visible outline regardless of theme. Apply identical outline
-  declarations to both.
+- Use `:focus-visible` (not `:focus`) for keyboard outlines; outline color is the
+  accent orange
 - Wrap non-essential motion in `@media (prefers-reduced-motion: reduce)` (disable
   shimmer/transition animations)
 - Manage focus for overlay UI: move focus into a drawer on open, restore it to the
@@ -350,7 +347,7 @@ Before committing:
 - [ ] CSS uses `:root` tokens (no raw hex/radius/spacing in rule bodies)
 - [ ] No dead code (unused `:root` tokens, CSS classes absent from markup, uncalled functions)
 - [ ] No inline styles in markup or set via JS (`element.style.*`)
-- [ ] Focus outline visible (`:focus-visible` + `:focus`) and `prefers-reduced-motion` respected
+- [ ] Keyboard focus visible (`:focus-visible`) and `prefers-reduced-motion` respected
 
 ## Anti-Patterns (Never Do)
 

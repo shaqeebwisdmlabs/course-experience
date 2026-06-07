@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-07T16:32:16+00:00\n"
+"POT-Creation-Date: 2026-06-07T16:53:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eb-course-exp\n"
@@ -70,61 +70,79 @@ msgstr ""
 msgid "Course progress"
 msgstr ""
 
-#: templates/parts/sections.php:94
+#: templates/parts/sections.php:98
 msgid "Done"
 msgstr ""
 
-#: templates/parts/sections.php:105
+#: templates/parts/sections.php:109
 msgid "Mark as done"
 msgstr ""
 
-#: templates/parts/sections.php:111
-#: templates/parts/sections.php:128
-#: templates/parts/sections.php:150
+#: templates/parts/sections.php:115
+#: templates/parts/sections.php:132
+#: templates/parts/sections.php:154
 msgid "To do"
 msgstr ""
 
-#: templates/parts/sections.php:134
+#: templates/parts/sections.php:138
 msgid "You must"
 msgstr ""
 
-#: templates/parts/sections.php:169
+#: templates/parts/sections.php:173
 msgid "Set by a teacher"
 msgstr ""
 
-#: templates/parts/sections.php:240
-#: templates/parts/sections.php:318
-#: templates/parts/sections.php:457
+#: templates/parts/sections.php:244
+#: templates/parts/sections.php:322
+#: templates/parts/sections.php:409
 msgid "Not available"
+msgstr ""
+
+#: templates/parts/sections.php:433
+msgid "No content in this section yet."
 msgstr ""
 
 #. translators: %d: section number (1-based) used when a section has no name.
 #. translators: %d: section number (1-based index) used as a fallback when the section has no name.
-#: templates/parts/sections.php:410
+#: templates/parts/sections.php:528
 #: templates/parts/sidebar.php:99
 #, php-format
 msgid "Section %d"
 msgstr ""
 
-#: templates/parts/sections.php:447
-#: templates/parts/sections.php:450
+#. translators: %s: section name.
+#: templates/parts/sections.php:556
+#, php-format
+msgid "Open %s"
+msgstr ""
+
+#. translators: %d: number of activities in the section.
+#: templates/parts/sections.php:575
+#, php-format
+msgid "Activities: %d"
+msgstr ""
+
+#. translators: 1: completed activities, 2: total activities that have completion conditions.
+#: templates/parts/sections.php:586
+#, php-format
+msgid "Progress: %1$d / %2$d"
+msgstr ""
+
+#: templates/parts/sections.php:619
+#: templates/parts/sections.php:622
 msgid "Expand all"
 msgstr ""
 
-#: templates/parts/sections.php:448
+#: templates/parts/sections.php:620
 msgid "Collapse all"
 msgstr ""
 
-#: templates/parts/sections.php:470
-msgid "No content in this section yet."
-msgstr ""
-
-#: templates/parts/sections.php:478
+#: templates/parts/sections.php:635
 #: templates/parts/sidebar.php:182
 msgid "Unable to load course content. Please try again later."
 msgstr ""
 
-#: templates/parts/sections.php:482
+#: templates/parts/sections.php:639
 msgid "This course has no content yet."
 msgstr ""
 

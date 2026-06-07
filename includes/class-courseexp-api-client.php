@@ -37,7 +37,7 @@ class CourseExp_API_Client {
 	 * @return bool
 	 */
 	private function is_connected(): bool {
-		return $this->connection_helper !== null;
+		return null !== $this->connection_helper;
 	}
 
 	/**

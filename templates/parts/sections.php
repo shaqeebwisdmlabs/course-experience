@@ -31,6 +31,10 @@ $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['secti
 $courseformat        = $has_data && isset( $course_data['courseformat'] ) ? (array) $course_data['courseformat'] : array();
 $completion_settings = $has_data && isset( $course_data['completion'] ) ? (array) $course_data['completion'] : array();
 
+$layouttype  = isset( $courseformat['layouttype'] ) ? $courseformat['layouttype'] : 'allinonepage';
+$is_paged    = ( 'onesectionperpage' === $layouttype );
+$course_slug = (string) get_query_var( 'course_slug' );
+
 $courseexp_ctx = array(
 	'enable_completion'   => ! empty( $completion_settings['enablecompletion'] ),
 	'show_conditions'     => ! empty( $completion_settings['showcompletionconditions'] ),
@@ -386,16 +390,130 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 		}
 	}
 }
+
+if ( ! function_exists( 'courseexp_render_section_body_inner' ) ) {
+	/**
+	 * Render the inner content of a section body: stub note, or summary + items.
+	 *
+	 * Shared by both layouts so the markup stays in one place.
+	 *
+	 * @param array $section Section block (array-cast).
+	 * @param array $ctx     Course-level rendering context.
+	 * @return void
+	 */
+	function courseexp_render_section_body_inner( array $section, array $ctx ): void {
+		$is_visible = ! isset( $section['visible'] ) || (bool) $section['visible'];
+
+		if ( ! $is_visible ) {
+			?>
+			<p class="courseexp-section-block__stub-note"><?php esc_html_e( 'Not available', 'eb-course-exp' ); ?></p>
+			<?php
+			return;
+		}
+
+		$summary    = isset( $section['summary'] ) ? $section['summary'] : '';
+		$activities = isset( $section['activities'] ) ? $section['activities'] : array();
+
+		if ( '' !== trim( (string) $summary ) ) {
+			?>
+			<div class="courseexp-section-block__summary">
+				<?php courseexp_render_trusted_html( $summary ); ?>
+			</div>
+			<?php
+		}
+
+		if ( ! empty( $activities ) ) {
+			?>
+			<div class="courseexp-section-block__items">
+				<?php courseexp_render_section_items( $activities, $ctx ); ?>
+			</div>
+			<?php
+		} else {
+			?>
+			<p class="courseexp-section-block__empty"><?php esc_html_e( 'No content in this section yet.', 'eb-course-exp' ); ?></p>
+			<?php
+		}
+	}
+}
+
+if ( ! function_exists( 'courseexp_count_section_activities' ) ) {
+	/**
+	 * Tally activities and completion-tracked progress within a section tree.
+	 *
+	 * Subsection containers are not counted themselves, only their children.
+	 *
+	 * @param array $activities Activity blocks (may contain nested children).
+	 * @return array Associative array with 'activities', 'completed', 'total' keys.
+	 */
+	function courseexp_count_section_activities( array $activities ): array {
+		$totals = array(
+			'activities' => 0,
+			'completed'  => 0,
+			'total'      => 0,
+		);
+
+		foreach ( $activities as $activity ) {
+			$activity = (array) $activity;
+			$children = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
+
+			if ( ! empty( $children ) ) {
+				$sub                   = courseexp_count_section_activities( $children );
+				$totals['activities'] += $sub['activities'];
+				$totals['completed']  += $sub['completed'];
+				$totals['total']      += $sub['total'];
+				continue;
+			}
+
+			++$totals['activities'];
+
+			$completion = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
+			if ( ! empty( $completion['tracked'] ) ) {
+				++$totals['total'];
+				if ( ! empty( $completion['isoverallcomplete'] ) ) {
+					++$totals['completed'];
+				}
+			}
+		}
+
+		return $totals;
+	}
+}
+
+if ( ! function_exists( 'courseexp_section_metrics' ) ) {
+	/**
+	 * Resolve a section's footer metrics for the one-section-per-page layout.
+	 *
+	 * Prefers a server-provided progress block; falls back to deriving the
+	 * figures from the activity tree so the layout works before the API ships
+	 * per-section progress. Expected (optional) shape on each section:
+	 *   'progress' => array(
+	 *       'activities' => int,  // total activities -> "Activities: N"
+	 *       'completed'  => int,  // completed activities that have completion conditions
+	 *       'total'      => int,  // activities that have completion conditions
+	 *   )
+	 *
+	 * @param array $section Section block (array-cast).
+	 * @return array Associative array with 'activities', 'completed', 'total' keys.
+	 */
+	function courseexp_section_metrics( array $section ): array {
+		$progress = isset( $section['progress'] ) && is_array( $section['progress'] ) ? $section['progress'] : array();
+		$derived  = courseexp_count_section_activities( isset( $section['activities'] ) ? (array) $section['activities'] : array() );
+
+		return array(
+			'activities' => isset( $progress['activities'] ) ? absint( $progress['activities'] ) : $derived['activities'],
+			'completed'  => isset( $progress['completed'] ) ? absint( $progress['completed'] ) : $derived['completed'],
+			'total'      => isset( $progress['total'] ) ? absint( $progress['total'] ) : $derived['total'],
+		);
+	}
+}
 ?>
 
-<div class="courseexp-sections" id="courseexp-sections">
+<div class="courseexp-sections" id="courseexp-sections" data-layout="<?php echo esc_attr( $layouttype ); ?>">
 	<?php if ( $has_data && ! empty( $sections ) ) : ?>
 		<?php foreach ( $sections as $section_index => $section ) : ?>
 			<?php
 			$section    = (array) $section;
 			$section_id = isset( $section['id'] ) ? (int) $section['id'] : (int) $section_index;
-			$activities = isset( $section['activities'] ) ? $section['activities'] : array();
-			$summary    = isset( $section['summary'] ) ? $section['summary'] : '';
 			$is_visible = ! isset( $section['visible'] ) || (bool) $section['visible'];
 			$is_current = ! empty( $section['current'] );
 			$is_first   = ( 0 === $section_index );
@@ -417,61 +535,100 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 			if ( $is_current ) {
 				$section_classes[] = 'is-current';
 			}
-			if ( $is_first ) {
+			if ( $is_paged ) {
+				$section_classes[] = 'courseexp-section-block--paged';
+			} elseif ( $is_first ) {
 				$section_classes[] = 'is-expanded';
 			}
 			$section_class = implode( ' ', array_map( 'sanitize_html_class', $section_classes ) );
+
+			$section_url = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) : '';
 			?>
-			<section class="<?php echo esc_attr( $section_class ); ?>" id="section-<?php echo esc_attr( $section_id ); ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
-				<div class="courseexp-section-block__header">
-					<button
-						type="button"
-						class="courseexp-section-block__toggle"
-						id="<?php echo esc_attr( $toggle_id ); ?>"
-						aria-expanded="<?php echo $is_first ? 'true' : 'false'; ?>"
-						aria-controls="<?php echo esc_attr( $body_id ); ?>"
-						aria-labelledby="<?php echo esc_attr( $title_id ); ?>"
-					>
-						<span class="courseexp-section-block__toggle-icon" aria-hidden="true">
-							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-						</span>
-					</button>
-					<h2 class="courseexp-section-block__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo esc_html( $section_name ); ?></h2>
+			<?php if ( $is_paged ) : ?>
+				<section class="<?php echo esc_attr( $section_class ); ?>" id="section-<?php echo esc_attr( $section_id ); ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
+					<div class="courseexp-section-block__header">
+						<h2 class="courseexp-section-block__title">
+							<a class="courseexp-section-block__title-link" href="<?php echo esc_url( $section_url ); ?>"><?php echo esc_html( $section_name ); ?></a>
+						</h2>
+						<a
+							class="courseexp-section-block__arrow"
+							href="<?php echo esc_url( $section_url ); ?>"
+							aria-label="<?php /* translators: %s: section name. */ printf( esc_attr__( 'Open %s', 'eb-course-exp' ), esc_attr( $section_name ) ); ?>"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+						</a>
+					</div>
 
 					<?php if ( $is_first ) : ?>
+						<div class="courseexp-section-block__body">
+							<?php courseexp_render_section_body_inner( $section, $courseexp_ctx ); ?>
+						</div>
+					<?php else : ?>
+						<?php $metrics = courseexp_section_metrics( $section ); ?>
+						<div class="courseexp-section-block__footer">
+							<span class="courseexp-section-block__metric">
+								<span class="courseexp-section-block__metric-icon" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+								</span>
+								<?php
+								/* translators: %d: number of activities in the section. */
+								printf( esc_html__( 'Activities: %d', 'eb-course-exp' ), (int) $metrics['activities'] );
+								?>
+							</span>
+							<?php if ( $metrics['total'] > 0 ) : ?>
+								<span class="courseexp-section-block__metric">
+									<span class="courseexp-section-block__metric-icon" aria-hidden="true">
+										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+									</span>
+									<?php
+									printf(
+										/* translators: 1: completed activities, 2: total activities that have completion conditions. */
+										esc_html__( 'Progress: %1$d / %2$d', 'eb-course-exp' ),
+										(int) $metrics['completed'],
+										(int) $metrics['total']
+									);
+									?>
+								</span>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
+				</section>
+			<?php else : ?>
+				<section class="<?php echo esc_attr( $section_class ); ?>" id="section-<?php echo esc_attr( $section_id ); ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
+					<div class="courseexp-section-block__header">
 						<button
 							type="button"
-							class="courseexp-section-block__expand-all"
-							id="courseexp-sections-expand-all"
-							aria-pressed="false"
-							data-label-expand="<?php esc_attr_e( 'Expand all', 'eb-course-exp' ); ?>"
-							data-label-collapse="<?php esc_attr_e( 'Collapse all', 'eb-course-exp' ); ?>"
+							class="courseexp-section-block__toggle"
+							id="<?php echo esc_attr( $toggle_id ); ?>"
+							aria-expanded="<?php echo $is_first ? 'true' : 'false'; ?>"
+							aria-controls="<?php echo esc_attr( $body_id ); ?>"
+							aria-labelledby="<?php echo esc_attr( $title_id ); ?>"
 						>
-							<span class="courseexp-section-block__expand-all-text"><?php esc_html_e( 'Expand all', 'eb-course-exp' ); ?></span>
+							<span class="courseexp-section-block__toggle-icon" aria-hidden="true">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+							</span>
 						</button>
-					<?php endif; ?>
-				</div>
+						<h2 class="courseexp-section-block__title" id="<?php echo esc_attr( $title_id ); ?>"><?php echo esc_html( $section_name ); ?></h2>
 
-				<div class="courseexp-section-block__body" id="<?php echo esc_attr( $body_id ); ?>"<?php echo $is_first ? '' : ' hidden'; ?>>
-					<?php if ( ! $is_visible ) : ?>
-						<p class="courseexp-section-block__stub-note"><?php esc_html_e( 'Not available', 'eb-course-exp' ); ?></p>
-					<?php else : ?>
-						<?php if ( '' !== trim( (string) $summary ) ) : ?>
-							<div class="courseexp-section-block__summary">
-								<?php courseexp_render_trusted_html( $summary ); ?>
-							</div>
+						<?php if ( $is_first ) : ?>
+							<button
+								type="button"
+								class="courseexp-section-block__expand-all"
+								id="courseexp-sections-expand-all"
+								aria-pressed="false"
+								data-label-expand="<?php esc_attr_e( 'Expand all', 'eb-course-exp' ); ?>"
+								data-label-collapse="<?php esc_attr_e( 'Collapse all', 'eb-course-exp' ); ?>"
+							>
+								<span class="courseexp-section-block__expand-all-text"><?php esc_html_e( 'Expand all', 'eb-course-exp' ); ?></span>
+							</button>
 						<?php endif; ?>
+					</div>
 
-						<?php if ( ! empty( $activities ) ) : ?>
-							<div class="courseexp-section-block__items">
-								<?php courseexp_render_section_items( $activities, $courseexp_ctx ); ?>
-							</div>
-						<?php else : ?>
-							<p class="courseexp-section-block__empty"><?php esc_html_e( 'No content in this section yet.', 'eb-course-exp' ); ?></p>
-						<?php endif; ?>
-					<?php endif; ?>
-				</div>
-			</section>
+					<div class="courseexp-section-block__body" id="<?php echo esc_attr( $body_id ); ?>"<?php echo $is_first ? '' : ' hidden'; ?>>
+						<?php courseexp_render_section_body_inner( $section, $courseexp_ctx ); ?>
+					</div>
+				</section>
+			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php elseif ( is_wp_error( $course_data ) ) : ?>
 		<div class="courseexp-error">

@@ -27,6 +27,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'COURSEEXP_VERSION', '1.0.0' );
 
 /**
+ * URL slug for the course experience endpoint.
+ *
+ * Change this in one place to rebrand every course/section URL. Use only
+ * URL-safe characters ([a-z0-9-]); the router re-flushes rewrite rules
+ * automatically whenever this value changes.
+ */
+define( 'COURSEEXP_SLUG', 'eb-course-experience' );
+
+/**
  * Plugin base name.
  */
 define( 'COURSEEXP_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

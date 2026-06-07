@@ -20,7 +20,7 @@
 
 	function initSectionAccordion() {
 		var container = document.getElementById('courseexp-sections');
-		if (!container) {
+		if (!container || container.dataset.layout === 'onesectionperpage') {
 			return;
 		}
 

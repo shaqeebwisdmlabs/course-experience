@@ -30,16 +30,18 @@ class CourseExp_Course_Router {
 	 */
 	public function add_rewrite_rules(): void {
 		add_rewrite_rule(
-			'eb-course-experience/([^/]+)/?$',
+			COURSEEXP_SLUG . '/([^/]+)/?$',
 			'index.php?eb_course_exp=1&course_slug=$matches[1]',
 			'top'
 		);
 
 		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
 
-		if ( get_option( 'courseexp_flush_rewrite_rules' ) !== COURSEEXP_VERSION ) {
+		// Re-flush when either the version or the endpoint slug changes.
+		$rewrite_signature = COURSEEXP_VERSION . ':' . COURSEEXP_SLUG;
+		if ( get_option( 'courseexp_flush_rewrite_rules' ) !== $rewrite_signature ) {
 			flush_rewrite_rules();
-			update_option( 'courseexp_flush_rewrite_rules', COURSEEXP_VERSION );
+			update_option( 'courseexp_flush_rewrite_rules', $rewrite_signature );
 		}
 	}
 
@@ -73,7 +75,7 @@ class CourseExp_Course_Router {
 			return $course_data;
 		}
 
-		$course_data['course_url'] = home_url( '/eb-course-experience/' . $post->post_name . '/' );
+		$course_data['course_url'] = home_url( '/' . COURSEEXP_SLUG . '/' . $post->post_name . '/' );
 
 		return $course_data;
 	}

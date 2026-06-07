@@ -33,8 +33,8 @@ class CourseExp_Core {
 	 * @return void
 	 */
 	private function includes(): void {
-		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-course-router.php';
-		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-api-client.php';
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-course-router.php';
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-api-client.php';
 	}
 
 	/**
