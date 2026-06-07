@@ -28,11 +28,13 @@ $completion  = $has_data && isset( $course_data['completion'] ) ? (array) $cours
 
 $tracks_completion = empty( $completion ) || ! empty( $completion['enablecompletion'] );
 
-$total_activities     = $has_data && isset( $course_data['totalactivities'] ) ? absint( $course_data['totalactivities'] ) : 0;
-$completed_activities = $has_data && isset( $course_data['completedactivities'] ) ? absint( $course_data['completedactivities'] ) : 0;
+$progress_block = $has_data && isset( $course_data['progress'] ) ? (array) $course_data['progress'] : array();
 
-if ( $has_data && isset( $course_data['progresspercentage'] ) ) {
-	$progress = (int) round( (float) $course_data['progresspercentage'] );
+$total_activities     = isset( $progress_block['totalactivities'] ) ? absint( $progress_block['totalactivities'] ) : 0;
+$completed_activities = isset( $progress_block['completedactivities'] ) ? absint( $progress_block['completedactivities'] ) : 0;
+
+if ( isset( $progress_block['percentage'] ) ) {
+	$progress = (int) round( (float) $progress_block['percentage'] );
 } elseif ( $total_activities > 0 ) {
 	$progress = (int) round( ( $completed_activities / $total_activities ) * 100 );
 } else {
