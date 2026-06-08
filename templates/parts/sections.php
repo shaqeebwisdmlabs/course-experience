@@ -297,7 +297,7 @@ if ( ! function_exists( 'courseexp_render_inline_content' ) ) {
 		}
 		$inline_class = implode( ' ', array_map( 'sanitize_html_class', $inline_classes ) );
 		?>
-		<div class="<?php echo esc_attr( $inline_class ); ?>" data-activity-id="<?php echo esc_attr( $cmid ); ?>">
+		<div class="<?php echo esc_attr( $inline_class ); ?>" id="courseexp-activity-<?php echo esc_attr( $cmid ); ?>" data-activity-id="<?php echo esc_attr( $cmid ); ?>">
 			<?php if ( $show_control ) : ?>
 				<div class="courseexp-inline-content__header">
 					<?php courseexp_render_completion_control( $completion, $cmid, $ctx ); ?>

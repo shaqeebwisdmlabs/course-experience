@@ -110,10 +110,73 @@
 		updateExpandAll();
 	}
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initSectionAccordion);
-	} else {
+	var highlighted = null;
+	var highlightTimer = null;
+
+	function flashTarget(el) {
+		if (highlighted) {
+			highlighted.classList.remove('is-target');
+		}
+		if (highlightTimer) {
+			clearTimeout(highlightTimer);
+		}
+		highlighted = el;
+		el.classList.add('is-target');
+		highlightTimer = setTimeout(function () {
+			el.classList.remove('is-target');
+			highlighted = null;
+			highlightTimer = null;
+		}, 2200);
+	}
+
+	function revealActivity(cmid) {
+		if (!/^\d+$/.test(String(cmid))) {
+			return;
+		}
+		var content = document.querySelector('.courseexp-main__content');
+		if (!content) {
+			return;
+		}
+		var el = content.querySelector('[data-activity-id="' + cmid + '"]');
+		if (!el) {
+			return;
+		}
+
+		var block = el.closest('.courseexp-section-block');
+		if (block && !block.classList.contains('is-expanded')) {
+			var toggle = block.querySelector('.courseexp-section-block__toggle');
+			if (toggle) {
+				toggle.click();
+			}
+		}
+
+		var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+		flashTarget(el);
+	}
+
+	function revealFromHash() {
+		var match = /^#courseexp-activity-(\d+)$/.exec(window.location.hash || '');
+		if (match) {
+			revealActivity(match[1]);
+		}
+	}
+
+	document.addEventListener('courseexp:activitySelected', function (e) {
+		if (e.detail && e.detail.cmid) {
+			revealActivity(e.detail.cmid);
+		}
+	});
+
+	function init() {
 		initSectionAccordion();
+		revealFromHash();
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
 	}
 
 	function closeOutside(target) {

@@ -172,9 +172,18 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 										$completion_state = isset( $completion['state'] ) ? (int) $completion['state'] : 0;
 										$show_status_icon = $is_tracked;
 
-										$is_external  = ( 'external' === $rendermode && '' !== $external_url );
-										$activity_url = $is_external ? $external_url : ( $activity_base ? $activity_base . $activity_id . '/' : '' );
-										$is_active    = ( $active_cmid > 0 && $activity_id === $active_cmid );
+										$is_external = ( 'external' === $rendermode && '' !== $external_url );
+										$is_inline   = ( 'inline' === $rendermode );
+										if ( $is_external ) {
+											$activity_url = $external_url;
+										} elseif ( $is_inline ) {
+											$activity_url = $course_slug
+												? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) . '#courseexp-activity-' . $activity_id
+												: '';
+										} else {
+											$activity_url = $activity_base ? $activity_base . $activity_id . '/' : '';
+										}
+										$is_active = ( $active_cmid > 0 && $activity_id === $active_cmid );
 
 										$activity_classes = array( 'courseexp-activity' );
 										if ( ! $available ) {

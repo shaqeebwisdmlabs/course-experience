@@ -217,6 +217,7 @@
 	line-height: 1.6;
 	overflow-wrap: break-word;
 	word-break: break-word;
+	scroll-margin-top: calc(var(--courseexp-header-height) + var(--courseexp-space-lg));
 }
 
 .courseexp-inline-content img {
@@ -251,6 +252,12 @@
 
 .courseexp-inline-content.is-locked {
 	opacity: 0.7;
+}
+
+.courseexp-inline-content.is-target {
+	outline: 2px solid var(--courseexp-accent-orange);
+	outline-offset: 2px;
+	transition: outline-color var(--courseexp-transition-speed) ease;
 }
 
 .courseexp-inline-content__header {
@@ -612,7 +619,8 @@ button.courseexp-completion:focus-visible {
 	.courseexp-section-block__toggle,
 	.courseexp-section-block__toggle-icon,
 	.courseexp-section-block__expand-all,
-	.courseexp-section-block__arrow {
+	.courseexp-section-block__arrow,
+	.courseexp-inline-content.is-target {
 		transition: none;
 	}
 }

@@ -122,6 +122,43 @@
 				close();
 			}
 		});
+
+		document.addEventListener('courseexp:activitySelected', function () {
+			if (sidebar.classList.contains('is-open')) {
+				close();
+			}
+		});
+	}
+
+	function initActivityNav() {
+		const sidebar = document.getElementById('courseexp-sidebar');
+		const content = document.querySelector('.courseexp-main__content');
+
+		if (!sidebar || !content) {
+			return;
+		}
+
+		sidebar.addEventListener('click', function (e) {
+			const link = e.target.closest('.courseexp-activity__link');
+			if (!link) {
+				return;
+			}
+
+			const match = /^#courseexp-activity-(\d+)$/.exec(link.hash || '');
+			if (!match) {
+				return;
+			}
+
+			const cmid = match[1];
+			if (!content.querySelector('[data-activity-id="' + cmid + '"]')) {
+				return;
+			}
+
+			e.preventDefault();
+			document.dispatchEvent(
+				new CustomEvent('courseexp:activitySelected', { detail: { cmid: cmid } })
+			);
+		});
 	}
 
 	function initAccordion() {
@@ -299,6 +336,7 @@
 		initMobileSidebar();
 		initAccordion();
 		initScrollSpy();
+		initActivityNav();
 	}
 
 	if (document.readyState === 'loading') {
