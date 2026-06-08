@@ -34,9 +34,9 @@ $total_activities     = isset( $progress_block['totalactivities'] ) ? absint( $p
 $completed_activities = isset( $progress_block['completedactivities'] ) ? absint( $progress_block['completedactivities'] ) : 0;
 
 if ( isset( $progress_block['percentage'] ) ) {
-	$progress = (int) round( (float) $progress_block['percentage'] );
+	$progress = (int) floor( (float) $progress_block['percentage'] );
 } elseif ( $total_activities > 0 ) {
-	$progress = (int) round( ( $completed_activities / $total_activities ) * 100 );
+	$progress = (int) floor( ( $completed_activities / $total_activities ) * 100 );
 } else {
 	$progress = 0;
 }

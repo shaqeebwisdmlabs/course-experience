@@ -19,8 +19,10 @@ if ( is_object( $course_data ) ) {
 $has_data = ! empty( $course_data ) && ! is_wp_error( $course_data );
 $sections = $has_data && isset( $course_data['sections'] ) ? $course_data['sections'] : array();
 
-$course_slug = (string) get_query_var( 'course_slug' );
-$course_url  = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' ) : '';
+$course_slug   = (string) get_query_var( 'course_slug' );
+$course_url    = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' ) : '';
+$active_cmid   = (int) get_query_var( 'courseexp_active_cmid' );
+$activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/activity/' ) : '';
 ?>
 
 <button
@@ -150,6 +152,8 @@ $course_url  = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slu
 										$activity_name = isset( $activity['name'] ) ? $activity['name'] : '';
 										$indent        = isset( $activity['indent'] ) ? intval( $activity['indent'] ) : 0;
 										$available     = isset( $activity['available'] ) ? (bool) $activity['available'] : true;
+										$rendermode    = isset( $activity['rendermode'] ) ? (string) $activity['rendermode'] : '';
+										$external_url  = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
 
 										$completion       = isset( $activity['completion'] ) ? $activity['completion'] : array();
 										$is_tracked       = isset( $completion['tracked'] ) ? (bool) $completion['tracked'] : false;
@@ -157,15 +161,27 @@ $course_url  = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slu
 										$show_status_icon = $is_tracked;
 										$status_complete  = $is_complete;
 
+										$is_external  = ( 'external' === $rendermode && '' !== $external_url );
+										$activity_url = $is_external ? $external_url : ( $activity_base ? $activity_base . $activity_id . '/' : '' );
+										$is_active    = ( $active_cmid > 0 && $activity_id === $active_cmid );
+
 										$activity_classes = array( 'courseexp-activity' );
 										if ( ! $available ) {
 											$activity_classes[] = 'is-locked';
+										}
+										if ( $is_active ) {
+											$activity_classes[] = 'is-active';
 										}
 										$activity_class = implode( ' ', array_map( 'sanitize_html_class', $activity_classes ) );
 
 										?>
 										<li class="<?php echo esc_attr( $activity_class ); ?>" data-activity-id="<?php echo esc_attr( $activity_id ); ?>" data-indent="<?php echo esc_attr( $indent ); ?>">
-											<a href="#activity-<?php echo esc_attr( $activity_id ); ?>" class="courseexp-activity__link">
+											<a
+												href="<?php echo esc_url( $activity_url ); ?>"
+												class="courseexp-activity__link"
+												<?php echo $is_active ? 'aria-current="page"' : ''; ?>
+												<?php echo $is_external ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+											>
 												<span class="courseexp-activity__status">
 													<?php if ( $show_status_icon ) : ?>
 														<?php if ( $status_complete ) : ?>

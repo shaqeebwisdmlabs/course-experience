@@ -20,7 +20,11 @@
 
 	function initSectionAccordion() {
 		var container = document.getElementById('courseexp-sections');
-		if (!container || container.dataset.layout === 'onesectionperpage') {
+		if (
+			!container ||
+			container.dataset.layout === 'onesectionperpage' ||
+			container.classList.contains('courseexp-sections--detail')
+		) {
 			return;
 		}
 
@@ -92,7 +96,7 @@
 			}
 
 			var id = section.dataset.sectionId;
-			if (id && state.hasOwnProperty(id)) {
+			if (toggle && id && state.hasOwnProperty(id)) {
 				setExpanded(section, state[id], false);
 			}
 		});

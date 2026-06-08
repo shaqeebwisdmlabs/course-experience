@@ -30,6 +30,7 @@ class CourseExp_Course_Router {
 	 */
 	public function add_rewrite_rules(): void {
 		$rules = array(
+			COURSEEXP_SLUG . '/([^/]+)/activity/([^/]+)/?$' => 'index.php?eb_course_exp=1&course_slug=$matches[1]&course_activity=$matches[2]',
 			COURSEEXP_SLUG . '/([^/]+)/([^/]+)/?$' => 'index.php?eb_course_exp=1&course_slug=$matches[1]&course_section=$matches[2]',
 			COURSEEXP_SLUG . '/([^/]+)/?$'         => 'index.php?eb_course_exp=1&course_slug=$matches[1]',
 		);
@@ -57,6 +58,7 @@ class CourseExp_Course_Router {
 		$vars[] = 'eb_course_exp';
 		$vars[] = 'course_slug';
 		$vars[] = 'course_section';
+		$vars[] = 'course_activity';
 		return $vars;
 	}
 
@@ -91,9 +93,13 @@ class CourseExp_Course_Router {
 	 */
 	public function load_course_experience_template( string $template ): string {
 		if ( get_query_var( 'eb_course_exp' ) ) {
-			$template_file = '' !== (string) get_query_var( 'course_section' )
-				? 'templates/section-experience.php'
-				: 'templates/course-experience.php';
+			if ( '' !== (string) get_query_var( 'course_activity' ) ) {
+				$template_file = 'templates/activity-experience.php';
+			} elseif ( '' !== (string) get_query_var( 'course_section' ) ) {
+				$template_file = 'templates/section-experience.php';
+			} else {
+				$template_file = 'templates/course-experience.php';
+			}
 
 			$custom_template = COURSEEXP_PLUGIN_DIR . $template_file;
 			if ( file_exists( $custom_template ) ) {

@@ -344,6 +344,7 @@ Before committing:
 - [ ] Capability checks for admin actions
 - [ ] Works with WP_DEBUG enabled
 - [ ] No console errors in browser
+- [ ] No unnecassry comments
 - [ ] CSS uses `:root` tokens (no raw hex/radius/spacing in rule bodies)
 - [ ] No dead code (unused `:root` tokens, CSS classes absent from markup, uncalled functions)
 - [ ] No inline styles in markup or set via JS (`element.style.*`)

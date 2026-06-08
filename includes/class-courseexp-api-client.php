@@ -128,6 +128,107 @@ class CourseExp_API_Client {
 	}
 
 	/**
+	 * Locate an activity (and its containing section) within a course structure.
+	 *
+	 * Searches top-level activities and subsection children so an activity is
+	 * found regardless of nesting depth.
+	 *
+	 * @param array|object|\WP_Error $course_data Course structure payload.
+	 * @param int                    $cmid        Course module id to locate.
+	 * @return array {
+	 *     @type array  $activity     The matched activity block (empty if not found).
+	 *     @type array  $section      The containing section block (empty if not found).
+	 *     @type int    $section_id   The containing section id.
+	 *     @type string $section_name The containing section name ('' when unnamed).
+	 * }
+	 */
+	public function find_activity( $course_data, int $cmid ): array {
+		$empty = array(
+			'activity'     => array(),
+			'section'      => array(),
+			'section_id'   => 0,
+			'section_name' => '',
+		);
+
+		if ( is_object( $course_data ) ) {
+			$course_data = json_decode( wp_json_encode( $course_data ), true );
+		}
+
+		if ( ! is_array( $course_data ) || empty( $course_data['sections'] ) ) {
+			return $empty;
+		}
+
+		foreach ( $course_data['sections'] as $index => $section ) {
+			$section    = (array) $section;
+			$activities = isset( $section['activities'] ) ? (array) $section['activities'] : array();
+			$found      = $this->search_activities( $activities, $cmid );
+
+			if ( ! empty( $found ) ) {
+				$name = isset( $section['name'] ) && '' !== trim( (string) $section['name'] ) ? (string) $section['name'] : '';
+
+				return array(
+					'activity'     => $found,
+					'section'      => $section,
+					'section_id'   => isset( $section['id'] ) ? (int) $section['id'] : (int) $index,
+					'section_name' => $name,
+				);
+			}
+		}
+
+		return $empty;
+	}
+
+	/**
+	 * Recursively search an activity list (including subsection children) for a cmid.
+	 *
+	 * @param array $activities Activity blocks.
+	 * @param int   $cmid       Course module id to locate.
+	 * @return array Matched activity (array-cast) or an empty array.
+	 */
+	private function search_activities( array $activities, int $cmid ): array {
+		foreach ( $activities as $activity ) {
+			$activity = (array) $activity;
+
+			if ( isset( $activity['cmid'] ) && (int) $activity['cmid'] === $cmid ) {
+				return $activity;
+			}
+
+			if ( ! empty( $activity['children'] ) && is_array( $activity['children'] ) ) {
+				$child = $this->search_activities( $activity['children'], $cmid );
+				if ( ! empty( $child ) ) {
+					return $child;
+				}
+			}
+		}
+
+		return array();
+	}
+
+	/**
+	 * Append the Edwiser Bridge web-service token to a Moodle pluginfile URL.
+	 *
+	 * Moodle returns file URLs as webservice/pluginfile.php links that require the
+	 * token as a query argument before the browser can fetch them.
+	 *
+	 * @param string $url Raw file URL from get_activity_content().
+	 * @return string URL with the token appended, or the input unchanged when no token.
+	 */
+	public function append_file_token( string $url ): string {
+		if ( '' === $url ) {
+			return '';
+		}
+
+		$connection = get_option( 'eb_connection' );
+		$token      = is_array( $connection ) && isset( $connection['eb_access_token'] ) ? (string) $connection['eb_access_token'] : '';
+
+		if ( '' === $token ) {
+			return $url;
+		}
+
+		return add_query_arg( 'token', $token, $url );
+	}
+
+	/**
 	 * Get Moodle course ID from WordPress post
 	 *
 	 * @param int $post_id WordPress post ID.

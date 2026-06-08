@@ -221,59 +221,6 @@
 		updateToggleButton();
 	}
 
-	function initActivities() {
-		const accordion = document.getElementById('courseexp-accordion');
-		if (!accordion) {
-			return;
-		}
-
-		function handleActivityClick(e) {
-			const activityLink = e.target.closest('.courseexp-activity__link');
-			if (activityLink) {
-				e.preventDefault();
-			}
-
-			const activityItem = e.target.closest('.courseexp-activity');
-			if (!activityItem) {
-				return;
-			}
-
-			const activityId = activityItem.dataset.activityId;
-			const activityType = activityItem.dataset.activityType;
-
-			const allActivities = accordion.querySelectorAll('.courseexp-activity');
-			allActivities.forEach(function (act) {
-				act.classList.remove('is-active');
-			});
-			activityItem.classList.add('is-active');
-
-			const event = new CustomEvent('courseexp:activitySelected', {
-				detail: {
-					activityId: activityId,
-					activityType: activityType,
-					activityElement: activityItem,
-				},
-			});
-			document.dispatchEvent(event);
-
-			if (window.innerWidth < 1024) {
-				const sidebar = document.getElementById('courseexp-sidebar');
-				const overlay = document.getElementById('courseexp-sidebar-overlay');
-				const body = document.body;
-
-				if (sidebar && sidebar.classList.contains('is-open')) {
-					sidebar.classList.remove('is-open');
-					body.classList.remove('courseexp-sidebar-open');
-					if (overlay) {
-						overlay.classList.remove('is-visible');
-					}
-				}
-			}
-		}
-
-		accordion.addEventListener('click', handleActivityClick);
-	}
-
 	function initScrollSpy() {
 		const sidebar = document.getElementById('courseexp-sidebar');
 		const content = document.querySelector('.courseexp-main__content');
@@ -351,7 +298,6 @@
 		initSidebar();
 		initMobileSidebar();
 		initAccordion();
-		initActivities();
 		initScrollSpy();
 	}
 

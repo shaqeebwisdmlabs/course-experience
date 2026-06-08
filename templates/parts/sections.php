@@ -43,6 +43,7 @@ $courseexp_ctx = array(
 	'show_conditions'     => ! empty( $completion_settings['showcompletionconditions'] ),
 	'uses_indentation'    => ! empty( $courseformat['usesindentation'] ),
 	'show_activity_dates' => $has_data && ! empty( $course_data['showactivitydates'] ),
+	'activity_base_url'   => $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/activity/' ) : '',
 );
 
 if ( ! function_exists( 'courseexp_render_trusted_html' ) ) {
@@ -58,6 +59,36 @@ if ( ! function_exists( 'courseexp_render_trusted_html' ) ) {
 	 */
 	function courseexp_render_trusted_html( string $html ): void {
 		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Trusted Moodle course content, rendered verbatim so script-based embeds run.
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_condition_status' ) ) {
+	/**
+	 * Render a completion-condition status icon.
+	 *
+	 * Mirrors the sidebar activity status icons for visual consistency:
+	 * green check when met, an empty circle when still to do, a red cross on fail.
+	 *
+	 * @param int $status Condition status: 0 incomplete, 1 complete, 2 complete-pass, 3 complete-fail.
+	 * @return void
+	 */
+	function courseexp_render_condition_status( int $status ): void {
+		if ( 1 === $status || 2 === $status ) {
+			?>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+			<?php
+			return;
+		}
+
+		if ( 3 === $status ) {
+			?>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+			<?php
+			return;
+		}
+		?>
+		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+		<?php
 	}
 }
 
@@ -85,6 +116,17 @@ if ( ! function_exists( 'courseexp_render_completion_control' ) ) {
 		$mode     = isset( $completion['mode'] ) ? (int) $completion['mode'] : 0;
 		$complete = ! empty( $completion['isoverallcomplete'] );
 		$override = ! empty( $completion['overrideby'] );
+
+		$details        = isset( $completion['details'] ) && is_array( $completion['details'] ) ? $completion['details'] : array();
+		$has_conditions = 2 === $mode && ! empty( $ctx['show_conditions'] ) && ! empty( $details );
+
+		if ( $has_conditions ) {
+			courseexp_render_todo_dropdown( $details, $complete );
+			if ( $override ) {
+				courseexp_render_override_note();
+			}
+			return;
+		}
 
 		if ( $complete ) {
 			$is_manual = ( 1 === $mode && ! empty( $completion['canmanuallycomplete'] ) );
@@ -126,42 +168,74 @@ if ( ! function_exists( 'courseexp_render_completion_control' ) ) {
 			return;
 		}
 
-		$details = isset( $completion['details'] ) && is_array( $completion['details'] ) ? $completion['details'] : array();
-
-		if ( ! empty( $ctx['show_conditions'] ) && ! empty( $details ) ) {
-			?>
-			<details class="courseexp-completion courseexp-completion--todo courseexp-todo">
-				<summary class="courseexp-todo__trigger">
-					<span class="courseexp-todo__label"><?php esc_html_e( 'To do', 'eb-course-exp' ); ?></span>
-					<span class="courseexp-todo__caret" aria-hidden="true">
-						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-					</span>
-				</summary>
-				<div class="courseexp-todo__panel">
-					<p class="courseexp-todo__intro"><?php esc_html_e( 'You must', 'eb-course-exp' ); ?></p>
-					<ul class="courseexp-todo__list">
-						<?php foreach ( $details as $detail ) : ?>
-							<?php
-							$detail      = (array) $detail;
-							$description = isset( $detail['description'] ) ? $detail['description'] : '';
-							?>
-							<li class="courseexp-todo__item"><?php echo esc_html( $description ); ?></li>
-						<?php endforeach; ?>
-					</ul>
-				</div>
-			</details>
-			<?php
-		} else {
-			?>
-			<span class="courseexp-completion courseexp-completion--todo is-readonly">
-				<span class="courseexp-completion__text"><?php esc_html_e( 'To do', 'eb-course-exp' ); ?></span>
-			</span>
-			<?php
-		}
-
+		?>
+		<span class="courseexp-completion courseexp-completion--todo is-readonly">
+			<span class="courseexp-completion__text"><?php esc_html_e( 'To do', 'eb-course-exp' ); ?></span>
+		</span>
+		<?php
 		if ( $override ) {
 			courseexp_render_override_note();
 		}
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_todo_dropdown' ) ) {
+	/**
+	 * Render the expandable completion-conditions control.
+	 *
+	 * Used for automatic activities that expose a conditions list, in both the
+	 * "to do" and completed states. When complete, the trigger shows the done
+	 * icon and label while the per-condition list stays reviewable in the panel.
+	 *
+	 * @param array $details  Per-condition detail blocks.
+	 * @param bool  $complete Whether the activity is overall complete.
+	 * @return void
+	 */
+	function courseexp_render_todo_dropdown( array $details, bool $complete ): void {
+		$details_class = 'courseexp-completion courseexp-completion--todo courseexp-todo';
+		if ( $complete ) {
+			$details_class .= ' is-done';
+		}
+		?>
+		<details class="<?php echo esc_attr( $details_class ); ?>">
+			<summary class="courseexp-todo__trigger">
+				<?php if ( $complete ) : ?>
+					<span class="courseexp-completion__icon" aria-hidden="true">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+					</span>
+				<?php endif; ?>
+				<span class="courseexp-todo__label"><?php echo $complete ? esc_html__( 'Done', 'eb-course-exp' ) : esc_html__( 'To do', 'eb-course-exp' ); ?></span>
+				<span class="courseexp-todo__caret" aria-hidden="true">
+					<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+				</span>
+			</summary>
+			<div class="courseexp-todo__panel">
+				<p class="courseexp-todo__intro"><?php esc_html_e( 'You must', 'eb-course-exp' ); ?></p>
+				<ul class="courseexp-todo__list">
+					<?php foreach ( $details as $detail ) : ?>
+						<?php
+						$detail      = (array) $detail;
+						$description = isset( $detail['description'] ) ? $detail['description'] : '';
+						$status      = isset( $detail['status'] ) ? (int) $detail['status'] : 0;
+						if ( 1 === $status || 2 === $status ) {
+							$item_class = 'courseexp-todo__item is-complete';
+						} elseif ( 3 === $status ) {
+							$item_class = 'courseexp-todo__item is-fail';
+						} else {
+							$item_class = 'courseexp-todo__item is-incomplete';
+						}
+						?>
+						<li class="<?php echo esc_attr( $item_class ); ?>">
+							<span class="courseexp-todo__item-status" aria-hidden="true">
+								<?php courseexp_render_condition_status( $status ); ?>
+							</span>
+							<span class="courseexp-todo__item-text"><?php echo esc_html( $description ); ?></span>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		</details>
+		<?php
 	}
 }
 
@@ -271,6 +345,11 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 		$show_desc   = ! empty( $activity['showdescription'] );
 		$description = isset( $activity['description'] ) ? $activity['description'] : '';
 		$completion  = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
+		$rendermode  = isset( $activity['rendermode'] ) ? (string) $activity['rendermode'] : '';
+		$external    = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
+
+		$is_external  = ( 'external' === $rendermode && '' !== $external );
+		$activity_url = $is_external ? $external : ( ! empty( $ctx['activity_base_url'] ) ? $ctx['activity_base_url'] . $cmid . '/' : '' );
 
 		$indent_attr = ! empty( $ctx['uses_indentation'] ) ? $indent : 0;
 
@@ -291,7 +370,11 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 						<?php endif; ?>
 
 						<?php if ( $available ) : ?>
-							<a href="#activity-<?php echo esc_attr( $cmid ); ?>" class="courseexp-activity-row__name">
+							<a
+								href="<?php echo esc_url( $activity_url ); ?>"
+								class="courseexp-activity-row__name"
+								<?php echo $is_external ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+							>
 								<?php echo esc_html( $name ); ?>
 							</a>
 						<?php else : ?>
@@ -439,60 +522,15 @@ if ( ! function_exists( 'courseexp_render_section_body_inner' ) ) {
 	}
 }
 
-if ( ! function_exists( 'courseexp_count_section_activities' ) ) {
-	/**
-	 * Tally activities and completion-tracked progress within a section tree.
-	 *
-	 * Subsection containers are not counted themselves, only their children.
-	 *
-	 * @param array $activities Activity blocks (may contain nested children).
-	 * @return array Associative array with 'activities', 'completed', 'total' keys.
-	 */
-	function courseexp_count_section_activities( array $activities ): array {
-		$totals = array(
-			'activities' => 0,
-			'completed'  => 0,
-			'total'      => 0,
-		);
-
-		foreach ( $activities as $activity ) {
-			$activity = (array) $activity;
-			$children = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
-
-			if ( ! empty( $children ) ) {
-				$sub                   = courseexp_count_section_activities( $children );
-				$totals['activities'] += $sub['activities'];
-				$totals['completed']  += $sub['completed'];
-				$totals['total']      += $sub['total'];
-				continue;
-			}
-
-			++$totals['activities'];
-
-			$completion = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
-			if ( ! empty( $completion['tracked'] ) ) {
-				++$totals['total'];
-				if ( ! empty( $completion['isoverallcomplete'] ) ) {
-					++$totals['completed'];
-				}
-			}
-		}
-
-		return $totals;
-	}
-}
-
 if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 	/**
-	 * Resolve a section's footer metrics for the one-section-per-page layout.
+	 * Read a section's footer metrics from the server-provided progress block.
 	 *
-	 * Prefers a server-provided progress block; falls back to deriving the
-	 * figures from the activity tree so the layout works before the API ships
-	 * per-section progress. Expected (optional) shape on each section:
+	 * Expected shape on each section (one-section-per-page layout):
 	 *   'progress' => array(
-	 *       'activities' => int,  // total activities -> "Activities: N"
-	 *       'completed'  => int,  // completed activities that have completion conditions
-	 *       'total'      => int,  // activities that have completion conditions
+	 *       'totalactivities'     => int,  // all activities -> "Activities: N"
+	 *       'completedactivities' => int,  // completed completion-tracked activities
+	 *       'trackedactivities'   => int,  // completion-tracked activities (denominator)
 	 *   )
 	 *
 	 * @param array $section Section block (array-cast).
@@ -500,18 +538,17 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 	 */
 	function courseexp_section_metrics( array $section ): array {
 		$progress = isset( $section['progress'] ) && is_array( $section['progress'] ) ? $section['progress'] : array();
-		$derived  = courseexp_count_section_activities( isset( $section['activities'] ) ? (array) $section['activities'] : array() );
 
 		return array(
-			'activities' => isset( $progress['activities'] ) ? absint( $progress['activities'] ) : $derived['activities'],
-			'completed'  => isset( $progress['completed'] ) ? absint( $progress['completed'] ) : $derived['completed'],
-			'total'      => isset( $progress['total'] ) ? absint( $progress['total'] ) : $derived['total'],
+			'activities' => isset( $progress['totalactivities'] ) ? absint( $progress['totalactivities'] ) : 0,
+			'completed'  => isset( $progress['completedactivities'] ) ? absint( $progress['completedactivities'] ) : 0,
+			'total'      => isset( $progress['trackedactivities'] ) ? absint( $progress['trackedactivities'] ) : 0,
 		);
 	}
 }
 ?>
 
-<div class="courseexp-sections" id="courseexp-sections" data-layout="<?php echo esc_attr( $layouttype ); ?>">
+<div class="courseexp-sections<?php echo $is_detail ? ' courseexp-sections--detail' : ''; ?>" id="courseexp-sections" data-layout="<?php echo esc_attr( $layouttype ); ?>">
 	<?php if ( $is_detail ) : ?>
 		<?php
 		$target_section = null;

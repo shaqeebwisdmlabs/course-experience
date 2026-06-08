@@ -25,7 +25,6 @@ class CourseExp_Core {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
-		add_action( 'wp_ajax_courseexp_load_activity', array( $this, 'ajax_load_activity' ) );
 	}
 
 	/**
@@ -49,8 +48,10 @@ class CourseExp_Core {
 			wp_enqueue_style( 'courseexp-sidebar', COURSEEXP_PLUGIN_URL . 'assets/css/sidebar.css', array(), COURSEEXP_VERSION );
 			wp_enqueue_style( 'courseexp-course-header', COURSEEXP_PLUGIN_URL . 'assets/css/course-header.css', array(), COURSEEXP_VERSION );
 			wp_enqueue_style( 'courseexp-sections', COURSEEXP_PLUGIN_URL . 'assets/css/sections.css', array(), COURSEEXP_VERSION );
+			wp_enqueue_style( 'courseexp-activity', COURSEEXP_PLUGIN_URL . 'assets/css/activity.css', array(), COURSEEXP_VERSION );
 			wp_enqueue_script( 'courseexp-sidebar', COURSEEXP_PLUGIN_URL . 'assets/js/sidebar.js', array(), COURSEEXP_VERSION, true );
 			wp_enqueue_script( 'courseexp-sections', COURSEEXP_PLUGIN_URL . 'assets/js/sections.js', array(), COURSEEXP_VERSION, true );
+			wp_enqueue_script( 'courseexp-activity', COURSEEXP_PLUGIN_URL . 'assets/js/activity.js', array(), COURSEEXP_VERSION, true );
 		}
 	}
 
@@ -78,16 +79,5 @@ class CourseExp_Core {
 	 */
 	private function is_courseexp_context(): bool {
 		return (bool) get_query_var( 'eb_course_exp' );
-	}
-
-	/**
-	 * AJAX handler for loading activity content.
-	 *
-	 * @return void
-	 */
-	public function ajax_load_activity(): void {
-		check_ajax_referer( 'courseexp_nonce', 'nonce' );
-
-		wp_send_json_success( array( 'message' => __( 'Activity loaded', 'eb-course-exp' ) ) );
 	}
 }
