@@ -345,10 +345,9 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 		$show_desc   = ! empty( $activity['showdescription'] );
 		$description = isset( $activity['description'] ) ? $activity['description'] : '';
 		$completion  = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
-		$rendermode  = isset( $activity['rendermode'] ) ? (string) $activity['rendermode'] : '';
 		$external    = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
 
-		$is_external  = ( 'external' === $rendermode && '' !== $external );
+		$is_external  = courseexp_activity_opens_externally( $activity );
 		$activity_url = $is_external ? $external : ( ! empty( $ctx['activity_base_url'] ) ? $ctx['activity_base_url'] . $cmid . '/' : '' );
 
 		$indent_attr = ! empty( $ctx['uses_indentation'] ) ? $indent : 0;

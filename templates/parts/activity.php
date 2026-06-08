@@ -128,14 +128,20 @@ if ( ! function_exists( 'courseexp_render_embed' ) ) {
 
 if ( ! function_exists( 'courseexp_render_launch' ) ) {
 	/**
-	 * Render the prompt for an activity that opens in a new tab: a plain sentence
-	 * with the activity name as the link (mirrors Moodle, no surrounding chrome).
+	 * Render the prompt for an activity that opens off-page: a plain sentence with
+	 * the activity name as the link (mirrors Moodle, no surrounding chrome).
 	 *
-	 * @param string $url  Destination URL.
-	 * @param string $name Activity name used as the link text.
+	 * When popup dimensions are given the link carries them as data attributes so
+	 * the front-end opens a sized window (Moodle's popup display); the new-tab
+	 * target remains as the fallback when the browser blocks the popup.
+	 *
+	 * @param string $url          Destination URL.
+	 * @param string $name         Activity name used as the link text.
+	 * @param int    $popup_width  Popup window width in pixels, or 0 for a new tab.
+	 * @param int    $popup_height Popup window height in pixels, or 0 for a new tab.
 	 * @return void
 	 */
-	function courseexp_render_launch( string $url, string $name ): void {
+	function courseexp_render_launch( string $url, string $name, int $popup_width = 0, int $popup_height = 0 ): void {
 		if ( '' === $url ) {
 			?>
 			<div class="courseexp-sections__empty"><p><?php esc_html_e( 'This activity could not be loaded.', 'eb-course-exp' ); ?></p></div>
@@ -143,9 +149,14 @@ if ( ! function_exists( 'courseexp_render_launch' ) ) {
 			return;
 		}
 
+		$popup_attrs = ( $popup_width > 0 && $popup_height > 0 )
+			? sprintf( ' data-courseexp-popup-width="%d" data-courseexp-popup-height="%d"', $popup_width, $popup_height )
+			: '';
+
 		$link = sprintf(
-			'<a class="courseexp-activity-launch__link" href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			'<a class="courseexp-activity-launch__link" href="%s" target="_blank" rel="noopener noreferrer"%s>%s</a>',
 			esc_url( $url ),
+			$popup_attrs,
 			esc_html( '' !== trim( $name ) ? $name : __( 'this activity', 'eb-course-exp' ) )
 		);
 		?>
@@ -159,36 +170,18 @@ if ( ! function_exists( 'courseexp_render_launch' ) ) {
 				),
 				array(
 					'a' => array(
-						'href'   => array(),
-						'target' => array(),
-						'rel'    => array(),
-						'class'  => array(),
+						'href'                        => array(),
+						'target'                      => array(),
+						'rel'                         => array(),
+						'class'                       => array(),
+						'data-courseexp-popup-width'  => array(),
+						'data-courseexp-popup-height' => array(),
 					),
 				)
 			);
 			?>
 		</p>
 		<?php
-	}
-}
-
-if ( ! function_exists( 'courseexp_url_display' ) ) {
-	/**
-	 * Resolve a url activity's display mode from moduledata.
-	 *
-	 * Prefers the already-resolved value so an "automatic" setting is honoured
-	 * without re-deriving it. Matches Moodle's RESOURCELIB_DISPLAY_* constants
-	 * (1 embed, 5 open, 6 popup; 0 automatic).
-	 *
-	 * @param array $moduledata Decoded moduledata bag.
-	 * @return int Display constant.
-	 */
-	function courseexp_url_display( array $moduledata ): int {
-		if ( ! empty( $moduledata['displayresolved'] ) ) {
-			return (int) $moduledata['displayresolved'];
-		}
-
-		return isset( $moduledata['display'] ) ? (int) $moduledata['display'] : 0;
 	}
 }
 
@@ -213,11 +206,7 @@ $activity_name = isset( $activity['name'] ) ? (string) $activity['name'] : '';
 $modname       = isset( $activity['modname'] ) ? (string) $activity['modname'] : '';
 $has_desc      = '' !== trim( $description );
 
-$moduledata = isset( $activity['moduledata'] ) ? $activity['moduledata'] : array();
-if ( is_string( $moduledata ) ) {
-	$moduledata = json_decode( $moduledata, true );
-}
-$moduledata = is_array( $moduledata ) ? $moduledata : array();
+$moduledata = courseexp_activity_moduledata( $activity );
 
 $embeds_own_intro = ( 'iframe' === $rendermode && 'url' !== $modname );
 $show_intro       = $has_desc && ! $embeds_own_intro && ( ! isset( $moduledata['printintro'] ) || ! empty( $moduledata['printintro'] ) );
@@ -249,10 +238,15 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 
 		<?php
 		if ( 'url' === $modname ) {
-			$url_target = '' !== $external_url ? $external_url : ( isset( $activity['url'] ) ? (string) $activity['url'] : '' );
+			$url_target  = '' !== $external_url ? $external_url : ( isset( $activity['url'] ) ? (string) $activity['url'] : '' );
+			$url_display = courseexp_url_display( $moduledata );
 
-			if ( 1 === courseexp_url_display( $moduledata ) ) {
+			if ( 1 === $url_display ) {
 				courseexp_render_embed( $url_target, $activity_name, $url_target );
+			} elseif ( 6 === $url_display ) {
+				$popup_width  = isset( $moduledata['popupwidth'] ) ? (int) $moduledata['popupwidth'] : 620;
+				$popup_height = isset( $moduledata['popupheight'] ) ? (int) $moduledata['popupheight'] : 450;
+				courseexp_render_launch( $url_target, $activity_name, $popup_width, $popup_height );
 			} else {
 				courseexp_render_launch( $url_target, $activity_name );
 			}

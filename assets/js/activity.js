@@ -21,9 +21,35 @@
 		} catch (e) {}
 	}
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initEmbed);
-	} else {
+	function initPopupLinks() {
+		var links = document.querySelectorAll('a[data-courseexp-popup-width]');
+		Array.prototype.forEach.call(links, function (link) {
+			link.addEventListener('click', function (event) {
+				var width = parseInt(link.dataset.courseexpPopupWidth, 10);
+				var height = parseInt(link.dataset.courseexpPopupHeight, 10);
+				if (!width || !height) {
+					return;
+				}
+
+				var features = 'width=' + width + ',height=' + height + ',scrollbars=yes,resizable=yes';
+				var popup = window.open(link.href, 'courseexp_url_popup', features);
+
+				if (popup) {
+					event.preventDefault();
+					popup.focus();
+				}
+			});
+		});
+	}
+
+	function init() {
 		initEmbed();
+		initPopupLinks();
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
 	}
 })();

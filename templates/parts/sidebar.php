@@ -172,7 +172,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 										$completion_state = isset( $completion['state'] ) ? (int) $completion['state'] : 0;
 										$show_status_icon = $is_tracked;
 
-										$is_external = ( 'external' === $rendermode && '' !== $external_url );
+										$is_external = courseexp_activity_opens_externally( $activity );
 										$is_inline   = ( 'inline' === $rendermode );
 										if ( $is_external ) {
 											$activity_url = $external_url;
