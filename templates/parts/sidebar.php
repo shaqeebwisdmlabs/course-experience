@@ -198,16 +198,6 @@ $course_url  = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slu
 			<div class="courseexp-error">
 				<p><?php esc_html_e( 'Unable to load course content. Please try again later.', 'eb-course-exp' ); ?></p>
 			</div>
-		<?php else : ?>
-			<div class="courseexp-skeleton" id="courseexp-skeleton" aria-busy="true" aria-label="<?php esc_attr_e( 'Loading course content', 'eb-course-exp' ); ?>">
-				<?php for ( $i = 0; $i < 4; $i++ ) : ?>
-					<div class="courseexp-skeleton__section">
-						<div class="courseexp-skeleton__header">
-							<div class="courseexp-skeleton__text courseexp-skeleton__text--long"></div>
-						</div>
-					</div>
-				<?php endfor; ?>
-			</div>
 		<?php endif; ?>
 	</div>
 </aside>

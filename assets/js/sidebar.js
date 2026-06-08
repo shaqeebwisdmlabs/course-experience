@@ -274,21 +274,6 @@
 		accordion.addEventListener('click', handleActivityClick);
 	}
 
-	function initSkeleton() {
-		const skeleton = document.getElementById('courseexp-skeleton');
-		const accordion = document.getElementById('courseexp-accordion');
-
-		if (!skeleton) {
-			return;
-		}
-
-		if (accordion) {
-			skeleton.classList.add('courseexp-is-hidden');
-			skeleton.removeAttribute('aria-busy');
-			accordion.classList.remove('courseexp-is-hidden');
-		}
-	}
-
 	function initScrollSpy() {
 		const sidebar = document.getElementById('courseexp-sidebar');
 		const content = document.querySelector('.courseexp-main__content');
@@ -367,7 +352,6 @@
 		initMobileSidebar();
 		initAccordion();
 		initActivities();
-		initSkeleton();
 		initScrollSpy();
 	}
 

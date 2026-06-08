@@ -6,9 +6,6 @@
 
 	--courseexp-floating-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-	--courseexp-skeleton-bg: #e8e8e8;
-	--courseexp-skeleton-shimmer: #f5f5f5;
-
 	--courseexp-indent-step: 16px;
 }
 
@@ -218,45 +215,6 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 .courseexp-sidebar-overlay.is-visible {
 	opacity: 1;
 	visibility: visible;
-}
-
-.courseexp-skeleton {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-
-.courseexp-skeleton__section {
-	padding: 16px;
-	background: var(--courseexp-skeleton-bg);
-	border-radius: var(--courseexp-radius);
-}
-
-.courseexp-skeleton__text {
-	width: 60%;
-	height: 16px;
-	background: linear-gradient(
-		90deg,
-		var(--courseexp-skeleton-bg) 0%,
-		var(--courseexp-skeleton-shimmer) 50%,
-		var(--courseexp-skeleton-bg) 100%
-	);
-	background-size: 200% 100%;
-	border-radius: var(--courseexp-radius);
-	animation: courseexp-skeleton-shimmer 1.5s infinite;
-}
-
-.courseexp-skeleton__text--long {
-	width: 80%;
-}
-
-@keyframes courseexp-skeleton-shimmer {
-	0% {
-		background-position: 200% 0;
-	}
-	100% {
-		background-position: -200% 0;
-	}
 }
 
 .courseexp-accordion {
@@ -563,9 +521,5 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	.courseexp-activity__link,
 	.courseexp-sidebar__action-btn {
 		transition: none;
-	}
-
-	.courseexp-skeleton__text {
-		animation: none;
 	}
 }

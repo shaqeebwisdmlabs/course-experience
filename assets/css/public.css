@@ -46,10 +46,6 @@ body.courseexp-page p {
 	margin-bottom: 12px;
 }
 
-.courseexp-is-hidden {
-	display: none !important;
-}
-
 .courseexp-layout,
 body.courseexp-page footer,
 body.courseexp-page .site-footer,
