@@ -1,6 +1,6 @@
 :root {
-	--courseexp-accordion-header-bg: #f8f9fa;
-	--courseexp-accordion-header-hover: #f0f7eb;
+	--courseexp-accordion-header-bg: var(--courseexp-surface-bg);
+	--courseexp-accordion-header-hover: var(--courseexp-accent-tint);
 	--courseexp-accordion-border: var(--courseexp-surface-border);
 	--courseexp-activity-hover: #f8f9fa;
 
@@ -15,7 +15,7 @@
 	left: 0;
 	bottom: 0;
 	width: var(--courseexp-sidebar-width);
-	background: var(--courseexp-surface-bg);
+	background: var(--courseexp-page-bg);
 	border-right: 1px solid var(--courseexp-surface-border);
 	display: flex;
 	flex-direction: column;
@@ -286,6 +286,10 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	font-weight: 600;
 	color: var(--courseexp-text);
 	line-height: 1.4;
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .courseexp-section__toggle {
@@ -303,8 +307,8 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 }
 
 .courseexp-section__toggle:hover {
-	background: var(--courseexp-accent-tint);
-	color: var(--courseexp-text);
+	background: var(--courseexp-surface-bg);
+	color: var(--courseexp-accent-orange);
 }
 
 .courseexp-section__icon {
@@ -394,6 +398,10 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 
 .courseexp-activity__icon--complete {
 	color: var(--courseexp-primary-green);
+}
+
+.courseexp-activity__icon--fail {
+	color: var(--courseexp-error-text);
 }
 
 .courseexp-activity__icon--incomplete {

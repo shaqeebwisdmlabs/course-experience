@@ -86,7 +86,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 				aria-label="<?php esc_attr_e( 'Collapse sidebar', 'eb-course-exp' ); ?>"
 				title="<?php esc_attr_e( 'Collapse Sidebar', 'eb-course-exp' ); ?>"
 			>
-				<span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+				<span aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg></span>
 			</button>
 		</div>
 	</div>
@@ -99,11 +99,23 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 					if ( is_object( $section ) ) {
 						$section = json_decode( wp_json_encode( $section ), true );
 					}
-					$section_id       = isset( $section['id'] ) ? $section['id'] : $section_index;
-					$activities       = isset( $section['activities'] ) ? $section['activities'] : array();
-					$section_unique   = 'courseexp-section-' . esc_attr( $section_id );
-					$is_first_section = 0 === $section_index;
-					$section_url      = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) : '';
+					$section_id        = isset( $section['id'] ) ? $section['id'] : $section_index;
+					$activities        = isset( $section['activities'] ) ? $section['activities'] : array();
+					$section_unique    = 'courseexp-section-' . esc_attr( $section_id );
+					$is_first_section  = 0 === $section_index;
+					$section_url       = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) : '';
+					$section_is_active = false;
+					if ( $active_cmid > 0 ) {
+						foreach ( $activities as $section_activity ) {
+							$section_activity = (array) $section_activity;
+							if ( isset( $section_activity['cmid'] ) && (int) $section_activity['cmid'] === $active_cmid ) {
+								$section_is_active = true;
+								break;
+							}
+						}
+					}
+					$is_expanded = $is_first_section || $section_is_active;
+
 					if ( isset( $section['name'] ) ) {
 						$section_name = $section['name'];
 					} else {
@@ -111,7 +123,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 						$section_name = sprintf( __( 'Section %d', 'eb-course-exp' ), $section_index + 1 );
 					}
 					?>
-					<div class="courseexp-section<?php echo $is_first_section ? ' is-expanded' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
+					<div class="courseexp-section<?php echo $is_expanded ? ' is-expanded' : ''; ?><?php echo $section_is_active ? ' is-active' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
 						<div class="courseexp-section__header">
 							<?php if ( $section_url ) : ?>
 								<a class="courseexp-section__title-link" id="<?php echo esc_attr( $section_unique . '-title' ); ?>" href="<?php echo esc_url( $section_url ); ?>">
@@ -123,7 +135,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 							<button
 								type="button"
 								class="courseexp-section__toggle"
-								aria-expanded="<?php echo $is_first_section ? 'true' : 'false'; ?>"
+								aria-expanded="<?php echo $is_expanded ? 'true' : 'false'; ?>"
 								aria-controls="<?php echo esc_attr( $section_unique ); ?>"
 								id="<?php echo esc_attr( $section_unique . '-toggle' ); ?>"
 								aria-label="<?php /* translators: %s: section name. */ printf( esc_attr__( 'Toggle %s', 'eb-course-exp' ), esc_attr( $section_name ) ); ?>"
@@ -138,7 +150,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 							id="<?php echo esc_attr( $section_unique ); ?>"
 							role="region"
 							aria-labelledby="<?php echo esc_attr( $section_unique . '-title' ); ?>"
-							<?php echo $is_first_section ? '' : 'hidden'; ?>
+							<?php echo $is_expanded ? '' : 'hidden'; ?>
 						>
 							<?php if ( ! empty( $activities ) ) : ?>
 								<ul class="courseexp-activities">
@@ -157,9 +169,8 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 
 										$completion       = isset( $activity['completion'] ) ? $activity['completion'] : array();
 										$is_tracked       = isset( $completion['tracked'] ) ? (bool) $completion['tracked'] : false;
-										$is_complete      = isset( $completion['isoverallcomplete'] ) ? (bool) $completion['isoverallcomplete'] : false;
+										$completion_state = isset( $completion['state'] ) ? (int) $completion['state'] : 0;
 										$show_status_icon = $is_tracked;
-										$status_complete  = $is_complete;
 
 										$is_external  = ( 'external' === $rendermode && '' !== $external_url );
 										$activity_url = $is_external ? $external_url : ( $activity_base ? $activity_base . $activity_id . '/' : '' );
@@ -184,8 +195,10 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 											>
 												<span class="courseexp-activity__status">
 													<?php if ( $show_status_icon ) : ?>
-														<?php if ( $status_complete ) : ?>
+														<?php if ( 1 === $completion_state || 2 === $completion_state ) : ?>
 															<svg class="courseexp-activity__icon courseexp-activity__icon--complete" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+														<?php elseif ( 3 === $completion_state ) : ?>
+															<svg class="courseexp-activity__icon courseexp-activity__icon--fail" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
 														<?php else : ?>
 															<svg class="courseexp-activity__icon courseexp-activity__icon--incomplete" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
 														<?php endif; ?>

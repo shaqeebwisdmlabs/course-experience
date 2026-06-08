@@ -210,22 +210,21 @@ $description   = isset( $activity['description'] ) ? (string) $activity['descrip
 $embed_url     = isset( $activity['embedurl'] ) ? (string) $activity['embedurl'] : '';
 $external_url  = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
 $activity_name = isset( $activity['name'] ) ? (string) $activity['name'] : '';
+$modname       = isset( $activity['modname'] ) ? (string) $activity['modname'] : '';
 $has_desc      = '' !== trim( $description );
 
-// moduledata is an open per-module-type JSON bag; only a few keys affect how this
-// page renders. The render mode itself is already resolved server-side, so we read
-// only the presentational toggles here and ignore everything else.
 $moduledata = isset( $activity['moduledata'] ) ? $activity['moduledata'] : array();
 if ( is_string( $moduledata ) ) {
 	$moduledata = json_decode( $moduledata, true );
 }
 $moduledata = is_array( $moduledata ) ? $moduledata : array();
 
-$show_intro     = $has_desc && ( ! isset( $moduledata['printintro'] ) || ! empty( $moduledata['printintro'] ) );
-$show_file_size = ! empty( $moduledata['showsize'] );
-$show_file_type = ! empty( $moduledata['showtype'] );
-$show_file_date = ! empty( $moduledata['showdate'] );
-$book_numbering = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbering'] : 1;
+$embeds_own_intro = ( 'iframe' === $rendermode && 'url' !== $modname );
+$show_intro       = $has_desc && ! $embeds_own_intro && ( ! isset( $moduledata['printintro'] ) || ! empty( $moduledata['printintro'] ) );
+$show_file_size   = ! empty( $moduledata['showsize'] );
+$show_file_type   = ! empty( $moduledata['showtype'] );
+$show_file_date   = ! empty( $moduledata['showdate'] );
+$book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbering'] : 1;
 ?>
 
 <div class="courseexp-activity-content" data-activity-id="<?php echo esc_attr( $cmid ); ?>" data-rendermode="<?php echo esc_attr( $rendermode ); ?>">
@@ -249,11 +248,6 @@ $book_numbering = isset( $moduledata['numbering'] ) ? (int) $moduledata['numberi
 	<?php endif; ?>
 
 		<?php
-		$modname = isset( $activity['modname'] ) ? (string) $activity['modname'] : '';
-
-		// A url activity's presentation is driven by its moduledata display setting
-		// (which overrides the coarse render mode): popup opens externally, while
-		// open/embed/automatic render the link inline or as a launch.
 		if ( 'url' === $modname ) {
 			$url_target = '' !== $external_url ? $external_url : ( isset( $activity['url'] ) ? (string) $activity['url'] : '' );
 

@@ -28,7 +28,7 @@
 
 	--courseexp-success: var(--courseexp-primary-green);
 	--courseexp-success-bg: #f0f8e9;
-	--courseexp-accent-tint: rgba(234, 120, 19, 0.08);
+	--courseexp-accent-tint: #fdf4ec;
 	--courseexp-row-hover: #f8f9fa;
 	--courseexp-locked-bg: rgba(0, 0, 0, 0.02);
 	--courseexp-lock-bg: #fff4e5;
@@ -57,7 +57,7 @@ body.courseexp-page .footer-section {
 .courseexp-layout {
 	width: 100%;
 	min-height: 100vh;
-	background: var(--courseexp-page-bg);
+	background: var(--courseexp-surface-bg);
 }
 
 .courseexp-main {
