@@ -27,10 +27,11 @@ if ( $moodle_course_id > 0 && $moodle_user_id > 0 ) {
 	$course_data = $api_client->get_course_structure( $moodle_course_id, $moodle_user_id );
 }
 
-$course_title = $course_post ? $course_post->post_title : '';
-$course_url   = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' ) : '';
+$course_title    = $course_post ? $course_post->post_title : '';
+$course_url      = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' ) : '';
+$course_data_arr = is_object( $course_data ) ? json_decode( wp_json_encode( $course_data ), true ) : $course_data;
 
-$found        = $api_client->find_activity( $course_data, $cmid );
+$found        = $api_client->find_activity( $course_data_arr, $cmid );
 $activity     = $found['activity'];
 $section_id   = (int) $found['section_id'];
 $section_name = '' !== $found['section_name'] ? $found['section_name'] : __( 'Section', 'eb-course-exp' );
@@ -41,6 +42,16 @@ $activity_name = isset( $activity['name'] ) && '' !== trim( (string) $activity['
 	: __( 'Activity', 'eb-course-exp' );
 
 $activity_icon = isset( $activity['icon'] ) ? (string) $activity['icon'] : '';
+
+$activity_available  = ! isset( $activity['available'] ) || (bool) $activity['available'];
+$activity_completion = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
+
+$completion_settings = ( is_array( $course_data_arr ) && isset( $course_data_arr['completion'] ) ) ? (array) $course_data_arr['completion'] : array();
+$completion_ctx      = array(
+	'enable_completion' => ! empty( $completion_settings['enablecompletion'] ),
+	'show_conditions'   => ! empty( $completion_settings['showcompletionconditions'] ),
+);
+$show_completion     = $activity_available && courseexp_completion_is_visible( $activity_completion, $completion_ctx );
 
 get_header();
 
@@ -74,12 +85,19 @@ load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 			</span>
 		</nav>
 
-		<h1 class="courseexp-section-page__title courseexp-activity-title">
-			<?php if ( '' !== $activity_icon ) : ?>
-				<img class="courseexp-activity-title__icon" src="<?php echo esc_url( $activity_icon ); ?>" alt="" width="32" height="32" loading="lazy" />
+		<div class="courseexp-activity-header">
+			<h1 class="courseexp-section-page__title courseexp-activity-title">
+				<?php if ( '' !== $activity_icon ) : ?>
+					<img class="courseexp-activity-title__icon" src="<?php echo esc_url( $activity_icon ); ?>" alt="" width="32" height="32" loading="lazy" />
+				<?php endif; ?>
+				<?php echo esc_html( $activity_name ); ?>
+			</h1>
+			<?php if ( $show_completion ) : ?>
+				<div class="courseexp-activity-header__completion">
+					<?php courseexp_render_completion_control( $activity_completion, $cmid, $completion_ctx ); ?>
+				</div>
 			<?php endif; ?>
-			<?php echo esc_html( $activity_name ); ?>
-		</h1>
+		</div>
 
 		<div class="courseexp-main__content">
 			<?php

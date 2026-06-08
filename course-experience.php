@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Current plugin version.
  */
-define( 'COURSEEXP_VERSION', '1.2.2' );
+define( 'COURSEEXP_VERSION', '1.2.7' );
 
 /**
  * URL slug for the course experience endpoint.

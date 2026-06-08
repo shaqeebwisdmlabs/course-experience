@@ -128,6 +128,41 @@ class CourseExp_API_Client {
 	}
 
 	/**
+	 * Write an activity's manual completion state for a user.
+	 *
+	 * The Edwiser Bridge token acts on the given user's behalf, so Moodle enforces
+	 * that the user is enrolled and may manually complete the activity.
+	 *
+	 * @since 1.0.0
+	 * @param int $cmid           Course module id.
+	 * @param int $moodle_user_id Moodle user id the token acts for.
+	 * @param int $target_state   0 = mark not done, 1 = mark done.
+	 * @return array|\WP_Error API response or error.
+	 */
+	public function set_activity_completion( int $cmid, int $moodle_user_id, int $target_state ) {
+		if ( ! $this->is_connected() ) {
+			return new \WP_Error( 'eb_not_available', __( 'Edwiser Bridge connection helper not available', 'eb-course-exp' ) );
+		}
+
+		$request_data = array(
+			'cmid'        => $cmid,
+			'userid'      => $moodle_user_id,
+			'targetstate' => $target_state ? 1 : 0,
+		);
+
+		$response = $this->connection_helper->connect_moodle_with_args_helper(
+			'mod_courselink_set_activity_completion',
+			$request_data
+		);
+
+		if ( ! $response['success'] ) {
+			return new \WP_Error( 'api_error', $response['response_message'] );
+		}
+
+		return $response['response_data'];
+	}
+
+	/**
 	 * Locate an activity (and its containing section) within a course structure.
 	 *
 	 * Searches top-level activities and subsection children so an activity is

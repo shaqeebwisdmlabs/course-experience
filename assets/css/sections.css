@@ -472,6 +472,21 @@ button.courseexp-completion:focus-visible {
 	color: var(--courseexp-success);
 }
 
+.courseexp-completion-form {
+	display: contents;
+}
+
+.courseexp-completion--manual.is-complete {
+	border-color: var(--courseexp-success);
+	background: var(--courseexp-success-bg);
+	color: var(--courseexp-success);
+}
+
+.courseexp-completion.is-busy {
+	cursor: progress;
+	opacity: 0.6;
+}
+
 .courseexp-completion__icon {
 	display: inline-flex;
 	flex-shrink: 0;

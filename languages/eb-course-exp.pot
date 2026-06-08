@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-08T11:07:03+00:00\n"
+"POT-Creation-Date: 2026-06-08T18:34:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eb-course-exp\n"
@@ -42,30 +42,31 @@ msgstr ""
 #: includes/class-courseexp-api-client.php:52
 #: includes/class-courseexp-api-client.php:81
 #: includes/class-courseexp-api-client.php:110
+#: includes/class-courseexp-api-client.php:144
 msgid "Edwiser Bridge connection helper not available"
 msgstr ""
 
-#: templates/activity-experience.php:36
+#: templates/activity-experience.php:37
 #: templates/section-experience.php:72
 msgid "Section"
 msgstr ""
 
-#: templates/activity-experience.php:41
+#: templates/activity-experience.php:42
 msgid "Activity"
 msgstr ""
 
-#: templates/activity-experience.php:55
+#: templates/activity-experience.php:66
 #: templates/section-experience.php:62
 msgid "Breadcrumb"
 msgstr ""
 
-#: templates/activity-experience.php:58
+#: templates/activity-experience.php:69
 #: templates/section-experience.php:65
 msgid "Course"
 msgstr ""
 
 #: templates/parts/activity.php:102
-#: templates/parts/activity.php:141
+#: templates/parts/activity.php:147
 msgid "This activity could not be loaded."
 msgstr ""
 
@@ -77,39 +78,62 @@ msgstr ""
 msgid "Open in a new tab"
 msgstr ""
 
-#: templates/parts/activity.php:149
+#: templates/parts/activity.php:160
 msgid "this activity"
 msgstr ""
 
 #. translators: %s: linked activity name.
-#: templates/parts/activity.php:157
+#: templates/parts/activity.php:168
 #, php-format
 msgid "Click on %s to open the resource."
 msgstr ""
 
-#: templates/parts/activity.php:199
+#: templates/parts/activity.php:192
 msgid "Activity not found."
 msgstr ""
 
-#: templates/parts/activity.php:240
+#: templates/parts/activity.php:228
 msgid "This activity is not available yet."
 msgstr ""
 
-#: templates/parts/activity.php:284
+#: templates/parts/activity.php:272
 msgid "Unable to load this activity. Please try again later."
 msgstr ""
 
-#: templates/parts/activity.php:305
+#: templates/parts/activity.php:293
 msgid "Chapters"
 msgstr ""
 
-#: templates/parts/activity.php:409
-#: templates/parts/activity.php:417
+#: templates/parts/activity.php:397
+#: templates/parts/activity.php:405
 msgid "This activity has no content yet."
 msgstr ""
 
-#: templates/parts/activity.php:425
+#: templates/parts/activity.php:413
 msgid "This activity cannot be displayed here."
+msgstr ""
+
+#: templates/parts/completion.php:98
+#: templates/parts/completion.php:151
+#: templates/parts/completion.php:183
+msgid "Done"
+msgstr ""
+
+#: templates/parts/completion.php:109
+#: templates/parts/completion.php:183
+msgid "To do"
+msgstr ""
+
+#: templates/parts/completion.php:151
+msgid "Mark as done"
+msgstr ""
+
+#: templates/parts/completion.php:189
+msgid "You must"
+msgstr ""
+
+#: templates/parts/completion.php:226
+msgid "Set by a teacher"
 msgstr ""
 
 #: templates/parts/course-header.php:56
@@ -133,85 +157,61 @@ msgstr ""
 msgid "Course progress"
 msgstr ""
 
-#: templates/parts/sections.php:146
-#: templates/parts/sections.php:210
-msgid "Done"
-msgstr ""
-
-#: templates/parts/sections.php:157
-msgid "Mark as done"
-msgstr ""
-
-#: templates/parts/sections.php:163
-#: templates/parts/sections.php:176
-#: templates/parts/sections.php:210
-msgid "To do"
-msgstr ""
-
-#: templates/parts/sections.php:216
-msgid "You must"
-msgstr ""
-
-#: templates/parts/sections.php:253
-msgid "Set by a teacher"
-msgstr ""
-
-#: templates/parts/sections.php:324
-#: templates/parts/sections.php:411
-#: templates/parts/sections.php:498
+#: templates/parts/sections.php:116
+#: templates/parts/sections.php:202
+#: templates/parts/sections.php:289
 msgid "Not available"
 msgstr ""
 
-#: templates/parts/sections.php:522
+#: templates/parts/sections.php:313
 msgid "No content in this section yet."
 msgstr ""
 
-#: templates/parts/sections.php:577
+#: templates/parts/sections.php:368
 msgid "Section not found."
 msgstr ""
 
 #. translators: %d: section number (1-based) used when a section has no name.
-#. translators: %d: section number (1-based index) used as a fallback when the section has no name.
-#: templates/parts/sections.php:596
-#: templates/parts/sidebar.php:111
+#: templates/parts/sections.php:387
+#: templates/parts/sidebar.php:123
 #: templates/section-experience.php:46
 #, php-format
 msgid "Section %d"
 msgstr ""
 
 #. translators: %s: section name.
-#: templates/parts/sections.php:624
+#: templates/parts/sections.php:415
 #, php-format
 msgid "Open %s"
 msgstr ""
 
 #. translators: %d: number of activities in the section.
-#: templates/parts/sections.php:643
+#: templates/parts/sections.php:434
 #, php-format
 msgid "Activities: %d"
 msgstr ""
 
 #. translators: 1: completed activities, 2: total activities that have completion conditions.
-#: templates/parts/sections.php:654
+#: templates/parts/sections.php:445
 #, php-format
 msgid "Progress: %1$d / %2$d"
 msgstr ""
 
-#: templates/parts/sections.php:693
-#: templates/parts/sections.php:696
+#: templates/parts/sections.php:484
+#: templates/parts/sections.php:487
 msgid "Expand all"
 msgstr ""
 
-#: templates/parts/sections.php:694
+#: templates/parts/sections.php:485
 msgid "Collapse all"
 msgstr ""
 
-#: templates/parts/sections.php:709
-#: templates/parts/sidebar.php:215
+#: templates/parts/sections.php:500
+#: templates/parts/sidebar.php:237
 msgid "Unable to load course content. Please try again later."
 msgstr ""
 
-#: templates/parts/sections.php:713
+#: templates/parts/sections.php:504
 msgid "This course has no content yet."
 msgstr ""
 
@@ -265,15 +265,15 @@ msgid "Course sections"
 msgstr ""
 
 #. translators: %s: section name.
-#: templates/parts/sidebar.php:129
+#: templates/parts/sidebar.php:141
 #, php-format
 msgid "Toggle %s"
 msgstr ""
 
-#: templates/parts/sidebar.php:197
+#: templates/parts/sidebar.php:219
 msgid "Locked"
 msgstr ""
 
-#: templates/parts/sidebar.php:207
+#: templates/parts/sidebar.php:229
 msgid "No activities in this section."
 msgstr ""

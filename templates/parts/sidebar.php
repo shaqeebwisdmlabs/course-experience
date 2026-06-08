@@ -119,7 +119,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 					if ( isset( $section['name'] ) ) {
 						$section_name = $section['name'];
 					} else {
-						/* translators: %d: section number (1-based index) used as a fallback when the section has no name. */
+						/* translators: %d: section number (1-based) used when a section has no name. */
 						$section_name = sprintf( __( 'Section %d', 'eb-course-exp' ), $section_index + 1 );
 					}
 					?>
