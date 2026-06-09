@@ -13,18 +13,22 @@
 .courseexp-activity-locked {
 	display: flex;
 	align-items: flex-start;
-	gap: var(--courseexp-space-sm);
-	padding: var(--courseexp-space-md);
-	background: var(--courseexp-lock-bg);
-	border: 1px solid var(--courseexp-surface-border);
+	width: fit-content;
+	gap: 6px;
+	padding: 4px 10px;
 	border-radius: var(--courseexp-radius);
-	color: var(--courseexp-text-muted);
+	background: var(--courseexp-lock-bg);
+	color: var(--courseexp-text);
+	font-size: 0.8125rem;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	min-width: 0;
 }
 
 .courseexp-activity-locked__icon {
 	display: inline-flex;
 	flex-shrink: 0;
-	color: var(--courseexp-accent-orange);
+	margin-top: 4px;
 }
 
 .courseexp-activity-embed {

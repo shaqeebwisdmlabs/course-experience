@@ -49,7 +49,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 <aside class="courseexp-sidebar" id="courseexp-sidebar" role="navigation" aria-label="<?php esc_attr_e( 'Course content navigation', 'eb-course-exp' ); ?>">
 	<div class="courseexp-sidebar__header">
 		<?php if ( ! empty( $course_title ) ) : ?>
-			<h2 class="courseexp-sidebar__title">
+			<h2 class="courseexp-sidebar__title" title="<?php echo esc_attr( $course_title ); ?>">
 				<?php if ( $course_url ) : ?>
 					<a class="courseexp-sidebar__title-link" href="<?php echo esc_url( $course_url ); ?>"><?php echo esc_html( $course_title ); ?></a>
 				<?php else : ?>
@@ -127,10 +127,10 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 						<div class="courseexp-section__header">
 							<?php if ( $section_url ) : ?>
 								<a class="courseexp-section__title-link" id="<?php echo esc_attr( $section_unique . '-title' ); ?>" href="<?php echo esc_url( $section_url ); ?>">
-									<span class="courseexp-section__title"><?php echo esc_html( $section_name ); ?></span>
+									<span class="courseexp-section__title" title="<?php echo esc_attr( $section_name ); ?>"><?php echo esc_html( $section_name ); ?></span>
 								</a>
 							<?php else : ?>
-								<span class="courseexp-section__title" id="<?php echo esc_attr( $section_unique . '-title' ); ?>"><?php echo esc_html( $section_name ); ?></span>
+								<span class="courseexp-section__title" id="<?php echo esc_attr( $section_unique . '-title' ); ?>" title="<?php echo esc_attr( $section_name ); ?>"><?php echo esc_html( $section_name ); ?></span>
 							<?php endif; ?>
 							<button
 								type="button"
@@ -163,7 +163,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 										$activity_id   = isset( $activity['cmid'] ) ? intval( $activity['cmid'] ) : 0;
 										$activity_name = isset( $activity['name'] ) ? $activity['name'] : '';
 										$indent        = isset( $activity['indent'] ) ? intval( $activity['indent'] ) : 0;
-										$available     = isset( $activity['available'] ) ? (bool) $activity['available'] : true;
+										$available     = ( ! isset( $activity['available'] ) || (bool) $activity['available'] ) && ! courseexp_activity_is_unavailable( $activity );
 										$rendermode    = isset( $activity['rendermode'] ) ? (string) $activity['rendermode'] : '';
 										$external_url  = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
 
@@ -214,7 +214,7 @@ $activity_base = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_s
 													<?php endif; ?>
 												</span>
 												<span class="courseexp-activity__label">
-													<span class="courseexp-activity__name"><?php echo esc_html( $activity_name ); ?></span>
+													<span class="courseexp-activity__name" title="<?php echo esc_attr( $activity_name ); ?>"><?php echo esc_html( $activity_name ); ?></span>
 													<?php if ( ! $available ) : ?>
 														<span class="courseexp-activity__lock" title="<?php esc_attr_e( 'Locked', 'eb-course-exp' ); ?>">
 															<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock-keyhole-icon lucide-lock-keyhole"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>

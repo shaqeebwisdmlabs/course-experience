@@ -76,7 +76,7 @@ if ( ! function_exists( 'courseexp_render_inline_content' ) ) {
 	function courseexp_render_inline_content( array $activity, array $ctx ): void {
 		$description  = isset( $activity['description'] ) ? $activity['description'] : '';
 		$cmid         = isset( $activity['cmid'] ) ? (int) $activity['cmid'] : 0;
-		$available    = ! isset( $activity['available'] ) || (bool) $activity['available'];
+		$available    = ( ! isset( $activity['available'] ) || (bool) $activity['available'] ) && ! courseexp_activity_is_unavailable( $activity );
 		$avail_info   = isset( $activity['availabilityinfo'] ) ? $activity['availabilityinfo'] : '';
 		$completion   = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
 		$has_body     = '' !== trim( (string) $description );
@@ -131,16 +131,17 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 	 * @return void
 	 */
 	function courseexp_render_activity_row( array $activity, array $ctx ): void {
-		$cmid        = isset( $activity['cmid'] ) ? (int) $activity['cmid'] : 0;
-		$name        = isset( $activity['name'] ) ? $activity['name'] : '';
-		$icon        = isset( $activity['icon'] ) ? $activity['icon'] : '';
-		$indent      = isset( $activity['indent'] ) ? (int) $activity['indent'] : 0;
-		$available   = ! isset( $activity['available'] ) || (bool) $activity['available'];
-		$avail_info  = isset( $activity['availabilityinfo'] ) ? $activity['availabilityinfo'] : '';
-		$show_desc   = ! empty( $activity['showdescription'] );
-		$description = isset( $activity['description'] ) ? $activity['description'] : '';
-		$completion  = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
-		$external    = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
+		$cmid           = isset( $activity['cmid'] ) ? (int) $activity['cmid'] : 0;
+		$name           = isset( $activity['name'] ) ? $activity['name'] : '';
+		$icon           = isset( $activity['icon'] ) ? $activity['icon'] : '';
+		$indent         = isset( $activity['indent'] ) ? (int) $activity['indent'] : 0;
+		$is_unavailable = courseexp_activity_is_unavailable( $activity );
+		$available      = ( ! isset( $activity['available'] ) || (bool) $activity['available'] ) && ! $is_unavailable;
+		$avail_info     = isset( $activity['availabilityinfo'] ) ? $activity['availabilityinfo'] : '';
+		$show_desc      = ! empty( $activity['showdescription'] );
+		$description    = isset( $activity['description'] ) ? $activity['description'] : '';
+		$completion     = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
+		$external       = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
 
 		$is_external  = courseexp_activity_opens_externally( $activity );
 		$activity_url = $is_external ? $external : ( ! empty( $ctx['activity_base_url'] ) ? $ctx['activity_base_url'] . $cmid . '/' : '' );
@@ -153,7 +154,7 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 		}
 		$row_class = implode( ' ', array_map( 'sanitize_html_class', $row_classes ) );
 		?>
-		<li class="<?php echo esc_attr( $row_class ); ?>" data-activity-id="<?php echo esc_attr( $cmid ); ?>" data-indent="<?php echo esc_attr( $indent_attr ); ?>">
+		<li class="<?php echo esc_attr( $row_class ); ?>"<?php echo $is_unavailable ? ' id="courseexp-activity-' . esc_attr( $cmid ) . '"' : ''; ?> data-activity-id="<?php echo esc_attr( $cmid ); ?>" data-indent="<?php echo esc_attr( $indent_attr ); ?>">
 			<div class="courseexp-activity-row__inner">
 				<div class="courseexp-activity-row__top">
 					<div class="courseexp-activity-row__main">
@@ -225,7 +226,7 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 			$children = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
 			$mode     = isset( $activity['rendermode'] ) ? $activity['rendermode'] : '';
 
-			$is_inline = 'inline' === $mode && empty( $children );
+			$is_inline = 'inline' === $mode && empty( $children ) && ! courseexp_activity_is_unavailable( $activity );
 
 			if ( $is_inline || ! empty( $children ) ) {
 				if ( $open_list ) {

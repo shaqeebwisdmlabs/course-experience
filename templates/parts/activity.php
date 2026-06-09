@@ -197,7 +197,7 @@ if ( empty( $activity ) ) {
 }
 
 $rendermode    = isset( $activity['rendermode'] ) ? (string) $activity['rendermode'] : '';
-$available     = ! isset( $activity['available'] ) || (bool) $activity['available'];
+$available     = ( ! isset( $activity['available'] ) || (bool) $activity['available'] ) && ! courseexp_activity_is_unavailable( $activity );
 $avail_info    = isset( $activity['availabilityinfo'] ) ? (string) $activity['availabilityinfo'] : '';
 $description   = isset( $activity['description'] ) ? (string) $activity['description'] : '';
 $embed_url     = isset( $activity['embedurl'] ) ? (string) $activity['embedurl'] : '';
@@ -220,7 +220,7 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 	<?php if ( ! $available ) : ?>
 		<div class="courseexp-activity-locked">
 			<span class="courseexp-activity-locked__icon" aria-hidden="true">
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
 			</span>
 			<?php if ( '' !== trim( $avail_info ) ) : ?>
 				<span class="courseexp-activity-locked__text"><?php echo wp_kses_post( $avail_info ); ?></span>

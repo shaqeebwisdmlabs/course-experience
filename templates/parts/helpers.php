@@ -48,6 +48,27 @@ if ( ! function_exists( 'courseexp_url_display' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_activity_is_unavailable' ) ) {
+	/**
+	 * Whether an activity is a linked activity the user cannot reach.
+	 *
+	 * The Moodle course-activity-link service returns a placeholder block with
+	 * modname 'unavailable' when the linked activity is missing, hidden, or in a
+	 * course the user is not enrolled in. Such a block reports available=true and
+	 * rendermode=inline, so it is detected by modname alone and then rendered in
+	 * the locked style with its availabilityinfo as the reason text.
+	 *
+	 * @since 1.0.0
+	 * @param array $activity Activity payload.
+	 * @return bool
+	 */
+	function courseexp_activity_is_unavailable( array $activity ): bool {
+		$modname = isset( $activity['modname'] ) ? (string) $activity['modname'] : '';
+
+		return 'unavailable' === $modname;
+	}
+}
+
 if ( ! function_exists( 'courseexp_activity_opens_externally' ) ) {
 	/**
 	 * Whether a course-listing link should open the resource in a new tab instead
