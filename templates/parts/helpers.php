@@ -9,6 +9,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! function_exists( 'courseexp_render_body_class' ) ) {
+	/**
+	 * Guarantee the page-scope body class regardless of theme.
+	 *
+	 * All of our CSS is namespaced under `.courseexp-page`. We add that class via
+	 * the `body_class` filter, but some themes hardcode their `<body>` tag and
+	 * never call WordPress's body_class(), so the filter never runs. This prints a
+	 * tiny synchronous script immediately after the opening body tag (after
+	 * get_header()) to add the class on the client side. It executes before the
+	 * rest of the body is parsed, so the namespaced styles apply with no flash of
+	 * unstyled content.
+	 *
+	 * @since 1.2.8
+	 * @return void
+	 */
+	function courseexp_render_body_class(): void {
+		wp_print_inline_script_tag( "document.body.classList.add('courseexp-page');" );
+	}
+}
+
 if ( ! function_exists( 'courseexp_activity_moduledata' ) ) {
 	/**
 	 * Decode an activity's moduledata bag, which the API may deliver as JSON.

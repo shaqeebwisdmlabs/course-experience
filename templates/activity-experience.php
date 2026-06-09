@@ -54,6 +54,7 @@ $completion_ctx      = array(
 $show_completion     = $activity_available && courseexp_completion_is_visible( $activity_completion, $completion_ctx );
 
 get_header();
+courseexp_render_body_class();
 
 set_query_var( 'course_title', $course_title );
 set_query_var( 'course_data', $course_data );

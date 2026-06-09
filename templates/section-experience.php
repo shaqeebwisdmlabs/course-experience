@@ -51,6 +51,7 @@ if ( is_array( $sections_data ) && isset( $sections_data['sections'] ) ) {
 }
 
 get_header();
+courseexp_render_body_class();
 
 set_query_var( 'course_title', $course_title );
 set_query_var( 'course_data', $course_data );

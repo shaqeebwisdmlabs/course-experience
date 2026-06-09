@@ -35,6 +35,7 @@ if ( $moodle_course_id > 0 && $moodle_user_id > 0 ) {
 $course_title = $course_post ? $course_post->post_title : '';
 
 get_header();
+courseexp_render_body_class();
 
 set_query_var( 'course_title', $course_title );
 set_query_var( 'course_data', $course_data );
