@@ -59,6 +59,7 @@ class CourseExp_Course_Router {
 		$vars[] = 'course_slug';
 		$vars[] = 'course_section';
 		$vars[] = 'course_activity';
+		$vars[] = 'courseexp_chapter';
 		return $vars;
 	}
 

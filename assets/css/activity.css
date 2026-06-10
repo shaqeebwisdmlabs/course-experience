@@ -289,6 +289,85 @@
 	outline-offset: 2px;
 }
 
+.courseexp-activity-book__toc-item.is-active > .courseexp-activity-book__toc-link {
+	font-weight: 600;
+	color: var(--courseexp-text);
+	cursor: default;
+}
+
+.courseexp-activity-book__toc-item.is-active > .courseexp-activity-book__toc-link:hover {
+	text-decoration: none;
+}
+
+.courseexp-activity-book__pager {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--courseexp-space-md);
+	margin-top: var(--courseexp-space-lg);
+	padding-top: var(--courseexp-space-lg);
+	border-top: 1px solid var(--courseexp-surface-border);
+}
+
+.courseexp-activity-book__pager-spacer {
+	flex: 0 0 auto;
+}
+
+.courseexp-activity-book__pager-link,
+.courseexp-activity-book__pager-link:link,
+.courseexp-activity-book__pager-link:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--courseexp-space-sm);
+	max-width: 48%;
+	padding: var(--courseexp-space-sm) var(--courseexp-space-md);
+	color: var(--courseexp-text);
+	text-decoration: none;
+	background: var(--courseexp-card-bg);
+	border: 1px solid var(--courseexp-surface-border);
+	border-radius: var(--courseexp-radius);
+	transition: border-color var(--courseexp-transition-speed) ease, color var(--courseexp-transition-speed) ease;
+}
+
+.courseexp-activity-book__pager-link--next {
+	margin-left: auto;
+	text-align: right;
+}
+
+.courseexp-activity-book__pager-link:hover {
+	color: var(--courseexp-accent-orange-hover);
+	border-color: var(--courseexp-accent-orange);
+}
+
+.courseexp-activity-book__pager-link:focus-visible {
+	outline: 2px solid var(--courseexp-accent-orange);
+	outline-offset: 2px;
+}
+
+.courseexp-activity-book__pager-meta {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.courseexp-activity-book__pager-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--courseexp-text-muted);
+}
+
+.courseexp-activity-book__pager-title {
+	overflow: hidden;
+	font-weight: 600;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.courseexp-activity-book__pager-arrow {
+	display: inline-flex;
+	flex: 0 0 auto;
+}
+
 .courseexp-activity-book__chapter-number {
 	margin-right: 0.35em;
 	color: var(--courseexp-text-muted);

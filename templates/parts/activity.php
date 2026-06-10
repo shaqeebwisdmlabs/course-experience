@@ -286,6 +286,53 @@ if ( ! function_exists( 'courseexp_render_file_launch' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_render_book_pager' ) ) {
+	/**
+	 * Render the previous/next chapter pager for a book activity.
+	 *
+	 * Each link reloads the activity page with the target chapter's
+	 * courseexp_chapter argument, mirroring Moodle's per-chapter navigation.
+	 *
+	 * @param array  $prev     Previous chapter {id,title} or empty array at the start.
+	 * @param array  $next     Next chapter {id,title} or empty array at the end.
+	 * @param string $base_url Activity page URL the chapter argument is added to.
+	 * @return void
+	 */
+	function courseexp_render_book_pager( array $prev, array $next, string $base_url ): void {
+		if ( empty( $prev ) && empty( $next ) ) {
+			return;
+		}
+		?>
+		<nav class="courseexp-activity-book__pager" aria-label="<?php esc_attr_e( 'Chapter navigation', 'eb-course-exp' ); ?>">
+			<?php if ( ! empty( $prev ) ) : ?>
+				<a class="courseexp-activity-book__pager-link courseexp-activity-book__pager-link--prev" href="<?php echo esc_url( add_query_arg( 'courseexp_chapter', (int) $prev['id'], $base_url ) ); ?>" rel="prev" title="<?php echo esc_attr( $prev['title'] ); ?>">
+					<span class="courseexp-activity-book__pager-arrow" aria-hidden="true">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+					</span>
+					<span class="courseexp-activity-book__pager-meta">
+						<span class="courseexp-activity-book__pager-label"><?php esc_html_e( 'Previous', 'eb-course-exp' ); ?></span>
+						<span class="courseexp-activity-book__pager-title"><?php echo esc_html( $prev['title'] ); ?></span>
+					</span>
+				</a>
+			<?php else : ?>
+				<span class="courseexp-activity-book__pager-spacer" aria-hidden="true"></span>
+			<?php endif; ?>
+			<?php if ( ! empty( $next ) ) : ?>
+				<a class="courseexp-activity-book__pager-link courseexp-activity-book__pager-link--next" href="<?php echo esc_url( add_query_arg( 'courseexp_chapter', (int) $next['id'], $base_url ) ); ?>" rel="next" title="<?php echo esc_attr( $next['title'] ); ?>">
+					<span class="courseexp-activity-book__pager-meta">
+						<span class="courseexp-activity-book__pager-label"><?php esc_html_e( 'Next', 'eb-course-exp' ); ?></span>
+						<span class="courseexp-activity-book__pager-title"><?php echo esc_html( $next['title'] ); ?></span>
+					</span>
+					<span class="courseexp-activity-book__pager-arrow" aria-hidden="true">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+					</span>
+				</a>
+			<?php endif; ?>
+		</nav>
+		<?php
+	}
+}
+
 if ( empty( $activity ) ) {
 	?>
 	<div class="courseexp-activity-content">
@@ -417,58 +464,75 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 						$book_mode  = isset( $book_modes[ $book_numbering ] ) ? $book_modes[ $book_numbering ] : 'numbers';
 						$toc_class  = 'courseexp-activity-book__toc courseexp-activity-book__toc--' . $book_mode;
 						$chap_nums  = ( 'numbers' === $book_mode ) ? courseexp_book_chapter_numbers( $chapters ) : array();
+						$visible    = array();
+						foreach ( $chapters as $index => $chapter ) {
+							$chapter = (array) $chapter;
+							if ( ! empty( $chapter['hidden'] ) ) {
+								continue;
+							}
+							$visible[] = array(
+								'id'      => isset( $chapter['id'] ) ? (int) $chapter['id'] : 0,
+								'title'   => isset( $chapter['title'] ) ? (string) $chapter['title'] : '',
+								'content' => isset( $chapter['content'] ) ? (string) $chapter['content'] : '',
+								'is_sub'  => ! empty( $chapter['subchapter'] ),
+								'number'  => isset( $chap_nums[ $index ] ) ? $chap_nums[ $index ] : '',
+							);
+						}
+
+						if ( empty( $visible ) ) {
+							?>
+				<div class="courseexp-sections__empty"><p><?php esc_html_e( 'This book has no chapters yet.', 'eb-course-exp' ); ?></p></div>
+							<?php
+							break;
+						}
+
+						$requested  = (int) get_query_var( 'courseexp_chapter' );
+						$active_pos = 0;
+						if ( $requested > 0 ) {
+							foreach ( $visible as $pos => $chap ) {
+								if ( $chap['id'] === $requested ) {
+									$active_pos = $pos;
+									break;
+								}
+							}
+						}
+
+						$active    = $visible[ $active_pos ];
+						$prev      = isset( $visible[ $active_pos - 1 ] ) ? $visible[ $active_pos - 1 ] : array();
+						$next      = isset( $visible[ $active_pos + 1 ] ) ? $visible[ $active_pos + 1 ] : array();
+						$book_base = home_url( '/' . COURSEEXP_SLUG . '/' . get_query_var( 'course_slug' ) . '/activity/' . $cmid . '/' );
 						?>
 				<div class="courseexp-activity-book">
 					<nav class="courseexp-activity-book__nav" aria-label="<?php esc_attr_e( 'Chapters', 'eb-course-exp' ); ?>">
 						<ul class="<?php echo esc_attr( $toc_class ); ?>">
-							<?php foreach ( $chapters as $index => $chapter ) : ?>
-								<?php
-								$chapter = (array) $chapter;
-								if ( ! empty( $chapter['hidden'] ) ) {
-									continue;
-								}
-								$chap_id     = isset( $chapter['id'] ) ? (int) $chapter['id'] : 0;
-								$chap_title  = isset( $chapter['title'] ) ? (string) $chapter['title'] : '';
-								$is_sub      = ! empty( $chapter['subchapter'] );
-								$chap_number = isset( $chap_nums[ $index ] ) ? $chap_nums[ $index ] : '';
-								?>
-								<li class="courseexp-activity-book__toc-item<?php echo $is_sub ? ' is-sub' : ''; ?>">
-									<a class="courseexp-activity-book__toc-link" href="#courseexp-chapter-<?php echo esc_attr( $chap_id ); ?>">
-										<?php if ( '' !== $chap_number ) : ?>
-											<span class="courseexp-activity-book__toc-number"><?php echo esc_html( $chap_number ); ?></span>
+							<?php foreach ( $visible as $pos => $chap ) : ?>
+								<?php $is_active = ( $pos === $active_pos ); ?>
+								<li class="courseexp-activity-book__toc-item<?php echo $chap['is_sub'] ? ' is-sub' : ''; ?><?php echo $is_active ? ' is-active' : ''; ?>">
+									<a class="courseexp-activity-book__toc-link" href="<?php echo esc_url( add_query_arg( 'courseexp_chapter', (int) $chap['id'], $book_base ) ); ?>"<?php echo $is_active ? ' aria-current="page"' : ''; ?>>
+										<?php if ( '' !== $chap['number'] ) : ?>
+											<span class="courseexp-activity-book__toc-number"><?php echo esc_html( $chap['number'] ); ?></span>
 										<?php endif; ?>
-										<span class="courseexp-activity-book__toc-text"><?php echo esc_html( $chap_title ); ?></span>
+										<span class="courseexp-activity-book__toc-text"><?php echo esc_html( $chap['title'] ); ?></span>
 									</a>
 								</li>
 							<?php endforeach; ?>
 						</ul>
 					</nav>
 					<div class="courseexp-activity-book__content">
-								<?php foreach ( $chapters as $index => $chapter ) : ?>
-									<?php
-									$chapter = (array) $chapter;
-									if ( ! empty( $chapter['hidden'] ) ) {
-										continue;
-									}
-									$chap_id     = isset( $chapter['id'] ) ? (int) $chapter['id'] : 0;
-									$chap_title  = isset( $chapter['title'] ) ? (string) $chapter['title'] : '';
-									$chap_html   = isset( $chapter['content'] ) ? (string) $chapter['content'] : '';
-									$chap_number = isset( $chap_nums[ $index ] ) ? $chap_nums[ $index ] : '';
-									?>
-							<section class="courseexp-activity-book__chapter" id="courseexp-chapter-<?php echo esc_attr( $chap_id ); ?>">
-									<?php if ( '' !== trim( $chap_title ) ) : ?>
-									<h2 class="courseexp-activity-book__chapter-title">
-										<?php if ( '' !== $chap_number ) : ?>
-											<span class="courseexp-activity-book__chapter-number"><?php echo esc_html( $chap_number ); ?></span>
-										<?php endif; ?>
-										<?php echo esc_html( $chap_title ); ?>
-									</h2>
-								<?php endif; ?>
-								<div class="courseexp-activity-book__chapter-body">
-									<?php courseexp_render_trusted_html( $chap_html ); ?>
-								</div>
-							</section>
-						<?php endforeach; ?>
+						<section class="courseexp-activity-book__chapter" id="courseexp-chapter-<?php echo esc_attr( $active['id'] ); ?>">
+							<?php if ( '' !== trim( $active['title'] ) ) : ?>
+								<h2 class="courseexp-activity-book__chapter-title">
+									<?php if ( '' !== $active['number'] ) : ?>
+										<span class="courseexp-activity-book__chapter-number"><?php echo esc_html( $active['number'] ); ?></span>
+									<?php endif; ?>
+									<?php echo esc_html( $active['title'] ); ?>
+								</h2>
+							<?php endif; ?>
+							<div class="courseexp-activity-book__chapter-body">
+								<?php courseexp_render_trusted_html( $active['content'] ); ?>
+							</div>
+						</section>
+						<?php courseexp_render_book_pager( $prev, $next, $book_base ); ?>
 					</div>
 				</div>
 						<?php
