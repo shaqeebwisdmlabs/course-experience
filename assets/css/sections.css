@@ -234,15 +234,20 @@
 	overflow-x: auto;
 }
 
-.courseexp-inline-content a {
+.courseexp-inline-content a,
+.courseexp-inline-content a:link,
+.courseexp-inline-content a:visited,
+.courseexp-inline-content a:active,
+.courseexp-inline-content a:focus {
 	color: var(--courseexp-accent-orange);
-	text-decoration: underline;
+	text-decoration: none;
 	overflow-wrap: anywhere;
 	transition: color var(--courseexp-transition-speed) ease;
 }
 
 .courseexp-inline-content a:hover {
 	color: var(--courseexp-accent-orange-hover);
+	text-decoration: underline;
 }
 
 .courseexp-inline-content a:focus-visible {
