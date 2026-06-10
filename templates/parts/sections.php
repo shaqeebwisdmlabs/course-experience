@@ -250,13 +250,16 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 			}
 
 			if ( $is_subsection ) {
-				$sub_name    = isset( $activity['name'] ) ? $activity['name'] : '';
-				$sub_id      = isset( $activity['cmid'] ) ? (int) $activity['cmid'] : 0;
-				$sub_unique  = 'courseexp-subsection-' . $sub_id;
-				$sub_body_id = $sub_unique . '-body';
-				$sub_ttl_id  = $sub_unique . '-title';
+				$sub_name      = isset( $activity['name'] ) ? $activity['name'] : '';
+				$sub_id        = isset( $activity['cmid'] ) ? (int) $activity['cmid'] : 0;
+				$sub_unique    = 'courseexp-subsection-' . $sub_id;
+				$sub_body_id   = $sub_unique . '-body';
+				$sub_ttl_id    = $sub_unique . '-title';
+				$sub_avail     = courseexp_block_availability( $activity );
+				$sub_locked    = ! $sub_avail['available'];
+				$sub_div_class = 'courseexp-subsection is-expanded' . ( $sub_locked ? ' is-locked' : '' );
 				?>
-				<div class="courseexp-subsection is-expanded" id="<?php echo esc_attr( $sub_unique ); ?>" data-subsection-id="<?php echo esc_attr( $sub_id ); ?>">
+				<div class="<?php echo esc_attr( $sub_div_class ); ?>" id="<?php echo esc_attr( $sub_unique ); ?>" data-subsection-id="<?php echo esc_attr( $sub_id ); ?>">
 					<div class="courseexp-subsection__header">
 						<button
 							type="button"
@@ -269,16 +272,25 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
 							</span>
 						</button>
-						<h3 class="courseexp-subsection__title" id="<?php echo esc_attr( $sub_ttl_id ); ?>"><?php echo esc_html( $sub_name ); ?></h3>
+						<h3 class="courseexp-subsection__title" id="<?php echo esc_attr( $sub_ttl_id ); ?>">
+							<?php echo esc_html( $sub_name ); ?>
+							<?php if ( $sub_locked ) : ?>
+								<?php courseexp_render_lock_icon( 'courseexp-subsection__lock' ); ?>
+							<?php endif; ?>
+						</h3>
 					</div>
 					<div class="courseexp-subsection__body" id="<?php echo esc_attr( $sub_body_id ); ?>">
-						<ul class="courseexp-activity-list">
-							<?php
-							foreach ( $children as $child ) {
-								courseexp_render_activity_row( (array) $child, $ctx );
-							}
-							?>
-						</ul>
+						<?php if ( $sub_locked ) : ?>
+							<?php courseexp_render_restricted_notice( $sub_avail['info'] ); ?>
+						<?php else : ?>
+							<ul class="courseexp-activity-list">
+								<?php
+								foreach ( $children as $child ) {
+									courseexp_render_activity_row( (array) $child, $ctx );
+								}
+								?>
+							</ul>
+						<?php endif; ?>
 					</div>
 				</div>
 				<?php
@@ -314,6 +326,12 @@ if ( ! function_exists( 'courseexp_render_section_body_inner' ) ) {
 	 * @return void
 	 */
 	function courseexp_render_section_body_inner( array $section, array $ctx ): void {
+		$availability = courseexp_block_availability( $section );
+		if ( ! $availability['available'] ) {
+			courseexp_render_restricted_notice( $availability['info'] );
+			return;
+		}
+
 		$is_visible = ! isset( $section['visible'] ) || (bool) $section['visible'];
 
 		if ( ! $is_visible ) {
@@ -403,14 +421,15 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 	<?php elseif ( $has_data && ! empty( $sections ) ) : ?>
 		<?php foreach ( $sections as $section_index => $section ) : ?>
 			<?php
-			$section    = (array) $section;
-			$section_id = isset( $section['id'] ) ? (int) $section['id'] : (int) $section_index;
-			$is_visible = ! isset( $section['visible'] ) || (bool) $section['visible'];
-			$is_current = ! empty( $section['current'] );
-			$is_first   = ( 0 === $section_index );
-			$body_id    = 'courseexp-section-body-' . $section_id;
-			$toggle_id  = 'courseexp-section-toggle-' . $section_id;
-			$title_id   = 'courseexp-section-title-' . $section_id;
+			$section       = (array) $section;
+			$section_id    = isset( $section['id'] ) ? (int) $section['id'] : (int) $section_index;
+			$is_visible    = ! isset( $section['visible'] ) || (bool) $section['visible'];
+			$is_restricted = ! courseexp_block_availability( $section )['available'];
+			$is_current    = ! empty( $section['current'] );
+			$is_first      = ( 0 === $section_index );
+			$body_id       = 'courseexp-section-body-' . $section_id;
+			$toggle_id     = 'courseexp-section-toggle-' . $section_id;
+			$title_id      = 'courseexp-section-title-' . $section_id;
 
 			if ( isset( $section['name'] ) && '' !== trim( (string) $section['name'] ) ) {
 				$section_name = $section['name'];
@@ -422,6 +441,9 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 			$section_classes = array( 'courseexp-section-block' );
 			if ( ! $is_visible ) {
 				$section_classes[] = 'courseexp-section-block--stub';
+			}
+			if ( $is_restricted ) {
+				$section_classes[] = 'is-locked';
 			}
 			if ( $is_current ) {
 				$section_classes[] = 'is-current';
@@ -439,18 +461,29 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 				<section class="<?php echo esc_attr( $section_class ); ?>" id="section-<?php echo esc_attr( $section_id ); ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
 					<div class="courseexp-section-block__header">
 						<h2 class="courseexp-section-block__title">
-							<a class="courseexp-section-block__title-link" href="<?php echo esc_url( $section_url ); ?>"><?php echo esc_html( $section_name ); ?></a>
+							<?php if ( $is_restricted ) : ?>
+								<?php echo esc_html( $section_name ); ?>
+								<?php courseexp_render_lock_icon( 'courseexp-section-block__lock' ); ?>
+							<?php else : ?>
+								<a class="courseexp-section-block__title-link" href="<?php echo esc_url( $section_url ); ?>"><?php echo esc_html( $section_name ); ?></a>
+							<?php endif; ?>
 						</h2>
-						<a
-							class="courseexp-section-block__arrow"
-							href="<?php echo esc_url( $section_url ); ?>"
-							aria-label="<?php /* translators: %s: section name. */ printf( esc_attr__( 'Open %s', 'eb-course-exp' ), esc_attr( $section_name ) ); ?>"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-						</a>
+						<?php if ( ! $is_restricted ) : ?>
+							<a
+								class="courseexp-section-block__arrow"
+								href="<?php echo esc_url( $section_url ); ?>"
+								aria-label="<?php /* translators: %s: section name. */ printf( esc_attr__( 'Open %s', 'eb-course-exp' ), esc_attr( $section_name ) ); ?>"
+							>
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+							</a>
+						<?php endif; ?>
 					</div>
 
-					<?php if ( $is_first ) : ?>
+					<?php if ( $is_restricted ) : ?>
+						<div class="courseexp-section-block__body">
+							<?php courseexp_render_restricted_notice( courseexp_block_availability( $section )['info'] ); ?>
+						</div>
+					<?php elseif ( $is_first ) : ?>
 						<div class="courseexp-section-block__body">
 							<?php courseexp_render_section_body_inner( $section, $courseexp_ctx ); ?>
 						</div>
@@ -506,10 +539,13 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 							</span>
 						</button>
 						<h2 class="courseexp-section-block__title" id="<?php echo esc_attr( $title_id ); ?>">
-							<?php if ( $section_url ) : ?>
+							<?php if ( $section_url && ! $is_restricted ) : ?>
 								<a class="courseexp-section-block__title-link" href="<?php echo esc_url( $section_url ); ?>"><?php echo esc_html( $section_name ); ?></a>
 							<?php else : ?>
 								<?php echo esc_html( $section_name ); ?>
+							<?php endif; ?>
+							<?php if ( $is_restricted ) : ?>
+								<?php courseexp_render_lock_icon( 'courseexp-section-block__lock' ); ?>
 							<?php endif; ?>
 						</h2>
 

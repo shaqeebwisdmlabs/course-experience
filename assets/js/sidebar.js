@@ -267,6 +267,9 @@
 		function areAllExpanded() {
 			let allExpanded = true;
 			sections.forEach(function (section) {
+				if (section.classList.contains('is-locked')) {
+					return;
+				}
 				if (!section.classList.contains('is-expanded')) {
 					allExpanded = false;
 				}
@@ -295,9 +298,15 @@
 
 		function setAll(expanded) {
 			sections.forEach(function (section) {
+				if (section.classList.contains('is-locked')) {
+					return;
+				}
 				setSectionExpanded(section, expanded, true);
 			});
 			subnavs.forEach(function (subnav) {
+				if (subnav.classList.contains('is-locked')) {
+					return;
+				}
 				setSubnavExpanded(subnav, expanded, subnavState, true);
 			});
 			saveAccordionState(accordionState);
@@ -310,6 +319,10 @@
 		}
 
 		sections.forEach(function (section) {
+			if (section.classList.contains('is-locked')) {
+				return;
+			}
+
 			const toggle = section.querySelector('.courseexp-section__toggle');
 			if (toggle) {
 				toggle.addEventListener('click', function () {
@@ -327,6 +340,10 @@
 		});
 
 		subnavs.forEach(function (subnav) {
+			if (subnav.classList.contains('is-locked')) {
+				return;
+			}
+
 			const toggle = subnav.querySelector('.courseexp-subnav__toggle');
 			if (toggle) {
 				toggle.addEventListener('click', function () {

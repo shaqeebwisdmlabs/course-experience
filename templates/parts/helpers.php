@@ -134,6 +134,72 @@ if ( ! function_exists( 'courseexp_activities_contain_cmid' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_block_availability' ) ) {
+	/**
+	 * Read an item's access-restriction state, matching the activity model.
+	 *
+	 * Sections, subsections and activities all carry the same `available` flag and
+	 * `availabilityinfo` reason; this reads them in one place so restrictions are
+	 * detected by the flag rather than inferred from an empty content list.
+	 *
+	 * @since 1.2.8
+	 * @param array $block Section, subsection or activity payload.
+	 * @return array{available:bool,info:string}
+	 */
+	function courseexp_block_availability( array $block ): array {
+		return array(
+			'available' => ! isset( $block['available'] ) || (bool) $block['available'],
+			'info'      => isset( $block['availabilityinfo'] ) ? trim( (string) $block['availabilityinfo'] ) : '',
+		);
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_lock_icon' ) ) {
+	/**
+	 * Render the restriction lock icon shown beside a restricted title.
+	 *
+	 * @since 1.2.8
+	 * @param string $icon_class Element class for the wrapping span.
+	 * @param int    $size       Icon width/height in pixels.
+	 * @return void
+	 */
+	function courseexp_render_lock_icon( string $icon_class, int $size = 18 ): void {
+		?>
+		<span class="<?php echo esc_attr( $icon_class ); ?>" title="<?php esc_attr_e( 'Locked', 'eb-course-exp' ); ?>">
+			<svg xmlns="http://www.w3.org/2000/svg" width="<?php echo esc_attr( $size ); ?>" height="<?php echo esc_attr( $size ); ?>" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+		</span>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_restricted_notice' ) ) {
+	/**
+	 * Render a restriction reason in place of restricted section/subsection content.
+	 *
+	 * @since 1.2.8
+	 * @param string $info The Moodle availabilityinfo reason (may be empty).
+	 * @return void
+	 */
+	function courseexp_render_restricted_notice( string $info ): void {
+		?>
+		<div class="courseexp-restricted-note">
+			<span class="courseexp-restricted-note__icon" aria-hidden="true">
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+			</span>
+			<span class="courseexp-restricted-note__text">
+				<?php
+				if ( '' !== trim( $info ) ) {
+					echo wp_kses_post( $info );
+				} else {
+					esc_html_e( 'Not available', 'eb-course-exp' );
+				}
+				?>
+			</span>
+		</div>
+		<?php
+	}
+}
+
 if ( ! function_exists( 'courseexp_activity_dates' ) ) {
 	/**
 	 * Extract an activity's display dates from the API `dates` array.

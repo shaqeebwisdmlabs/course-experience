@@ -115,8 +115,9 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 	 * @return void
 	 */
 	function courseexp_render_sidebar_subsection( array $activity, array $ctx ): void {
-		$children = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
-		if ( empty( $children ) ) {
+		$children   = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
+		$sub_locked = ! courseexp_block_availability( $activity )['available'];
+		if ( empty( $children ) && ! $sub_locked ) {
 			return;
 		}
 
@@ -126,12 +127,12 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 		$sub_id      = isset( $activity['cmid'] ) ? intval( $activity['cmid'] ) : 0;
 		$sub_name    = isset( $activity['name'] ) ? $activity['name'] : '';
 		$sub_unique  = 'courseexp-subnav-' . $sub_id;
-		$is_expanded = $active_cmid > 0 && courseexp_activities_contain_cmid( $children, $active_cmid );
+		$is_expanded = ! $sub_locked && ( $active_cmid > 0 && courseexp_activities_contain_cmid( $children, $active_cmid ) );
 		$sub_anchor  = ( '' !== $course_slug && '' !== (string) $section_id )
 			? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) . '#courseexp-subsection-' . $sub_id
 			: '';
 		?>
-		<li class="courseexp-subnav<?php echo $is_expanded ? ' is-expanded' : ''; ?>" data-subsection-id="<?php echo esc_attr( $sub_id ); ?>">
+		<li class="courseexp-subnav<?php echo $is_expanded ? ' is-expanded' : ''; ?><?php echo $sub_locked ? ' is-locked' : ''; ?>" data-subsection-id="<?php echo esc_attr( $sub_id ); ?>">
 			<div class="courseexp-subnav__header">
 				<button
 					type="button"
@@ -151,6 +152,9 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 					</a>
 				<?php else : ?>
 					<span class="courseexp-subnav__title" id="<?php echo esc_attr( $sub_unique . '-title' ); ?>" title="<?php echo esc_attr( $sub_name ); ?>"><?php echo esc_html( $sub_name ); ?></span>
+				<?php endif; ?>
+				<?php if ( $sub_locked ) : ?>
+					<?php courseexp_render_lock_icon( 'courseexp-subnav__lock', 14 ); ?>
 				<?php endif; ?>
 			</div>
 			<div
@@ -257,7 +261,8 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 					$is_first_section  = 0 === $section_index;
 					$section_url       = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_slug . '/' . $section_id . '/' ) : '';
 					$section_is_active = $active_cmid > 0 && courseexp_activities_contain_cmid( $activities, $active_cmid );
-					$is_expanded       = $is_first_section || $section_is_active;
+					$section_locked    = ! courseexp_block_availability( (array) $section )['available'];
+					$is_expanded       = ! $section_locked && ( $is_first_section || $section_is_active );
 
 					if ( isset( $section['name'] ) ) {
 						$section_name = $section['name'];
@@ -266,7 +271,7 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 						$section_name = sprintf( __( 'Section %d', 'eb-course-exp' ), $section_index + 1 );
 					}
 					?>
-					<div class="courseexp-section<?php echo $is_expanded ? ' is-expanded' : ''; ?><?php echo $section_is_active ? ' is-active' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
+					<div class="courseexp-section<?php echo $is_expanded ? ' is-expanded' : ''; ?><?php echo $section_is_active ? ' is-active' : ''; ?><?php echo $section_locked ? ' is-locked' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
 						<div class="courseexp-section__header">
 							<button
 								type="button"
@@ -280,12 +285,15 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
 								</span>
 							</button>
-							<?php if ( $section_url ) : ?>
+							<?php if ( $section_url && ! $section_locked ) : ?>
 								<a class="courseexp-section__title-link" id="<?php echo esc_attr( $section_unique . '-title' ); ?>" href="<?php echo esc_url( $section_url ); ?>">
 									<span class="courseexp-section__title" title="<?php echo esc_attr( $section_name ); ?>"><?php echo esc_html( $section_name ); ?></span>
 								</a>
 							<?php else : ?>
 								<span class="courseexp-section__title" id="<?php echo esc_attr( $section_unique . '-title' ); ?>" title="<?php echo esc_attr( $section_name ); ?>"><?php echo esc_html( $section_name ); ?></span>
+							<?php endif; ?>
+							<?php if ( $section_locked ) : ?>
+								<?php courseexp_render_lock_icon( 'courseexp-section__lock', 14 ); ?>
 							<?php endif; ?>
 						</div>
 						<div

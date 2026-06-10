@@ -508,6 +508,37 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	display: none;
 }
 
+.courseexp-section__lock,
+.courseexp-subnav__lock {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+	color: var(--courseexp-text-subtle);
+}
+
+.courseexp-section.is-locked .courseexp-section__title,
+.courseexp-subnav.is-locked .courseexp-subnav__title-link,
+.courseexp-subnav.is-locked .courseexp-subnav__title {
+	flex: 0 1 auto;
+}
+
+.courseexp-section.is-locked .courseexp-section__toggle,
+.courseexp-subnav.is-locked .courseexp-subnav__toggle {
+	cursor: default;
+	color: var(--courseexp-text-subtle);
+}
+
+.courseexp-section.is-locked .courseexp-section__toggle:hover,
+.courseexp-subnav.is-locked .courseexp-subnav__toggle:hover {
+	background: none;
+	color: var(--courseexp-text-subtle);
+}
+
+.courseexp-section.is-locked .courseexp-section__title,
+.courseexp-subnav.is-locked .courseexp-subnav__title {
+	color: var(--courseexp-text-muted);
+}
+
 .courseexp-activities--sub {
 	padding: 0 0 var(--courseexp-space-sm);
 }

@@ -32,7 +32,8 @@ $course_url   = $course_slug ? home_url( '/' . COURSEEXP_SLUG . '/' . $course_sl
 
 $sections_data = is_object( $course_data ) ? json_decode( wp_json_encode( $course_data ), true ) : $course_data;
 
-$section_name = '';
+$section_name       = '';
+$section_restricted = false;
 if ( is_array( $sections_data ) && isset( $sections_data['sections'] ) ) {
 	foreach ( $sections_data['sections'] as $index => $section ) {
 		$section = (array) $section;
@@ -45,6 +46,7 @@ if ( is_array( $sections_data ) && isset( $sections_data['sections'] ) ) {
 				/* translators: %d: section number (1-based) used when a section has no name. */
 				$section_name = sprintf( __( 'Section %d', 'eb-course-exp' ), (int) $index + 1 );
 			}
+			$section_restricted = ! courseexp_block_availability( $section )['available'];
 			break;
 		}
 	}
@@ -75,7 +77,12 @@ load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 		</nav>
 
 		<?php if ( $section_name ) : ?>
-			<h1 class="courseexp-section-page__title"><?php echo esc_html( $section_name ); ?></h1>
+			<h1 class="courseexp-section-page__title">
+				<?php echo esc_html( $section_name ); ?>
+				<?php if ( $section_restricted ) : ?>
+					<?php courseexp_render_lock_icon( 'courseexp-section-page__lock' ); ?>
+				<?php endif; ?>
+			</h1>
 		<?php endif; ?>
 
 		<div class="courseexp-main__content">
