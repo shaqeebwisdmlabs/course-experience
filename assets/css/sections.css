@@ -193,7 +193,8 @@
 }
 
 .courseexp-section-block__summary {
-	margin-bottom: var(--courseexp-space-md);
+	margin-top: var(--courseexp-space-lg);
+	margin-bottom: var(--courseexp-space-lg);
 	color: var(--courseexp-text);
 	line-height: 1.6;
 	overflow-wrap: break-word;
@@ -392,6 +393,26 @@
 	cursor: not-allowed;
 }
 
+.courseexp-activity-row__badge {
+	flex-shrink: 0;
+	align-self: center;
+	padding: 0.1em 0.45em;
+	border-radius: var(--courseexp-radius);
+	background: var(--courseexp-lock-bg);
+	color: var(--courseexp-text-muted);
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.courseexp-activity-row__badge.badge-none {
+	padding-inline: 0;
+	background: none;
+}
+
 .courseexp-activity-row__description {
 	padding-left: calc(24px + var(--courseexp-space-sm));
 	color: var(--courseexp-text);
@@ -404,6 +425,17 @@
 .courseexp-activity-row__description img {
 	max-width: 100%;
 	height: auto;
+}
+
+.courseexp-activity-row__afterlink {
+	padding-left: calc(24px + var(--courseexp-space-sm));
+	color: var(--courseexp-text-muted);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+}
+
+.courseexp-activity-row__afterlink .resourcelinkdetails {
+	color: var(--courseexp-text-muted);
 }
 
 .courseexp-activity-row__lock {

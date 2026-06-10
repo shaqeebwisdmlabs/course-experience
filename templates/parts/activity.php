@@ -38,33 +38,6 @@ if ( ! function_exists( 'courseexp_render_trusted_html' ) ) {
 	}
 }
 
-if ( ! function_exists( 'courseexp_file_meta_parts' ) ) {
-	/**
-	 * Build the file metadata parts honouring the resource moduledata toggles.
-	 *
-	 * @param array $file      File block (filesize, mimetype, timemodified).
-	 * @param bool  $show_size Whether to include the file size.
-	 * @param bool  $show_type Whether to include the MIME type.
-	 * @param bool  $show_date Whether to include the modified date.
-	 * @return string[] Display-ready metadata strings.
-	 */
-	function courseexp_file_meta_parts( array $file, bool $show_size, bool $show_type, bool $show_date ): array {
-		$parts = array();
-
-		if ( $show_size && ! empty( $file['filesize'] ) ) {
-			$parts[] = size_format( (int) $file['filesize'] );
-		}
-		if ( $show_type && ! empty( $file['mimetype'] ) ) {
-			$parts[] = (string) $file['mimetype'];
-		}
-		if ( $show_date && ! empty( $file['timemodified'] ) ) {
-			$parts[] = date_i18n( (string) get_option( 'date_format' ), (int) $file['timemodified'] );
-		}
-
-		return $parts;
-	}
-}
-
 if ( ! function_exists( 'courseexp_file_url' ) ) {
 	/**
 	 * Resolve a file URL for the browser: append the EB token for Moodle-hosted
@@ -210,10 +183,10 @@ $moduledata = courseexp_activity_moduledata( $activity );
 
 $embeds_own_intro = ( 'iframe' === $rendermode && 'url' !== $modname );
 $show_intro       = $has_desc && ! $embeds_own_intro && ( ! isset( $moduledata['printintro'] ) || ! empty( $moduledata['printintro'] ) );
-$show_file_size   = ! empty( $moduledata['showsize'] );
-$show_file_type   = ! empty( $moduledata['showtype'] );
-$show_file_date   = ! empty( $moduledata['showdate'] );
+$show_dates       = ! empty( courseexp_activity_dates( $activity ) );
 $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbering'] : 1;
+
+$afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterlink'] ) : '';
 ?>
 
 <div class="courseexp-activity-content" data-activity-id="<?php echo esc_attr( $cmid ); ?>" data-rendermode="<?php echo esc_attr( $rendermode ); ?>">
@@ -234,6 +207,14 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 		<div class="courseexp-activity-content__description">
 			<?php courseexp_render_trusted_html( $description ); ?>
 		</div>
+	<?php endif; ?>
+
+		<?php if ( '' !== $afterlink ) : ?>
+		<div class="courseexp-activity-afterlink"><?php courseexp_render_trusted_html( $afterlink ); ?></div>
+	<?php endif; ?>
+
+		<?php if ( $show_dates ) : ?>
+			<?php courseexp_render_activity_dates( $activity ); ?>
 	<?php endif; ?>
 
 		<?php
@@ -279,49 +260,62 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 					$content_type = isset( $body['type'] ) ? (string) $body['type'] : '';
 
 					if ( 'book' === $content_type && ! empty( $body['chapters'] ) ) {
-						$chapters       = (array) $body['chapters'];
-						$book_toc_class = 'courseexp-activity-book__toc';
-						if ( 0 === $book_numbering ) {
-							$book_toc_class .= ' courseexp-activity-book__toc--none';
-						} elseif ( 2 === $book_numbering ) {
-							$book_toc_class .= ' courseexp-activity-book__toc--bullets';
-						} elseif ( 3 === $book_numbering ) {
-							$book_toc_class .= ' courseexp-activity-book__toc--indented';
-						}
+						$chapters   = (array) $body['chapters'];
+						$book_modes = array(
+							0 => 'none',
+							1 => 'numbers',
+							2 => 'bullets',
+							3 => 'indented',
+						);
+						$book_mode  = isset( $book_modes[ $book_numbering ] ) ? $book_modes[ $book_numbering ] : 'numbers';
+						$toc_class  = 'courseexp-activity-book__toc courseexp-activity-book__toc--' . $book_mode;
+						$chap_nums  = ( 'numbers' === $book_mode ) ? courseexp_book_chapter_numbers( $chapters ) : array();
 						?>
 				<div class="courseexp-activity-book">
 					<nav class="courseexp-activity-book__nav" aria-label="<?php esc_attr_e( 'Chapters', 'eb-course-exp' ); ?>">
-						<ol class="<?php echo esc_attr( $book_toc_class ); ?>">
-							<?php foreach ( $chapters as $chapter ) : ?>
+						<ul class="<?php echo esc_attr( $toc_class ); ?>">
+							<?php foreach ( $chapters as $index => $chapter ) : ?>
 								<?php
 								$chapter = (array) $chapter;
 								if ( ! empty( $chapter['hidden'] ) ) {
 									continue;
 								}
-								$chap_id    = isset( $chapter['id'] ) ? (int) $chapter['id'] : 0;
-								$chap_title = isset( $chapter['title'] ) ? (string) $chapter['title'] : '';
-								$is_sub     = ! empty( $chapter['subchapter'] );
+								$chap_id     = isset( $chapter['id'] ) ? (int) $chapter['id'] : 0;
+								$chap_title  = isset( $chapter['title'] ) ? (string) $chapter['title'] : '';
+								$is_sub      = ! empty( $chapter['subchapter'] );
+								$chap_number = isset( $chap_nums[ $index ] ) ? $chap_nums[ $index ] : '';
 								?>
 								<li class="courseexp-activity-book__toc-item<?php echo $is_sub ? ' is-sub' : ''; ?>">
-									<a class="courseexp-activity-book__toc-link" href="#courseexp-chapter-<?php echo esc_attr( $chap_id ); ?>"><?php echo esc_html( $chap_title ); ?></a>
+									<a class="courseexp-activity-book__toc-link" href="#courseexp-chapter-<?php echo esc_attr( $chap_id ); ?>">
+										<?php if ( '' !== $chap_number ) : ?>
+											<span class="courseexp-activity-book__toc-number"><?php echo esc_html( $chap_number ); ?></span>
+										<?php endif; ?>
+										<span class="courseexp-activity-book__toc-text"><?php echo esc_html( $chap_title ); ?></span>
+									</a>
 								</li>
 							<?php endforeach; ?>
-						</ol>
+						</ul>
 					</nav>
 					<div class="courseexp-activity-book__content">
-								<?php foreach ( $chapters as $chapter ) : ?>
+								<?php foreach ( $chapters as $index => $chapter ) : ?>
 									<?php
 									$chapter = (array) $chapter;
 									if ( ! empty( $chapter['hidden'] ) ) {
 										continue;
 									}
-									$chap_id    = isset( $chapter['id'] ) ? (int) $chapter['id'] : 0;
-									$chap_title = isset( $chapter['title'] ) ? (string) $chapter['title'] : '';
-									$chap_html  = isset( $chapter['content'] ) ? (string) $chapter['content'] : '';
+									$chap_id     = isset( $chapter['id'] ) ? (int) $chapter['id'] : 0;
+									$chap_title  = isset( $chapter['title'] ) ? (string) $chapter['title'] : '';
+									$chap_html   = isset( $chapter['content'] ) ? (string) $chapter['content'] : '';
+									$chap_number = isset( $chap_nums[ $index ] ) ? $chap_nums[ $index ] : '';
 									?>
 							<section class="courseexp-activity-book__chapter" id="courseexp-chapter-<?php echo esc_attr( $chap_id ); ?>">
 									<?php if ( '' !== trim( $chap_title ) ) : ?>
-									<h2 class="courseexp-activity-book__chapter-title"><?php echo esc_html( $chap_title ); ?></h2>
+									<h2 class="courseexp-activity-book__chapter-title">
+										<?php if ( '' !== $chap_number ) : ?>
+											<span class="courseexp-activity-book__chapter-number"><?php echo esc_html( $chap_number ); ?></span>
+										<?php endif; ?>
+										<?php echo esc_html( $chap_title ); ?>
+									</h2>
 								<?php endif; ?>
 								<div class="courseexp-activity-book__chapter-body">
 									<?php courseexp_render_trusted_html( $chap_html ); ?>
@@ -346,12 +340,8 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 						if ( $is_pdf ) {
 							$file_url = courseexp_file_url( $first, $api_client );
 							$filename = isset( $first['filename'] ) ? (string) $first['filename'] : '';
-							$meta     = courseexp_file_meta_parts( $first, $show_file_size, $show_file_type, $show_file_date );
 							?>
 					<div class="courseexp-activity-file">
-							<?php if ( ! empty( $meta ) ) : ?>
-							<p class="courseexp-activity-file__meta"><?php echo esc_html( implode( ' · ', $meta ) ); ?></p>
-						<?php endif; ?>
 						<iframe class="courseexp-activity-file__viewer" src="<?php echo esc_url( $file_url ); ?>" title="<?php echo esc_attr( $filename ? $filename : $activity_name ); ?>"></iframe>
 					</div>
 							<?php
@@ -364,7 +354,6 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 							$file     = (array) $file;
 							$file_url = courseexp_file_url( $file, $api_client );
 							$filename = isset( $file['filename'] ) ? (string) $file['filename'] : '';
-							$meta     = courseexp_file_meta_parts( $file, $show_file_size, $show_file_type, $show_file_date );
 							?>
 						<li class="courseexp-activity-files__item">
 							<a class="courseexp-activity-files__link" href="<?php echo esc_url( $file_url ); ?>" target="_blank" rel="noopener noreferrer">
@@ -372,9 +361,6 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
 								</span>
 								<span class="courseexp-activity-files__name"><?php echo esc_html( $filename ); ?></span>
-								<?php if ( ! empty( $meta ) ) : ?>
-									<span class="courseexp-activity-files__meta"><?php echo esc_html( implode( ' · ', $meta ) ); ?></span>
-								<?php endif; ?>
 							</a>
 						</li>
 					<?php endforeach; ?>
@@ -388,6 +374,12 @@ $book_numbering   = isset( $moduledata['numbering'] ) ? (int) $moduledata['numbe
 				<div class="courseexp-activity-html">
 						<?php courseexp_render_trusted_html( (string) $body['html'] ); ?>
 				</div>
+						<?php if ( 'page' === $modname && ! empty( $moduledata['lastmodifiedformatted'] ) ) : ?>
+				<p class="courseexp-activity-last-modified">
+					<span class="courseexp-activity-last-modified__label"><?php esc_html_e( 'Last modified:', 'eb-course-exp' ); ?></span>
+					<span class="courseexp-activity-last-modified__value"><?php echo esc_html( (string) $moduledata['lastmodifiedformatted'] ); ?></span>
+				</p>
+						<?php endif; ?>
 						<?php
 						break;
 					}

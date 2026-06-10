@@ -142,6 +142,11 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 		$description    = isset( $activity['description'] ) ? $activity['description'] : '';
 		$completion     = isset( $activity['completion'] ) ? (array) $activity['completion'] : array();
 		$external       = isset( $activity['externalurl'] ) ? (string) $activity['externalurl'] : '';
+		$afterlink      = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterlink'] ) : '';
+
+		$badge         = isset( $activity['activitybadge'] ) ? (array) $activity['activitybadge'] : array();
+		$badge_content = isset( $badge['content'] ) ? (string) $badge['content'] : '';
+		$badge_style   = isset( $badge['style'] ) ? sanitize_html_class( (string) $badge['style'] ) : '';
 
 		$is_external  = courseexp_activity_opens_externally( $activity );
 		$activity_url = $is_external ? $external : ( ! empty( $ctx['activity_base_url'] ) ? $ctx['activity_base_url'] . $cmid . '/' : '' );
@@ -177,6 +182,10 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 								<?php echo esc_html( $name ); ?>
 							</span>
 						<?php endif; ?>
+
+						<?php if ( '' !== trim( $badge_content ) ) : ?>
+							<span class="courseexp-activity-row__badge<?php echo $badge_style ? ' ' . esc_attr( $badge_style ) : ''; ?>"><?php echo esc_html( $badge_content ); ?></span>
+						<?php endif; ?>
 					</div>
 
 					<?php if ( $available ) : ?>
@@ -190,6 +199,10 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 					<div class="courseexp-activity-row__description">
 						<?php courseexp_render_trusted_html( $description ); ?>
 					</div>
+				<?php endif; ?>
+
+				<?php if ( '' !== $afterlink ) : ?>
+					<div class="courseexp-activity-row__afterlink"><?php courseexp_render_trusted_html( $afterlink ); ?></div>
 				<?php endif; ?>
 
 				<?php if ( ! $available ) : ?>
@@ -424,6 +437,12 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 							<?php courseexp_render_section_body_inner( $section, $courseexp_ctx ); ?>
 						</div>
 					<?php else : ?>
+						<?php $section_summary = isset( $section['summary'] ) ? (string) $section['summary'] : ''; ?>
+						<?php if ( '' !== trim( $section_summary ) ) : ?>
+							<div class="courseexp-section-block__summary">
+								<?php courseexp_render_trusted_html( $section_summary ); ?>
+							</div>
+						<?php endif; ?>
 						<?php $metrics = courseexp_section_metrics( $section ); ?>
 						<div class="courseexp-section-block__footer">
 							<span class="courseexp-section-block__metric">

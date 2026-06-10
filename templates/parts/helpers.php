@@ -89,6 +89,115 @@ if ( ! function_exists( 'courseexp_activity_is_unavailable' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_activity_dates' ) ) {
+	/**
+	 * Extract an activity's display dates from the API `dates` array.
+	 *
+	 * Moodle delivers each entry with an already-localised `label` (e.g. "Opened:",
+	 * "Closes:", "Due:"), a Unix `timestamp`, and a `formatted` string rendered in
+	 * the user's Moodle timezone. Entries without a positive timestamp are dropped
+	 * so only set dates surface.
+	 *
+	 * @since 1.2.9
+	 * @param array $activity Activity payload.
+	 * @return array[] List of { label, timestamp, formatted } entries with a usable timestamp.
+	 */
+	function courseexp_activity_dates( array $activity ): array {
+		$dates = isset( $activity['dates'] ) ? $activity['dates'] : array();
+		if ( is_string( $dates ) ) {
+			$dates = json_decode( $dates, true );
+		}
+		if ( ! is_array( $dates ) ) {
+			return array();
+		}
+
+		$out = array();
+		foreach ( $dates as $date ) {
+			$date      = (array) $date;
+			$timestamp = isset( $date['timestamp'] ) ? (int) $date['timestamp'] : 0;
+			if ( $timestamp <= 0 ) {
+				continue;
+			}
+			$out[] = array(
+				'label'     => isset( $date['label'] ) ? (string) $date['label'] : '',
+				'timestamp' => $timestamp,
+				'formatted' => isset( $date['formatted'] ) ? (string) $date['formatted'] : '',
+			);
+		}
+
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_activity_dates' ) ) {
+	/**
+	 * Render an activity's dates block (label + formatted date), e.g. for
+	 * assignment and choice activities whose description lives inside the iframe.
+	 *
+	 * @since 1.2.9
+	 * @param array $activity Activity payload.
+	 * @return void
+	 */
+	function courseexp_render_activity_dates( array $activity ): void {
+		$dates = courseexp_activity_dates( $activity );
+		if ( empty( $dates ) ) {
+			return;
+		}
+
+		/* translators: date/time format used when the API does not supply a pre-formatted date, e.g. "Wednesday, 10 June 2026, 8:13 AM". */
+		$format = _x( 'l, j F Y, g:i A', 'activity date format', 'eb-course-exp' );
+		?>
+		<div class="courseexp-activity-dates">
+			<?php foreach ( $dates as $date ) : ?>
+				<?php $value = '' !== trim( $date['formatted'] ) ? $date['formatted'] : wp_date( $format, $date['timestamp'] ); ?>
+				<div class="courseexp-activity-dates__item">
+					<?php if ( '' !== trim( $date['label'] ) ) : ?>
+						<span class="courseexp-activity-dates__label"><?php echo esc_html( $date['label'] ); ?></span>
+					<?php endif; ?>
+					<span class="courseexp-activity-dates__value"><?php echo esc_html( $value ); ?></span>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'courseexp_book_chapter_numbers' ) ) {
+	/**
+	 * Compute hierarchical chapter numbers ("1", "1.1", "2") for a book TOC.
+	 *
+	 * Mirrors Moodle's two-level book numbering: top-level chapters take a running
+	 * integer, subchapters take "<chapter>.<sub>". Hidden chapters are skipped and
+	 * do not consume a number, matching what the learner sees.
+	 *
+	 * @since 1.2.9
+	 * @param array $chapters Ordered chapter blocks.
+	 * @return array<int,string> Map of chapter index to its number string.
+	 */
+	function courseexp_book_chapter_numbers( array $chapters ): array {
+		$numbers = array();
+		$top     = 0;
+		$sub     = 0;
+
+		foreach ( $chapters as $index => $chapter ) {
+			$chapter = (array) $chapter;
+			if ( ! empty( $chapter['hidden'] ) ) {
+				continue;
+			}
+			if ( ! empty( $chapter['subchapter'] ) ) {
+				++$sub;
+				$numbers[ $index ] = $top . '.' . $sub;
+			} else {
+				++$top;
+				$sub               = 0;
+				$numbers[ $index ] = (string) $top;
+			}
+		}
+
+		return $numbers;
+	}
+}
+
 if ( ! function_exists( 'courseexp_activity_opens_externally' ) ) {
 	/**
 	 * Whether a course-listing link should open the resource in a new tab instead
