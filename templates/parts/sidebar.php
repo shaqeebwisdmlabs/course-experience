@@ -170,6 +170,9 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 						if ( is_object( $child ) ) {
 							$child = json_decode( wp_json_encode( $child ), true );
 						}
+						if ( ! courseexp_activity_on_course_page( (array) $child ) ) {
+							continue;
+						}
 						courseexp_render_sidebar_activity( (array) $child, $ctx );
 					}
 					?>
@@ -315,6 +318,9 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 									foreach ( $activities as $activity ) {
 										if ( is_object( $activity ) ) {
 											$activity = json_decode( wp_json_encode( $activity ), true );
+										}
+										if ( ! courseexp_activity_on_course_page( (array) $activity ) ) {
+											continue;
 										}
 										if ( courseexp_activity_is_subsection( (array) $activity ) ) {
 											courseexp_render_sidebar_subsection( (array) $activity, $sidebar_ctx );

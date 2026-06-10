@@ -573,6 +573,10 @@ body.courseexp-page .courseexp-subsection__title {
 	margin-top: 4px;
 }
 
+.courseexp-restricted-note__text {
+	min-width: 0;
+}
+
 .courseexp-completion {
 	display: inline-flex;
 	align-items: center;

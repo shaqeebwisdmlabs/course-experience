@@ -99,6 +99,79 @@ if ( ! function_exists( 'courseexp_render_embed' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_render_file_viewer' ) ) {
+	/**
+	 * Render a file inline in the embedded viewer iframe (PDF, image, etc.).
+	 *
+	 * @param string $src   File URL.
+	 * @param string $title Accessible iframe title.
+	 * @return void
+	 */
+	function courseexp_render_file_viewer( string $src, string $title ): void {
+		if ( '' === $src ) {
+			?>
+			<div class="courseexp-sections__empty"><p><?php esc_html_e( 'This activity could not be loaded.', 'eb-course-exp' ); ?></p></div>
+			<?php
+			return;
+		}
+		?>
+		<div class="courseexp-activity-file">
+			<iframe class="courseexp-activity-file__viewer" src="<?php echo esc_url( $src ); ?>" title="<?php echo esc_attr( $title ); ?>"></iframe>
+		</div>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_download' ) ) {
+	/**
+	 * Render a prompt to download a file resource (Moodle "force download"), using
+	 * the file name as the link text.
+	 *
+	 * Adds Moodle's forcedownload flag so the file is served as an attachment.
+	 *
+	 * @param string $url      File URL.
+	 * @param string $filename File name used as the link text and download attribute.
+	 * @return void
+	 */
+	function courseexp_render_download( string $url, string $filename = '' ): void {
+		if ( '' === $url ) {
+			?>
+			<div class="courseexp-sections__empty"><p><?php esc_html_e( 'This activity could not be loaded.', 'eb-course-exp' ); ?></p></div>
+			<?php
+			return;
+		}
+
+		$link = sprintf(
+			'<a class="courseexp-activity-launch__link" href="%s" download="%s" target="_blank" rel="noopener noreferrer">%s</a>',
+			esc_url( add_query_arg( 'forcedownload', 1, $url ) ),
+			esc_attr( $filename ),
+			esc_html( '' !== trim( $filename ) ? $filename : __( 'the file', 'eb-course-exp' ) )
+		);
+		?>
+		<p class="courseexp-activity-launch">
+			<?php
+			echo wp_kses(
+				sprintf(
+					/* translators: %s: linked file name. */
+					__( 'Click %s link to download the file.', 'eb-course-exp' ),
+					$link
+				),
+				array(
+					'a' => array(
+						'href'     => array(),
+						'download' => array(),
+						'target'   => array(),
+						'rel'      => array(),
+						'class'    => array(),
+					),
+				)
+			);
+			?>
+		</p>
+		<?php
+	}
+}
+
 if ( ! function_exists( 'courseexp_render_launch' ) ) {
 	/**
 	 * Render the prompt for an activity that opens off-page: a plain sentence with
@@ -139,6 +212,61 @@ if ( ! function_exists( 'courseexp_render_launch' ) ) {
 				sprintf(
 					/* translators: %s: linked activity name. */
 					__( 'Click on %s to open the resource.', 'eb-course-exp' ),
+					$link
+				),
+				array(
+					'a' => array(
+						'href'                        => array(),
+						'target'                      => array(),
+						'rel'                         => array(),
+						'class'                       => array(),
+						'data-courseexp-popup-width'  => array(),
+						'data-courseexp-popup-height' => array(),
+					),
+				)
+			);
+			?>
+		</p>
+		<?php
+	}
+}
+
+if ( ! function_exists( 'courseexp_render_file_launch' ) ) {
+	/**
+	 * Render the prompt for a file resource that opens off-page, using the file
+	 * name as the link text (mirrors Moodle's "Click NAME link to view the file").
+	 *
+	 * @param string $url          File URL.
+	 * @param string $filename     File name used as the link text.
+	 * @param int    $popup_width  Popup window width in pixels, or 0 for a new tab.
+	 * @param int    $popup_height Popup window height in pixels, or 0 for a new tab.
+	 * @return void
+	 */
+	function courseexp_render_file_launch( string $url, string $filename, int $popup_width = 0, int $popup_height = 0 ): void {
+		if ( '' === $url ) {
+			?>
+			<div class="courseexp-sections__empty"><p><?php esc_html_e( 'This activity could not be loaded.', 'eb-course-exp' ); ?></p></div>
+			<?php
+			return;
+		}
+
+		$popup_attrs = ( $popup_width > 0 && $popup_height > 0 )
+			? sprintf( ' data-courseexp-popup-width="%d" data-courseexp-popup-height="%d"', $popup_width, $popup_height )
+			: '';
+
+		$link = sprintf(
+			'<a class="courseexp-activity-launch__link" href="%s" target="_blank" rel="noopener noreferrer"%s>%s</a>',
+			esc_url( $url ),
+			$popup_attrs,
+			esc_html( '' !== trim( $filename ) ? $filename : __( 'the file', 'eb-course-exp' ) )
+		);
+		?>
+		<p class="courseexp-activity-launch">
+			<?php
+			echo wp_kses(
+				sprintf(
+					/* translators: %s: linked file name. */
+					__( 'Click %s link to view the file.', 'eb-course-exp' ),
 					$link
 				),
 				array(
@@ -220,7 +348,7 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 		<?php
 		if ( 'url' === $modname ) {
 			$url_target  = '' !== $external_url ? $external_url : ( isset( $activity['url'] ) ? (string) $activity['url'] : '' );
-			$url_display = courseexp_url_display( $moduledata );
+			$url_display = courseexp_display_mode( $moduledata );
 
 			if ( 1 === $url_display ) {
 				courseexp_render_embed( $url_target, $activity_name, $url_target );
@@ -230,6 +358,25 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 				courseexp_render_launch( $url_target, $activity_name, $popup_width, $popup_height );
 			} else {
 				courseexp_render_launch( $url_target, $activity_name );
+			}
+		} elseif ( 'resource' === $modname && '' !== $external_url ) {
+			$file_url     = ( new CourseExp_API_Client() )->append_file_token( $external_url );
+			$file_display = courseexp_display_mode( $moduledata );
+			$embeddable   = ! empty( $moduledata['embeddable'] );
+			$file_name    = isset( $moduledata['filename'] ) ? (string) $moduledata['filename'] : '';
+
+			if ( ! $embeddable || 4 === $file_display ) {
+				courseexp_render_download( $file_url, $file_name );
+			} elseif ( 1 === $file_display || 2 === $file_display ) {
+				courseexp_render_file_viewer( $file_url, $activity_name );
+			} else {
+				$popup_width  = 0;
+				$popup_height = 0;
+				if ( 6 === $file_display ) {
+					$popup_width  = isset( $moduledata['popupwidth'] ) ? (int) $moduledata['popupwidth'] : 620;
+					$popup_height = isset( $moduledata['popupheight'] ) ? (int) $moduledata['popupheight'] : 450;
+				}
+				courseexp_render_file_launch( $file_url, $file_name, $popup_width, $popup_height );
 			}
 		} else {
 			switch ( $rendermode ) {
@@ -340,11 +487,7 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 						if ( $is_pdf ) {
 							$file_url = courseexp_file_url( $first, $api_client );
 							$filename = isset( $first['filename'] ) ? (string) $first['filename'] : '';
-							?>
-					<div class="courseexp-activity-file">
-						<iframe class="courseexp-activity-file__viewer" src="<?php echo esc_url( $file_url ); ?>" title="<?php echo esc_attr( $filename ? $filename : $activity_name ); ?>"></iframe>
-					</div>
-							<?php
+							courseexp_render_file_viewer( $file_url, '' !== $filename ? $filename : $activity_name );
 							break;
 						}
 						?>

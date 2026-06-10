@@ -235,7 +235,10 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 		$open_list = false;
 
 		foreach ( $activities as $activity ) {
-			$activity      = (array) $activity;
+			$activity = (array) $activity;
+			if ( ! courseexp_activity_on_course_page( $activity ) ) {
+				continue;
+			}
 			$children      = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
 			$mode          = isset( $activity['rendermode'] ) ? $activity['rendermode'] : '';
 			$is_subsection = courseexp_activity_is_subsection( $activity );
@@ -286,7 +289,11 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 							<ul class="courseexp-activity-list">
 								<?php
 								foreach ( $children as $child ) {
-									courseexp_render_activity_row( (array) $child, $ctx );
+									$child = (array) $child;
+									if ( ! courseexp_activity_on_course_page( $child ) ) {
+										continue;
+									}
+									courseexp_render_activity_row( $child, $ctx );
 								}
 								?>
 							</ul>

@@ -47,19 +47,19 @@ if ( ! function_exists( 'courseexp_activity_moduledata' ) ) {
 	}
 }
 
-if ( ! function_exists( 'courseexp_url_display' ) ) {
+if ( ! function_exists( 'courseexp_display_mode' ) ) {
 	/**
-	 * Resolve a url activity's display mode from moduledata.
+	 * Resolve a url or resource activity's display mode from moduledata.
 	 *
 	 * Prefers the already-resolved value so an "automatic" setting is honoured
 	 * without re-deriving it. Matches Moodle's RESOURCELIB_DISPLAY_* constants
-	 * (1 embed, 5 open, 6 popup; 0 automatic).
+	 * (1 embed, 4 force download, 5 open, 6 popup; 0 automatic).
 	 *
 	 * @since 1.0.0
 	 * @param array $moduledata Decoded moduledata bag.
 	 * @return int Display constant.
 	 */
-	function courseexp_url_display( array $moduledata ): int {
+	function courseexp_display_mode( array $moduledata ): int {
 		if ( ! empty( $moduledata['displayresolved'] ) ) {
 			return (int) $moduledata['displayresolved'];
 		}
@@ -86,6 +86,28 @@ if ( ! function_exists( 'courseexp_activity_is_unavailable' ) ) {
 		$modname = isset( $activity['modname'] ) ? (string) $activity['modname'] : '';
 
 		return 'unavailable' === $modname;
+	}
+}
+
+if ( ! function_exists( 'courseexp_activity_on_course_page' ) ) {
+	/**
+	 * Whether an activity should appear on the course page / in the listing.
+	 *
+	 * Moodle sets uservisibleoncoursepage=false for modules the user must not see
+	 * there (hidden, deleted, fully-restricted-and-hidden, or stealth). Such items
+	 * are skipped entirely — unlike a "show greyed" restriction, which keeps
+	 * uservisibleoncoursepage=true and is rendered locked.
+	 *
+	 * @since 1.2.8
+	 * @param array $activity Activity payload.
+	 * @return bool
+	 */
+	function courseexp_activity_on_course_page( array $activity ): bool {
+		if ( isset( $activity['uservisibleoncoursepage'] ) ) {
+			return (bool) $activity['uservisibleoncoursepage'];
+		}
+
+		return true;
 	}
 }
 
@@ -316,6 +338,9 @@ if ( ! function_exists( 'courseexp_activity_opens_externally' ) ) {
 	 *
 	 * A url activity set to open in a popup (display 6) is excluded: its popup is
 	 * launched from the activity page, so the listing link must lead there first.
+	 * A resource is also excluded: its external URL is a token-protected Moodle
+	 * file URL, so it must route through the activity page where the token is
+	 * appended and the display mode is honoured.
 	 *
 	 * @since 1.0.0
 	 * @param array $activity Activity payload.
@@ -330,7 +355,11 @@ if ( ! function_exists( 'courseexp_activity_opens_externally' ) ) {
 			return false;
 		}
 
-		$is_popup_url = ( 'url' === $modname && 6 === courseexp_url_display( courseexp_activity_moduledata( $activity ) ) );
+		if ( 'resource' === $modname ) {
+			return false;
+		}
+
+		$is_popup_url = ( 'url' === $modname && 6 === courseexp_display_mode( courseexp_activity_moduledata( $activity ) ) );
 
 		return ! $is_popup_url;
 	}
