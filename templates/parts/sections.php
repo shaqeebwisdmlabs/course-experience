@@ -235,33 +235,51 @@ if ( ! function_exists( 'courseexp_render_section_items' ) ) {
 		$open_list = false;
 
 		foreach ( $activities as $activity ) {
-			$activity = (array) $activity;
-			$children = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
-			$mode     = isset( $activity['rendermode'] ) ? $activity['rendermode'] : '';
+			$activity      = (array) $activity;
+			$children      = isset( $activity['children'] ) && is_array( $activity['children'] ) ? $activity['children'] : array();
+			$mode          = isset( $activity['rendermode'] ) ? $activity['rendermode'] : '';
+			$is_subsection = courseexp_activity_is_subsection( $activity );
 
-			$is_inline = 'inline' === $mode && empty( $children ) && ! courseexp_activity_is_unavailable( $activity );
+			$is_inline = 'inline' === $mode && ! $is_subsection && ! courseexp_activity_is_unavailable( $activity );
 
-			if ( $is_inline || ! empty( $children ) ) {
+			if ( $is_inline || $is_subsection ) {
 				if ( $open_list ) {
 					echo '</ul>';
 					$open_list = false;
 				}
 			}
 
-			if ( ! empty( $children ) ) {
-				$sub_name = isset( $activity['name'] ) ? $activity['name'] : '';
+			if ( $is_subsection ) {
+				$sub_name    = isset( $activity['name'] ) ? $activity['name'] : '';
+				$sub_id      = isset( $activity['cmid'] ) ? (int) $activity['cmid'] : 0;
+				$sub_unique  = 'courseexp-subsection-' . $sub_id;
+				$sub_body_id = $sub_unique . '-body';
+				$sub_ttl_id  = $sub_unique . '-title';
 				?>
-				<div class="courseexp-subsection">
-					<?php if ( '' !== trim( (string) $sub_name ) ) : ?>
-						<h3 class="courseexp-subsection__title"><?php echo esc_html( $sub_name ); ?></h3>
-					<?php endif; ?>
-					<ul class="courseexp-activity-list">
-						<?php
-						foreach ( $children as $child ) {
-							courseexp_render_activity_row( (array) $child, $ctx );
-						}
-						?>
-					</ul>
+				<div class="courseexp-subsection is-expanded" id="<?php echo esc_attr( $sub_unique ); ?>" data-subsection-id="<?php echo esc_attr( $sub_id ); ?>">
+					<div class="courseexp-subsection__header">
+						<button
+							type="button"
+							class="courseexp-subsection__toggle"
+							aria-expanded="true"
+							aria-controls="<?php echo esc_attr( $sub_body_id ); ?>"
+							aria-labelledby="<?php echo esc_attr( $sub_ttl_id ); ?>"
+						>
+							<span class="courseexp-subsection__toggle-icon" aria-hidden="true">
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+							</span>
+						</button>
+						<h3 class="courseexp-subsection__title" id="<?php echo esc_attr( $sub_ttl_id ); ?>"><?php echo esc_html( $sub_name ); ?></h3>
+					</div>
+					<div class="courseexp-subsection__body" id="<?php echo esc_attr( $sub_body_id ); ?>">
+						<ul class="courseexp-activity-list">
+							<?php
+							foreach ( $children as $child ) {
+								courseexp_render_activity_row( (array) $child, $ctx );
+							}
+							?>
+						</ul>
+					</div>
 				</div>
 				<?php
 				continue;

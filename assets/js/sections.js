@@ -2,6 +2,7 @@
 	'use strict';
 
 	var SECTIONS_STORAGE_KEY = 'courseexp-sections-state';
+	var SUBSECTIONS_STORAGE_KEY = 'courseexp-subsections-state';
 
 	function getSectionsState() {
 		try {
@@ -16,6 +17,71 @@
 		try {
 			localStorage.setItem(SECTIONS_STORAGE_KEY, JSON.stringify(state));
 		} catch (e) {}
+	}
+
+	function getSubsectionsState() {
+		try {
+			var saved = localStorage.getItem(SUBSECTIONS_STORAGE_KEY);
+			return saved ? JSON.parse(saved) : {};
+		} catch (e) {
+			return {};
+		}
+	}
+
+	function saveSubsectionsState(state) {
+		try {
+			localStorage.setItem(SUBSECTIONS_STORAGE_KEY, JSON.stringify(state));
+		} catch (e) {}
+	}
+
+	function setSubsectionExpanded(sub, expanded, state, persist) {
+		var toggle = sub.querySelector('.courseexp-subsection__toggle');
+		var body = sub.querySelector('.courseexp-subsection__body');
+		var id = sub.dataset.subsectionId;
+
+		sub.classList.toggle('is-expanded', expanded);
+		if (toggle) {
+			toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+		}
+		if (body) {
+			if (expanded) {
+				body.removeAttribute('hidden');
+			} else {
+				body.setAttribute('hidden', '');
+			}
+		}
+		if (persist && id) {
+			state[id] = expanded;
+		}
+	}
+
+	function initSubsectionAccordions() {
+		var content = document.querySelector('.courseexp-main__content');
+		if (!content) {
+			return;
+		}
+
+		var subs = content.querySelectorAll('.courseexp-subsection');
+		if (!subs.length) {
+			return;
+		}
+
+		var state = getSubsectionsState();
+
+		Array.prototype.forEach.call(subs, function (sub) {
+			var toggle = sub.querySelector('.courseexp-subsection__toggle');
+			if (toggle) {
+				toggle.addEventListener('click', function () {
+					setSubsectionExpanded(sub, !sub.classList.contains('is-expanded'), state, true);
+					saveSubsectionsState(state);
+				});
+			}
+
+			var id = sub.dataset.subsectionId;
+			if (id && state.hasOwnProperty(id)) {
+				setSubsectionExpanded(sub, state[id], state, false);
+			}
+		});
 	}
 
 	function initSectionAccordion() {
@@ -81,7 +147,13 @@
 			Array.prototype.forEach.call(sections, function (section) {
 				setExpanded(section, expanded, true);
 			});
+			var subState = getSubsectionsState();
+			var subs = container.querySelectorAll('.courseexp-subsection');
+			Array.prototype.forEach.call(subs, function (sub) {
+				setSubsectionExpanded(sub, expanded, subState, true);
+			});
 			saveSectionsState(state);
+			saveSubsectionsState(subState);
 			updateExpandAll();
 		}
 
@@ -150,15 +222,62 @@
 			}
 		}
 
+		var sub = el.closest('.courseexp-subsection');
+		if (sub && !sub.classList.contains('is-expanded')) {
+			var subToggle = sub.querySelector('.courseexp-subsection__toggle');
+			if (subToggle) {
+				subToggle.click();
+			}
+		}
+
+		var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+		flashTarget(el);
+	}
+
+	function revealSubsection(subId) {
+		if (!/^\d+$/.test(String(subId))) {
+			return;
+		}
+		var content = document.querySelector('.courseexp-main__content');
+		if (!content) {
+			return;
+		}
+		var el = content.querySelector('.courseexp-subsection[data-subsection-id="' + subId + '"]');
+		if (!el) {
+			return;
+		}
+
+		var block = el.closest('.courseexp-section-block');
+		if (block && !block.classList.contains('is-expanded')) {
+			var toggle = block.querySelector('.courseexp-section-block__toggle');
+			if (toggle) {
+				toggle.click();
+			}
+		}
+
+		if (!el.classList.contains('is-expanded')) {
+			var subToggle = el.querySelector('.courseexp-subsection__toggle');
+			if (subToggle) {
+				subToggle.click();
+			}
+		}
+
 		var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
 		flashTarget(el);
 	}
 
 	function revealFromHash() {
-		var match = /^#courseexp-activity-(\d+)$/.exec(window.location.hash || '');
-		if (match) {
-			revealActivity(match[1]);
+		var hash = window.location.hash || '';
+		var activityMatch = /^#courseexp-activity-(\d+)$/.exec(hash);
+		if (activityMatch) {
+			revealActivity(activityMatch[1]);
+			return;
+		}
+		var subsectionMatch = /^#courseexp-subsection-(\d+)$/.exec(hash);
+		if (subsectionMatch) {
+			revealSubsection(subsectionMatch[1]);
 		}
 	}
 
@@ -168,8 +287,15 @@
 		}
 	});
 
+	document.addEventListener('courseexp:subsectionSelected', function (e) {
+		if (e.detail && e.detail.subId) {
+			revealSubsection(e.detail.subId);
+		}
+	});
+
 	function init() {
 		initSectionAccordion();
+		initSubsectionAccordions();
 		revealFromHash();
 	}
 

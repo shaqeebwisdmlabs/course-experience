@@ -3,6 +3,7 @@
 
 	const STORAGE_KEY = 'courseexp-sidebar-collapsed';
 	const ACCORDION_STORAGE_KEY = 'courseexp-accordion-state';
+	const SUBNAV_STORAGE_KEY = 'courseexp-subnav-state';
 
 	function getState() {
 		try {
@@ -31,6 +32,42 @@
 		try {
 			localStorage.setItem(ACCORDION_STORAGE_KEY, JSON.stringify(state));
 		} catch (e) {}
+	}
+
+	function getSubnavState() {
+		try {
+			const saved = localStorage.getItem(SUBNAV_STORAGE_KEY);
+			return saved ? JSON.parse(saved) : {};
+		} catch (e) {
+			return {};
+		}
+	}
+
+	function saveSubnavState(state) {
+		try {
+			localStorage.setItem(SUBNAV_STORAGE_KEY, JSON.stringify(state));
+		} catch (e) {}
+	}
+
+	function setSubnavExpanded(subnav, expanded, state, persist) {
+		const toggle = subnav.querySelector('.courseexp-subnav__toggle');
+		const content = subnav.querySelector('.courseexp-subnav__content');
+		const id = subnav.dataset.subsectionId;
+
+		subnav.classList.toggle('is-expanded', expanded);
+		if (toggle) {
+			toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+		}
+		if (content) {
+			if (expanded) {
+				content.removeAttribute('hidden');
+			} else {
+				content.setAttribute('hidden', '');
+			}
+		}
+		if (persist && id) {
+			state[id] = expanded;
+		}
 	}
 
 	function initSidebar() {
@@ -128,6 +165,12 @@
 				close();
 			}
 		});
+
+		document.addEventListener('courseexp:subsectionSelected', function () {
+			if (sidebar.classList.contains('is-open')) {
+				close();
+			}
+		});
 	}
 
 	function initActivityNav() {
@@ -159,6 +202,32 @@
 				new CustomEvent('courseexp:activitySelected', { detail: { cmid: cmid } })
 			);
 		});
+
+		sidebar.addEventListener('click', function (e) {
+			const link = e.target.closest('.courseexp-subnav__title-link');
+			if (!link) {
+				return;
+			}
+
+			const match = /#courseexp-subsection-(\d+)$/.exec(link.hash || '');
+			if (!match) {
+				return;
+			}
+
+			if (link.pathname !== window.location.pathname) {
+				return;
+			}
+
+			const subId = match[1];
+			if (!content.querySelector('.courseexp-subsection[data-subsection-id="' + subId + '"]')) {
+				return;
+			}
+
+			e.preventDefault();
+			document.dispatchEvent(
+				new CustomEvent('courseexp:subsectionSelected', { detail: { subId: subId } })
+			);
+		});
 	}
 
 	function initAccordion() {
@@ -170,7 +239,9 @@
 		}
 
 		const sections = accordion.querySelectorAll('.courseexp-section');
+		const subnavs = accordion.querySelectorAll('.courseexp-subnav');
 		const accordionState = getAccordionState();
+		const subnavState = getSubnavState();
 
 		function setSectionExpanded(section, expanded, persist) {
 			const toggle = section.querySelector('.courseexp-section__toggle');
@@ -226,7 +297,11 @@
 			sections.forEach(function (section) {
 				setSectionExpanded(section, expanded, true);
 			});
+			subnavs.forEach(function (subnav) {
+				setSubnavExpanded(subnav, expanded, subnavState, true);
+			});
 			saveAccordionState(accordionState);
+			saveSubnavState(subnavState);
 			updateToggleButton();
 		}
 
@@ -248,6 +323,22 @@
 			const sectionId = section.dataset.sectionId;
 			if (sectionId && accordionState.hasOwnProperty(sectionId)) {
 				setSectionExpanded(section, accordionState[sectionId], false);
+			}
+		});
+
+		subnavs.forEach(function (subnav) {
+			const toggle = subnav.querySelector('.courseexp-subnav__toggle');
+			if (toggle) {
+				toggle.addEventListener('click', function () {
+					const expanded = subnav.classList.contains('is-expanded');
+					setSubnavExpanded(subnav, !expanded, subnavState, true);
+					saveSubnavState(subnavState);
+				});
+			}
+
+			const subnavId = subnav.dataset.subsectionId;
+			if (subnavId && subnavState.hasOwnProperty(subnavId)) {
+				setSubnavExpanded(subnav, subnavState[subnavId], subnavState, false);
 			}
 		});
 
@@ -312,6 +403,7 @@
 		}
 
 		const sidebarSections = sidebar.querySelectorAll('.courseexp-section[data-section-id]');
+		const sidebarSubnavs = sidebar.querySelectorAll('.courseexp-subnav[data-subsection-id]');
 		const sidebarActivities = sidebar.querySelectorAll('.courseexp-activity[data-activity-id]');
 
 		spy(
@@ -319,6 +411,14 @@
 			'data-section-id',
 			function (id) {
 				setActive(sidebarSections, 'data-section-id', id);
+			}
+		);
+
+		spy(
+			content.querySelectorAll('.courseexp-subsection[data-subsection-id]'),
+			'data-subsection-id',
+			function (id) {
+				setActive(sidebarSubnavs, 'data-subsection-id', id);
 			}
 		);
 

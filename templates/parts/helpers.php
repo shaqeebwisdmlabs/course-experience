@@ -89,6 +89,51 @@ if ( ! function_exists( 'courseexp_activity_is_unavailable' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_activity_is_subsection' ) ) {
+	/**
+	 * Whether an activity block is a subsection container.
+	 *
+	 * The Moodle course-structure service delivers a subsection as an activity
+	 * with modname 'subsection' whose nested activities live in its `children`
+	 * array. Detected by modname (not children presence) so the signal is
+	 * explicit and stable.
+	 *
+	 * @since 1.2.8
+	 * @param array $activity Activity payload.
+	 * @return bool
+	 */
+	function courseexp_activity_is_subsection( array $activity ): bool {
+		$modname = isset( $activity['modname'] ) ? (string) $activity['modname'] : '';
+
+		return 'subsection' === $modname;
+	}
+}
+
+if ( ! function_exists( 'courseexp_activities_contain_cmid' ) ) {
+	/**
+	 * Whether an activity list contains a given cmid, descending into subsections.
+	 *
+	 * @since 1.2.8
+	 * @param array $activities Activity blocks (may include subsection children).
+	 * @param int   $cmid       Course module id to find.
+	 * @return bool
+	 */
+	function courseexp_activities_contain_cmid( array $activities, int $cmid ): bool {
+		foreach ( $activities as $activity ) {
+			$activity = (array) $activity;
+			if ( isset( $activity['cmid'] ) && (int) $activity['cmid'] === $cmid ) {
+				return true;
+			}
+			if ( ! empty( $activity['children'] ) && is_array( $activity['children'] )
+				&& courseexp_activities_contain_cmid( $activity['children'], $cmid ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
+
 if ( ! function_exists( 'courseexp_activity_dates' ) ) {
 	/**
 	 * Extract an activity's display dates from the API `dates` array.
