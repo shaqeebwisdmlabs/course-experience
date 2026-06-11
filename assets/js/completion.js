@@ -12,7 +12,8 @@
 		'.courseexp-section-block__summary',
 		'.courseexp-inline-content__body',
 		'.courseexp-activity-book__chapter-body',
-		'.courseexp-activity-html'
+		'.courseexp-activity-html',
+		'.courseexp-activity-embed'
 	].join(',');
 
 	var ACCORDIONS = [
@@ -112,6 +113,39 @@
 		});
 	}
 
+	function applyHtml(html) {
+		var expanded = captureExpanded();
+		var active = captureActive();
+		morphRegions(html);
+		restoreExpanded(expanded);
+		restoreActive(active);
+	}
+
+	var refreshing = false;
+
+	function refresh() {
+		if (refreshing) {
+			return;
+		}
+		refreshing = true;
+		var done = function () {
+			refreshing = false;
+		};
+		fetch(window.location.href, {
+			credentials: 'same-origin',
+			headers: { 'X-Requested-With': 'XMLHttpRequest' }
+		}).then(function (response) {
+			if (!response.ok) {
+				throw new Error('request failed');
+			}
+			return response.text();
+		}).then(function (html) {
+			applyHtml(html);
+		}).then(done, done);
+	}
+
+	document.addEventListener('courseexp:refresh', refresh);
+
 	function refocusControl(cmid) {
 		var input = document.querySelector('.courseexp-completion-form input[name="cmid"][value="' + cmid + '"]');
 		var button = input && input.form ? input.form.querySelector('button[type="submit"]') : null;
@@ -164,11 +198,7 @@
 		).then(
 			function (html) {
 				try {
-					var expanded = captureExpanded();
-					var active = captureActive();
-					morphRegions(html);
-					restoreExpanded(expanded);
-					restoreActive(active);
+					applyHtml(html);
 					refocusControl(cmid);
 				} catch (e) {
 					setBusy(button, false);

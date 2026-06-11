@@ -36,6 +36,36 @@
 			frame.contentWindow.postMessage({ type: 'mod_courselink:requestHeight' }, frameOrigin);
 		}
 
+		var content = document.querySelector('.courseexp-activity-content');
+		var activityCmid = content ? content.dataset.activityId || '' : '';
+
+		var lastCompleted = null;
+
+		function sidebarShowsComplete(cmid) {
+			var item = document.querySelector('#courseexp-sidebar .courseexp-activity[data-activity-id="' + cmid + '"]');
+			if (!item) {
+				return null;
+			}
+			return !!item.querySelector('.courseexp-activity__icon--complete');
+		}
+
+		function handleCompletion(data) {
+			if (!activityCmid || String(data.cmid) !== activityCmid) {
+				return;
+			}
+			var completed = !!data.completed;
+			if (completed === lastCompleted) {
+				return;
+			}
+			lastCompleted = completed;
+
+			if (sidebarShowsComplete(String(data.cmid)) === completed) {
+				return;
+			}
+
+			document.dispatchEvent(new CustomEvent('courseexp:refresh'));
+		}
+
 		window.addEventListener('message', function (event) {
 			if (event.source !== frame.contentWindow) {
 				return;
@@ -44,10 +74,14 @@
 				return;
 			}
 			var data = event.data;
-			if (!data || data.type !== 'mod_courselink:resize') {
+			if (!data) {
 				return;
 			}
-			applyHeight(data.height);
+			if (data.type === 'mod_courselink:resize') {
+				applyHeight(data.height);
+			} else if (data.type === 'mod_courselink:completion') {
+				handleCompletion(data);
+			}
 		});
 
 		frame.addEventListener('load', function () {
