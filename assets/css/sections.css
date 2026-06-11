@@ -122,7 +122,11 @@
 	display: none;
 }
 
-.courseexp-section-block__title-link {
+.courseexp-section-block__title-link,
+.courseexp-section-block__title-link:link,
+.courseexp-section-block__title-link:visited,
+.courseexp-section-block__title-link:active,
+.courseexp-section-block__title-link:focus {
 	color: inherit;
 	text-decoration: none;
 }
@@ -137,7 +141,11 @@
 	outline-offset: 2px;
 }
 
-.courseexp-section-block__arrow {
+.courseexp-section-block__arrow,
+.courseexp-section-block__arrow:link,
+.courseexp-section-block__arrow:visited,
+.courseexp-section-block__arrow:active,
+.courseexp-section-block__arrow:focus {
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
@@ -370,7 +378,11 @@
 	object-fit: contain;
 }
 
-.courseexp-activity-row__name {
+.courseexp-activity-row__name,
+.courseexp-activity-row__name:link,
+.courseexp-activity-row__name:visited,
+.courseexp-activity-row__name:active,
+.courseexp-activity-row__name:focus {
 	min-width: 0;
 	color: var(--courseexp-accent-orange);
 	text-decoration: none;
@@ -441,7 +453,6 @@
 
 .courseexp-activity-row__lock {
 	display: flex;
-	align-self: flex-start;
 	align-items: flex-start;
 	gap: 6px;
 	margin-left: calc(24px + var(--courseexp-space-sm));
@@ -555,7 +566,6 @@ body.courseexp-page .courseexp-subsection__title {
 	display: flex;
 	align-items: flex-start;
 	gap: 6px;
-	width: fit-content;
 	max-width: 100%;
 	padding: 4px 10px;
 	border-radius: var(--courseexp-radius);
@@ -575,6 +585,11 @@ body.courseexp-page .courseexp-subsection__title {
 
 .courseexp-restricted-note__text {
 	min-width: 0;
+}
+
+.courseexp-restricted-note__text ul{
+	padding-left: 20px;
+	margin: 4px 0 0;
 }
 
 .courseexp-completion {

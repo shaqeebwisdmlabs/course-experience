@@ -76,7 +76,11 @@ body.courseexp-page .footer-section {
 	font-size: 0.875rem;
 }
 
-.courseexp-breadcrumb__link {
+.courseexp-breadcrumb__link,
+.courseexp-breadcrumb__link:link,
+.courseexp-breadcrumb__link:visited,
+.courseexp-breadcrumb__link:active,
+.courseexp-breadcrumb__link:focus {
 	color: var(--courseexp-accent-orange);
 	text-decoration: none;
 }
