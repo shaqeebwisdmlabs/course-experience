@@ -42,7 +42,7 @@ set_query_var( 'course_data', $course_data );
 load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 ?>
 
-<div class="courseexp-layout">
+<div class="courseexp-layout" data-course-id="<?php echo esc_attr( $moodle_course_id ); ?>">
 	<main class="courseexp-main" id="courseexp-main">
 		<?php load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/course-header.php', false ); ?>
 

@@ -104,11 +104,13 @@ if ( ! function_exists( 'courseexp_render_completion_control' ) ) {
 			return;
 		}
 
-		?>
-		<span class="courseexp-completion courseexp-completion--todo is-readonly">
-			<span class="courseexp-completion__text"><?php esc_html_e( 'To do', 'eb-course-exp' ); ?></span>
-		</span>
-		<?php
+		if ( ! empty( $details ) ) {
+			?>
+			<span class="courseexp-completion courseexp-completion--todo is-readonly">
+				<span class="courseexp-completion__text"><?php esc_html_e( 'To do', 'eb-course-exp' ); ?></span>
+			</span>
+			<?php
+		}
 		if ( $override ) {
 			courseexp_render_override_note();
 		}
@@ -239,6 +241,19 @@ if ( ! function_exists( 'courseexp_completion_is_visible' ) ) {
 	 * @return bool
 	 */
 	function courseexp_completion_is_visible( array $completion, array $ctx ): bool {
-		return ! empty( $ctx['enable_completion'] ) && ! empty( $completion['tracked'] );
+		if ( empty( $ctx['enable_completion'] ) || empty( $completion['tracked'] ) ) {
+			return false;
+		}
+
+		$mode = isset( $completion['mode'] ) ? (int) $completion['mode'] : 0;
+		if ( ! empty( $completion['isoverallcomplete'] ) ) {
+			return true;
+		}
+		if ( 1 === $mode && ! empty( $completion['canmanuallycomplete'] ) ) {
+			return true;
+		}
+
+		$details = isset( $completion['details'] ) && is_array( $completion['details'] ) ? $completion['details'] : array();
+		return ! empty( $details );
 	}
 }

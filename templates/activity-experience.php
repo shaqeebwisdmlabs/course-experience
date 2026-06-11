@@ -62,7 +62,7 @@ set_query_var( 'courseexp_active_cmid', (string) $cmid );
 load_template( COURSEEXP_PLUGIN_DIR . 'templates/parts/sidebar.php' );
 ?>
 
-<div class="courseexp-layout">
+<div class="courseexp-layout" data-course-id="<?php echo esc_attr( $moodle_course_id ); ?>">
 	<main class="courseexp-main" id="courseexp-main">
 		<nav class="courseexp-breadcrumb" aria-label="<?php esc_attr_e( 'Breadcrumb', 'eb-course-exp' ); ?>">
 			<?php if ( $course_url ) : ?>
