@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-10T19:22:36+00:00\n"
+"POT-Creation-Date: 2026-06-15T16:16:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eb-course-exp\n"
@@ -44,6 +44,42 @@ msgstr ""
 #: includes/class-courseexp-api-client.php:110
 #: includes/class-courseexp-api-client.php:144
 msgid "Edwiser Bridge connection helper not available"
+msgstr ""
+
+#: includes/class-courseexp-child-course-admin.php:105
+msgid "Child Course"
+msgstr ""
+
+#: includes/class-courseexp-child-course-admin.php:117
+msgid "Enable to select parent courses for enrollment"
+msgstr ""
+
+#: includes/class-courseexp-child-course-admin.php:168
+msgid "Parent Courses"
+msgstr ""
+
+#: includes/class-courseexp-child-course-admin.php:175
+msgid "Select any course"
+msgstr ""
+
+#: includes/class-courseexp-child-course-admin.php:188
+msgid "Select parent courses. User will be enrolled in all selected courses when purchasing this product."
+msgstr ""
+
+#: includes/class-courseexp-child-course-enrollment.php:518
+msgid "Parent Course Enrollment (via Child Course):"
+msgstr ""
+
+#: includes/class-courseexp-child-course-enrollment.php:524
+msgid "Enrolled"
+msgstr ""
+
+#: includes/class-courseexp-child-course-enrollment.php:527
+msgid "Already Enrolled"
+msgstr ""
+
+#: includes/class-courseexp-child-course-enrollment.php:530
+msgid "Failed"
 msgstr ""
 
 #: templates/activity-experience.php:37
@@ -132,69 +168,52 @@ msgstr ""
 msgid "Unable to load this activity. Please try again later."
 msgstr ""
 
-#: templates/parts/activity.php:487
+#: templates/parts/activity.php:484
 msgid "This book has no chapters yet."
 msgstr ""
 
-#: templates/parts/activity.php:510
+#: templates/parts/activity.php:506
 msgid "Chapters"
 msgstr ""
 
-#: templates/parts/activity.php:590
+#: templates/parts/activity.php:586
 msgid "Last modified:"
 msgstr ""
 
-#: templates/parts/activity.php:600
-#: templates/parts/activity.php:608
+#: templates/parts/activity.php:596
+#: templates/parts/activity.php:604
 msgid "This activity has no content yet."
 msgstr ""
 
-#: templates/parts/activity.php:616
+#: templates/parts/activity.php:612
 msgid "This activity cannot be displayed here."
 msgstr ""
 
 #: templates/parts/completion.php:98
-#: templates/parts/completion.php:151
-#: templates/parts/completion.php:183
+#: templates/parts/completion.php:153
+#: templates/parts/completion.php:185
 msgid "Done"
 msgstr ""
 
-#: templates/parts/completion.php:109
-#: templates/parts/completion.php:183
+#: templates/parts/completion.php:110
+#: templates/parts/completion.php:185
 msgid "To do"
 msgstr ""
 
-#: templates/parts/completion.php:151
+#: templates/parts/completion.php:153
 msgid "Mark as done"
 msgstr ""
 
-#: templates/parts/completion.php:189
+#: templates/parts/completion.php:191
 msgid "You must"
 msgstr ""
 
-#: templates/parts/completion.php:226
+#: templates/parts/completion.php:228
 msgid "Set by a teacher"
 msgstr ""
 
-#: templates/parts/course-header.php:56
+#: templates/parts/course-header.php:36
 msgid "Course Not Found"
-msgstr ""
-
-#. translators: 1: number of completed activities, 2: total number of activities.
-#: templates/parts/course-header.php:67
-#, php-format
-msgid "%1$d of %2$d activities completed"
-msgstr ""
-
-#. translators: %d: course completion percentage.
-#: templates/parts/course-header.php:76
-#: templates/parts/course-header.php:88
-#, php-format
-msgid "%d%%"
-msgstr ""
-
-#: templates/parts/course-header.php:84
-msgid "Course progress"
 msgstr ""
 
 #: templates/parts/helpers.php:190
