@@ -15,18 +15,62 @@
 			frameOrigin = '';
 		}
 
+		var FILL_MIN_HEIGHT = 480;
+
 		function markLoaded() {
 			embed.classList.add('is-loaded');
 		}
 
-		function applyHeight(reported) {
-			var height = parseInt(reported, 10);
-			if (!height || height < 0) {
+		function computeFillHeight() {
+			return Math.max(FILL_MIN_HEIGHT, Math.round(window.innerHeight * 0.9));
+		}
+
+		function lockToFill(iframe) {
+			iframe.style.height = computeFillHeight() + 'px';
+			iframe.style.minHeight = '0';
+			iframe.setAttribute('scrolling', 'auto');
+			iframe.dataset.clLocked = '1';
+			markLoaded();
+		}
+
+		var MAX_SANE_HEIGHT = 50000;
+
+		var RISE_LOCK_THRESHOLD = 8;
+
+		function applyHeight(iframe, reported) {
+			if (iframe.dataset.clLocked === '1') {
 				return;
 			}
-			frame.style.height = height + 'px';
-			frame.style.minHeight = '0';
+			var height = parseInt(reported, 10);
+			if (!height || height <= 0 || height > MAX_SANE_HEIGHT) {
+				return;
+			}
+			var st = iframe._clState || ( iframe._clState = { last: 0, rising: 0 } );
+			st.rising = ( height > st.last ) ? st.rising + 1 : 0;
+			st.last = height;
+			if (st.rising >= RISE_LOCK_THRESHOLD) {
+				lockToFill(iframe);
+				return;
+			}
+			iframe.style.height = height + 'px';
+			iframe.style.minHeight = '0';
 			markLoaded();
+		}
+
+		function findFrame(source) {
+			if (!source) {
+				return null;
+			}
+			if (frame.contentWindow === source) {
+				return frame;
+			}
+			var frames = document.querySelectorAll('iframe.courseexp-activity-embed__frame');
+			for (var i = 0; i < frames.length; i++) {
+				if (frames[i].contentWindow === source) {
+					return frames[i];
+				}
+			}
+			return null;
 		}
 
 		function requestHeight() {
@@ -67,21 +111,44 @@
 		}
 
 		window.addEventListener('message', function (event) {
-			if (event.source !== frame.contentWindow) {
-				return;
-			}
-			if (frameOrigin && event.origin !== frameOrigin) {
+			if (!frameOrigin || event.origin !== frameOrigin) {
 				return;
 			}
 			var data = event.data;
 			if (!data) {
 				return;
 			}
+			var targetFrame = findFrame(event.source);
+			if (!targetFrame) {
+				return;
+			}
 			if (data.type === 'mod_courselink:resize') {
-				applyHeight(data.height);
+				if (data.interactive === true) {
+					lockToFill(targetFrame);
+				} else {
+					applyHeight(targetFrame, data.height);
+				}
 			} else if (data.type === 'mod_courselink:completion') {
 				handleCompletion(data);
 			}
+		});
+
+		var resizeScheduled = false;
+		window.addEventListener('resize', function () {
+			if (resizeScheduled) {
+				return;
+			}
+			resizeScheduled = true;
+			window.requestAnimationFrame(function () {
+				resizeScheduled = false;
+				var fillHeight = computeFillHeight();
+				var frames = document.querySelectorAll('iframe.courseexp-activity-embed__frame');
+				Array.prototype.forEach.call(frames, function (f) {
+					if (f.dataset.clLocked === '1') {
+						f.style.height = fillHeight + 'px';
+					}
+				});
+			});
 		});
 
 		frame.addEventListener('load', function () {

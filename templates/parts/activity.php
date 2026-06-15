@@ -87,6 +87,8 @@ if ( ! function_exists( 'courseexp_render_embed' ) ) {
 				id="courseexp-activity-frame"
 				src="<?php echo esc_url( $src ); ?>"
 				title="<?php echo esc_attr( $title ); ?>"
+				height="600"
+				scrolling="no"
 				loading="lazy"
 			></iframe>
 		</div>
