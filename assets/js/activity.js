@@ -33,6 +33,43 @@
 			markLoaded();
 		}
 
+		var NAV_TIMEOUT = 15000;
+
+		function showNavigating(iframe) {
+			var parent = iframe.parentNode;
+			if (!parent) {
+				return;
+			}
+			var overlay = iframe._clOverlay;
+			if (!overlay) {
+				overlay = document.createElement('div');
+				overlay.className = 'courseexp-activity-embed__navigating';
+				overlay.setAttribute('aria-hidden', 'true');
+				var spinner = document.createElement('span');
+				spinner.className = 'courseexp-activity-embed__spinner';
+				overlay.appendChild(spinner);
+				parent.appendChild(overlay);
+				iframe._clOverlay = overlay;
+			}
+			overlay.classList.add('is-visible');
+			if (iframe._clNavTimer) {
+				window.clearTimeout(iframe._clNavTimer);
+			}
+			iframe._clNavTimer = window.setTimeout(function () {
+				hideNavigating(iframe);
+			}, NAV_TIMEOUT);
+		}
+
+		function hideNavigating(iframe) {
+			if (iframe._clNavTimer) {
+				window.clearTimeout(iframe._clNavTimer);
+				iframe._clNavTimer = null;
+			}
+			if (iframe._clOverlay) {
+				iframe._clOverlay.classList.remove('is-visible');
+			}
+		}
+
 		var MAX_SANE_HEIGHT = 50000;
 
 		var RISE_LOCK_THRESHOLD = 8;
@@ -122,13 +159,19 @@
 			if (!targetFrame) {
 				return;
 			}
-			if (data.type === 'mod_courselink:resize') {
+			if (data.type === 'mod_courselink:navigating') {
+				showNavigating(targetFrame);
+			} else if (data.type === 'mod_courselink:navigated') {
+				hideNavigating(targetFrame);
+			} else if (data.type === 'mod_courselink:resize') {
+				hideNavigating(targetFrame);
 				if (data.interactive === true) {
 					lockToFill(targetFrame);
 				} else {
 					applyHeight(targetFrame, data.height);
 				}
 			} else if (data.type === 'mod_courselink:completion') {
+				hideNavigating(targetFrame);
 				handleCompletion(data);
 			}
 		});
@@ -153,6 +196,7 @@
 
 		frame.addEventListener('load', function () {
 			markLoaded();
+			hideNavigating(frame);
 			requestHeight();
 		});
 
