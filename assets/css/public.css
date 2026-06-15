@@ -187,10 +187,32 @@ body.courseexp-page .courseexp-section-page__title {
 	}
 }
 
-
 .courseexp-page #content .ast-container {
 	width: 100%;
 	max-width: 100%;
 	margin: 0;
 	padding: 0;
 }
+
+.courseexp-page #content .ast-container button {
+	box-shadow: none;
+}
+
+/* ==========================================================================
+   Hide Parent Courses on My Courses Page
+   ========================================================================== */
+
+/* Hide parent courses (enrolled via child course) on My Courses page */
+.eb-my-courses-wrapper .parent-course,
+.eb-my-course .parent-course,
+.eb-my-courses-wrapper .eb-course-card.parent-course {
+	display: none !important;
+}
+
+/* Alternative selectors for different Edwiser Bridge versions */
+.eb-my-courses-wrapper .wdm-course-grid-wrap.parent-course,
+.eb-my-courses-wrapper #post-parent-course,
+.eb-my-courses-wrapper [class*="parent-course"] {
+	display: none !important;
+}
+

@@ -1,0 +1,151 @@
+/**
+ * Child Course Admin Styles
+ *
+ * @package EB_Course_Experience
+ */
+
+/* Child course wrapper */
+.ce-child-course-wrapper {
+    margin-bottom: 10px;
+}
+
+/* Parent courses wrapper */
+.ce-parent-courses-wrapper {
+    background: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.ce-parent-courses-wrapper .form-field {
+    margin: 0;
+    padding: 0;
+}
+
+/* Select2 styling - matching Edwiser Bridge Pro */
+.woo-moodle-post-course-id {
+    width: 50% !important;
+    min-height: 32px;
+}
+
+.woo-moodle-post-course-id + .select2-container {
+    width: 50% !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-selection--multiple {
+    min-height: 32px;
+    border-color: #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-selection__choice {
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 8px;
+    margin: 2px;
+    font-size: 13px;
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-selection__choice__remove {
+    margin-right: 5px;
+    color: #666;
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-selection__choice__remove:hover {
+    color: #333;
+}
+
+/* Placeholder style */
+.woo-moodle-post-course-id + .select2-container .select2-selection__placeholder {
+    color: #999;
+    font-size: 13px;
+}
+
+/* Select2 dropdown styling */
+.woo-moodle-post-course-id + .select2-container .select2-dropdown {
+    border-color: #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-results__option {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-results__option--highlighted {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.woo-moodle-post-course-id + .select2-container .select2-results__option[aria-selected="true"] {
+    background-color: #e8e8e8;
+}
+
+/* Search input in dropdown */
+.woo-moodle-post-course-id + .select2-container .select2-search--dropdown .select2-search__field {
+    border-color: #ddd;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+/* Variation specific styles */
+.woocommerce_variation .ce-child-course-wrapper,
+.woocommerce_variation .ce-parent-courses-wrapper {
+    padding: 10px;
+    background: #f0f0f0;
+    margin: 5px 0;
+}
+
+.woocommerce_variation .ce-parent-courses-wrapper {
+    border: 1px solid #ddd;
+}
+
+/* Checkbox styling */
+.ce-is-child-course {
+    margin-right: 5px;
+}
+
+/* Help tip positioning */
+.ce-parent-courses-wrapper .help_tip {
+    vertical-align: middle;
+    margin-left: 5px;
+    cursor: help;
+}
+
+/* Label styling */
+.ce-child-course-wrapper label,
+.ce-parent-courses-wrapper label {
+    font-weight: 600;
+    display: inline-block;
+    width: 150px;
+    vertical-align: middle;
+}
+
+/* Description text */
+.ce-child-course-wrapper .description,
+.ce-parent-courses-wrapper .description {
+    color: #666;
+    font-size: 12px;
+    font-style: italic;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+/* Form field structure matching WooCommerce */
+.ce-parent-courses-wrapper .form-field label {
+    float: left;
+    width: 150px;
+    padding: 0;
+    margin: 0 0 0 -150px;
+}
+
+.ce-parent-courses-wrapper .form-field {
+    padding: 5px 20px 5px 162px!important;
+    margin: 9px 0;
+}

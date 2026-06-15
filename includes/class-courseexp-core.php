@@ -23,6 +23,14 @@ class CourseExp_Core {
 		$router = new CourseExp_Course_Router();
 		$router->init();
 
+		// Initialize child course admin functionality.
+		$child_course_admin = new CourseExp_Child_Course_Admin();
+		$child_course_admin->init();
+
+		// Initialize child course enrollment handler.
+		$child_course_enrollment = new CourseExp_Child_Course_Enrollment();
+		$child_course_enrollment->init();
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'admin_post_courseexp_set_completion', array( $this, 'handle_set_completion' ) );
@@ -38,6 +46,10 @@ class CourseExp_Core {
 		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-api-client.php';
 		require_once COURSEEXP_PLUGIN_DIR . 'templates/parts/helpers.php';
 		require_once COURSEEXP_PLUGIN_DIR . 'templates/parts/completion.php';
+
+		// Child course functionality.
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-child-course-admin.php';
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-child-course-enrollment.php';
 	}
 
 	/**
