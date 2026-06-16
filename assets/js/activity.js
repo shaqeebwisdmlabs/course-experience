@@ -72,21 +72,12 @@
 
 		var MAX_SANE_HEIGHT = 50000;
 
-		var RISE_LOCK_THRESHOLD = 8;
-
 		function applyHeight(iframe, reported) {
 			if (iframe.dataset.clLocked === '1') {
 				return;
 			}
 			var height = parseInt(reported, 10);
 			if (!height || height <= 0 || height > MAX_SANE_HEIGHT) {
-				return;
-			}
-			var st = iframe._clState || ( iframe._clState = { last: 0, rising: 0 } );
-			st.rising = ( height > st.last ) ? st.rising + 1 : 0;
-			st.last = height;
-			if (st.rising >= RISE_LOCK_THRESHOLD) {
-				lockToFill(iframe);
 				return;
 			}
 			iframe.style.height = height + 'px';
@@ -195,6 +186,7 @@
 		});
 
 		frame.addEventListener('load', function () {
+			frame.dataset.clLocked = '';
 			markLoaded();
 			hideNavigating(frame);
 			requestHeight();

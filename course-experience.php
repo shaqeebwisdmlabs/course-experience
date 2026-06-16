@@ -3,7 +3,7 @@
  * Plugin Name:       Edwiser Bridge - Course Experience
  * Plugin URI:        https://edwiser.org/bridge-wordpress-moodle-integration/
  * Description:       An Edwiser Bridge extension that provides a seamless course viewing experience within WordPress by integrating with Moodle.
- * Version:           1.2.8
+ * Version:           1.2.9
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            WisdmLabs
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Current plugin version.
  */
-define( 'COURSEEXP_VERSION', '1.2.8' );
+define( 'COURSEEXP_VERSION', '1.2.9' );
 
 /**
  * URL slug for the course experience endpoint.
