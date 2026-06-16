@@ -67,9 +67,9 @@ class CourseExp_Core {
 			wp_enqueue_script( 'courseexp-public', COURSEEXP_PLUGIN_URL . 'assets/js/public.js', array(), COURSEEXP_VERSION, true );
 			wp_enqueue_script( 'courseexp-sidebar', COURSEEXP_PLUGIN_URL . 'assets/js/sidebar.js', array(), COURSEEXP_VERSION, true );
 			wp_enqueue_script( 'courseexp-sections', COURSEEXP_PLUGIN_URL . 'assets/js/sections.js', array(), COURSEEXP_VERSION, true );
-			wp_enqueue_script( 'courseexp-activity', COURSEEXP_PLUGIN_URL . 'assets/js/activity.js', array(), COURSEEXP_VERSION, true );
 			wp_enqueue_script( 'courseexp-idiomorph', COURSEEXP_PLUGIN_URL . 'assets/js/vendor/idiomorph.min.js', array(), '0.7.3', true );
 			wp_enqueue_script( 'courseexp-completion', COURSEEXP_PLUGIN_URL . 'assets/js/completion.js', array( 'courseexp-idiomorph' ), COURSEEXP_VERSION, true );
+			wp_enqueue_script( 'courseexp-activity', COURSEEXP_PLUGIN_URL . 'assets/js/activity.js', array( 'courseexp-completion' ), COURSEEXP_VERSION, true );
 		}
 	}
 

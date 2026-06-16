@@ -229,9 +229,30 @@
 		});
 	}
 
+	function syncDirectRenderCompletion() {
+		var content = document.querySelector('.courseexp-activity-content');
+		if (!content) {
+			return;
+		}
+		var rendermode = content.dataset.rendermode || '';
+		if (rendermode !== 'html' && rendermode !== 'file') {
+			return;
+		}
+		var cmid = content.dataset.activityId || '';
+		if (!cmid) {
+			return;
+		}
+		var item = document.querySelector('#courseexp-sidebar .courseexp-activity[data-activity-id="' + cmid + '"]');
+		if (!item || !item.querySelector('.courseexp-activity__icon--incomplete')) {
+			return;
+		}
+		document.dispatchEvent(new CustomEvent('courseexp:refresh'));
+	}
+
 	function init() {
 		initEmbed();
 		initPopupLinks();
+		syncDirectRenderCompletion();
 	}
 
 	if (document.readyState === 'loading') {
