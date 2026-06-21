@@ -83,12 +83,12 @@ body.courseexp-sidebar-collapsed .courseexp-sidebar {
 }
 
 .courseexp-sidebar__title-link:hover {
-	color: var(--courseexp-accent-orange);
+	color: var(--courseexp-link);
 	text-decoration: underline;
 }
 
 .courseexp-sidebar__title-link:focus-visible {
-	outline: 2px solid var(--courseexp-accent-orange);
+	outline: 2px solid var(--courseexp-link);
 	outline-offset: 2px;
 }
 
@@ -269,7 +269,7 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 
 .courseexp-section.is-monitor-completed .courseexp-section__toggle:hover,
 .courseexp-section.is-monitor-completed .courseexp-section__title-link:hover .courseexp-section__title {
-	color: var(--courseexp-monitor-completed);
+	color: var(--courseexp-link);
 }
 
 .courseexp-section__check {
@@ -281,7 +281,7 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	height: 20px;
 	border-radius: 50%;
 	background: var(--courseexp-surface-bg);
-	color: var(--courseexp-monitor-completed);
+	color: var(--courseexp-link);
 }
 
 .courseexp-section__toggle:focus-visible,
@@ -417,7 +417,7 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 }
 
 .courseexp-activity__link:hover {
-	color: var(--courseexp-accent-orange);
+	color: var(--courseexp-link);
 	background: var(--courseexp-activity-hover);
 }
 

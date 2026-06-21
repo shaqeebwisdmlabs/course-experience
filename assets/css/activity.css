@@ -107,24 +107,6 @@
 	color: var(--courseexp-text);
 }
 
-.courseexp-activity-launch__link,
-.courseexp-activity-launch__link:link,
-.courseexp-activity-launch__link:visited,
-.courseexp-activity-launch__link:active,
-.courseexp-activity-launch__link:focus {
-	color: var(--courseexp-accent-orange);
-	text-decoration: none;
-}
-
-.courseexp-activity-launch__link:hover {
-	color: var(--courseexp-accent-orange-hover);
-	text-decoration: underline;
-}
-
-.courseexp-activity-launch__link:focus-visible {
-	outline: 2px solid var(--courseexp-accent-orange);
-	outline-offset: 2px;
-}
 
 .courseexp-activity-header {
 	display: flex;
@@ -165,24 +147,6 @@
 	margin: var(--courseexp-space-sm) 0 0;
 }
 
-.courseexp-activity-embed__fallback-link,
-.courseexp-activity-embed__fallback-link:link,
-.courseexp-activity-embed__fallback-link:visited,
-.courseexp-activity-embed__fallback-link:active,
-.courseexp-activity-embed__fallback-link:focus {
-	color: var(--courseexp-accent-orange);
-	text-decoration: none;
-}
-
-.courseexp-activity-embed__fallback-link:hover {
-	color: var(--courseexp-accent-orange-hover);
-	text-decoration: underline;
-}
-
-.courseexp-activity-embed__fallback-link:focus-visible {
-	outline: 2px solid var(--courseexp-accent-orange);
-	outline-offset: 2px;
-}
 
 .courseexp-activity-file__viewer {
 	display: block;
@@ -300,13 +264,13 @@
 .courseexp-activity-book__toc-link:visited,
 .courseexp-activity-book__toc-link:active,
 .courseexp-activity-book__toc-link:focus {
-	color: var(--courseexp-accent-orange);
+	color: var(--courseexp-link);
 	text-decoration: none;
 	transition: color var(--courseexp-transition-speed) ease;
 }
 
 .courseexp-activity-book__toc-link:hover {
-	color: var(--courseexp-accent-orange-hover);
+	color: var(--courseexp-link);
 	text-decoration: underline;
 }
 
@@ -362,8 +326,8 @@
 }
 
 .courseexp-activity-book__pager-link:hover {
-	color: var(--courseexp-accent-orange-hover);
-	border-color: var(--courseexp-accent-orange);
+	color: var(--courseexp-link);
+	border-color: var(--courseexp-link);
 }
 
 .courseexp-activity-book__pager-link:focus-visible {

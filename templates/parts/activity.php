@@ -93,7 +93,7 @@ if ( ! function_exists( 'courseexp_render_embed' ) ) {
 			></iframe>
 		</div>
 		<?php if ( '' !== $fallback_url ) : ?>
-			<p class="courseexp-activity-embed__fallback">
+			<p class="courseexp-activity-embed__fallback courseexp-prose">
 				<a class="courseexp-activity-embed__fallback-link" href="<?php echo esc_url( $fallback_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open in a new tab', 'eb-course-exp' ); ?></a>
 			</p>
 			<?php
@@ -150,7 +150,7 @@ if ( ! function_exists( 'courseexp_render_download' ) ) {
 			esc_html( '' !== trim( $filename ) ? $filename : __( 'the file', 'eb-course-exp' ) )
 		);
 		?>
-		<p class="courseexp-activity-launch">
+		<p class="courseexp-activity-launch courseexp-prose">
 			<?php
 			echo wp_kses(
 				sprintf(
@@ -208,7 +208,7 @@ if ( ! function_exists( 'courseexp_render_launch' ) ) {
 			esc_html( '' !== trim( $name ) ? $name : __( 'this activity', 'eb-course-exp' ) )
 		);
 		?>
-		<p class="courseexp-activity-launch">
+		<p class="courseexp-activity-launch courseexp-prose">
 			<?php
 			echo wp_kses(
 				sprintf(
@@ -263,7 +263,7 @@ if ( ! function_exists( 'courseexp_render_file_launch' ) ) {
 			esc_html( '' !== trim( $filename ) ? $filename : __( 'the file', 'eb-course-exp' ) )
 		);
 		?>
-		<p class="courseexp-activity-launch">
+		<p class="courseexp-activity-launch courseexp-prose">
 			<?php
 			echo wp_kses(
 				sprintf(
@@ -373,7 +373,7 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
 			</span>
 			<?php if ( '' !== trim( $avail_info ) ) : ?>
-				<span class="courseexp-activity-locked__text"><?php echo wp_kses_post( $avail_info ); ?></span>
+				<span class="courseexp-activity-locked__text courseexp-prose"><?php echo wp_kses_post( $avail_info ); ?></span>
 			<?php else : ?>
 				<span class="courseexp-activity-locked__text"><?php esc_html_e( 'This activity is not available yet.', 'eb-course-exp' ); ?></span>
 			<?php endif; ?>
@@ -381,13 +381,13 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 	<?php else : ?>
 
 		<?php if ( $show_intro ) : ?>
-		<div class="courseexp-activity-content__description">
+		<div class="courseexp-activity-content__description courseexp-prose">
 			<?php courseexp_render_trusted_html( $description ); ?>
 		</div>
 	<?php endif; ?>
 
 		<?php if ( '' !== $afterlink ) : ?>
-		<div class="courseexp-activity-afterlink"><?php courseexp_render_trusted_html( $afterlink ); ?></div>
+		<div class="courseexp-activity-afterlink courseexp-prose"><?php courseexp_render_trusted_html( $afterlink ); ?></div>
 	<?php endif; ?>
 
 		<?php if ( $show_dates ) : ?>
@@ -530,7 +530,7 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 									<?php echo esc_html( $active['title'] ); ?>
 								</h2>
 							<?php endif; ?>
-							<div class="courseexp-activity-book__chapter-body">
+							<div class="courseexp-activity-book__chapter-body courseexp-prose">
 								<?php courseexp_render_trusted_html( $active['content'] ); ?>
 							</div>
 						</section>
@@ -580,7 +580,7 @@ $afterlink = isset( $activity['afterlink'] ) ? trim( (string) $activity['afterli
 
 					if ( ! empty( $body['html'] ) ) {
 						?>
-				<div class="courseexp-activity-html">
+				<div class="courseexp-activity-html courseexp-prose">
 						<?php courseexp_render_trusted_html( (string) $body['html'] ); ?>
 				</div>
 						<?php if ( 'page' === $modname && ! empty( $moduledata['lastmodifiedformatted'] ) ) : ?>

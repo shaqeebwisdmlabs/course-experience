@@ -100,7 +100,7 @@ if ( ! function_exists( 'courseexp_render_inline_content' ) ) {
 			<?php endif; ?>
 
 			<?php if ( $has_body ) : ?>
-				<div class="courseexp-inline-content__body">
+				<div class="courseexp-inline-content__body courseexp-prose">
 					<?php courseexp_render_trusted_html( $description ); ?>
 				</div>
 			<?php endif; ?>
@@ -111,7 +111,7 @@ if ( ! function_exists( 'courseexp_render_inline_content' ) ) {
 						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
 					</span>
 					<?php if ( ! empty( $avail_info ) ) : ?>
-						<span class="courseexp-activity-row__lock-text"><?php echo wp_kses_post( $avail_info ); ?></span>
+						<span class="courseexp-activity-row__lock-text courseexp-prose"><?php echo wp_kses_post( $avail_info ); ?></span>
 					<?php else : ?>
 						<span class="courseexp-activity-row__lock-text"><?php esc_html_e( 'Not available', 'eb-course-exp' ); ?></span>
 					<?php endif; ?>
@@ -196,13 +196,13 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 				</div>
 
 				<?php if ( $show_desc && '' !== trim( (string) $description ) ) : ?>
-					<div class="courseexp-activity-row__description">
+					<div class="courseexp-activity-row__description courseexp-prose">
 						<?php courseexp_render_trusted_html( $description ); ?>
 					</div>
 				<?php endif; ?>
 
 				<?php if ( '' !== $afterlink ) : ?>
-					<div class="courseexp-activity-row__afterlink"><?php courseexp_render_trusted_html( $afterlink ); ?></div>
+					<div class="courseexp-activity-row__afterlink courseexp-prose"><?php courseexp_render_trusted_html( $afterlink ); ?></div>
 				<?php endif; ?>
 
 				<?php if ( ! $available ) : ?>
@@ -211,7 +211,7 @@ if ( ! function_exists( 'courseexp_render_activity_row' ) ) {
 							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
 						</span>
 						<?php if ( ! empty( $avail_info ) ) : ?>
-							<span class="courseexp-activity-row__lock-text"><?php echo wp_kses_post( $avail_info ); ?></span>
+							<span class="courseexp-activity-row__lock-text courseexp-prose"><?php echo wp_kses_post( $avail_info ); ?></span>
 						<?php else : ?>
 							<span class="courseexp-activity-row__lock-text"><?php esc_html_e( 'Not available', 'eb-course-exp' ); ?></span>
 						<?php endif; ?>
@@ -353,7 +353,7 @@ if ( ! function_exists( 'courseexp_render_section_body_inner' ) ) {
 
 		if ( '' !== trim( (string) $summary ) ) {
 			?>
-			<div class="courseexp-section-block__summary">
+			<div class="courseexp-section-block__summary courseexp-prose">
 				<?php courseexp_render_trusted_html( $summary ); ?>
 			</div>
 			<?php
@@ -497,7 +497,7 @@ if ( ! function_exists( 'courseexp_section_metrics' ) ) {
 					<?php else : ?>
 						<?php $section_summary = isset( $section['summary'] ) ? (string) $section['summary'] : ''; ?>
 						<?php if ( '' !== trim( $section_summary ) ) : ?>
-							<div class="courseexp-section-block__summary">
+							<div class="courseexp-section-block__summary courseexp-prose">
 								<?php courseexp_render_trusted_html( $section_summary ); ?>
 							</div>
 						<?php endif; ?>

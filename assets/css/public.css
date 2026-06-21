@@ -13,6 +13,10 @@
 	--courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
 	--courseexp-accent-orange-hover: #c76610;
 	--courseexp-on-accent: #fff;
+
+	--courseexp-link: #456c32;
+	--courseexp-link-active: #afd137;
+	--courseexp-link-visited: #467082;
 	--courseexp-surface-bg: var(--wp--preset--color--background, #fff);
 	--courseexp-surface-border: var(--wp--preset--color--border, #e0e0e0);
 	--courseexp-text: var(--wp--preset--color--foreground, #333333);
@@ -81,16 +85,40 @@ body.courseexp-page .footer-section {
 .courseexp-breadcrumb__link:visited,
 .courseexp-breadcrumb__link:active,
 .courseexp-breadcrumb__link:focus {
-	color: var(--courseexp-accent-orange);
+	color: var(--courseexp-link);
 	text-decoration: none;
 }
 
 .courseexp-breadcrumb__link:hover {
-	color: var(--courseexp-accent-orange-hover);
+	color: var(--courseexp-link);
 	text-decoration: underline;
 }
 
 .courseexp-breadcrumb__link:focus-visible {
+	outline: 2px solid var(--courseexp-accent-orange);
+	outline-offset: 2px;
+}
+
+.courseexp-prose a,
+.courseexp-prose a:link {
+	color: var(--courseexp-link);
+	text-decoration: underline;
+	overflow-wrap: anywhere;
+	transition: color var(--courseexp-transition-speed) ease;
+}
+
+.courseexp-prose a:visited {
+	color: var(--courseexp-link-visited);
+}
+
+.courseexp-prose a:hover,
+.courseexp-prose a:active,
+.courseexp-prose a:focus {
+	color: var(--courseexp-link-active);
+	text-decoration: underline;
+}
+
+.courseexp-prose a:focus-visible {
 	outline: 2px solid var(--courseexp-accent-orange);
 	outline-offset: 2px;
 }
