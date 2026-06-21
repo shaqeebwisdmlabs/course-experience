@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Edwiser Bridge - Course Experience 1.2.8\n"
+"Project-Id-Version: Edwiser Bridge - Course Experience 1.3.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/course-experience\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-15T16:16:53+00:00\n"
+"POT-Creation-Date: 2026-06-21T08:02:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eb-course-exp\n"
@@ -82,6 +82,14 @@ msgstr ""
 msgid "Failed"
 msgstr ""
 
+#: includes/class-courseexp-course-router.php:181
+msgid "View as Student"
+msgstr ""
+
+#: includes/class-courseexp-course-router.php:182
+msgid "View as Instructor"
+msgstr ""
+
 #: templates/activity-experience.php:37
 #: templates/section-experience.php:75
 msgid "Section"
@@ -102,10 +110,10 @@ msgid "Course"
 msgstr ""
 
 #: templates/parts/activity.php:75
-#: templates/parts/activity.php:113
-#: templates/parts/activity.php:139
-#: templates/parts/activity.php:193
-#: templates/parts/activity.php:248
+#: templates/parts/activity.php:115
+#: templates/parts/activity.php:141
+#: templates/parts/activity.php:195
+#: templates/parts/activity.php:250
 msgid "This activity could not be loaded."
 msgstr ""
 
@@ -113,79 +121,79 @@ msgstr ""
 msgid "Loading activity…"
 msgstr ""
 
-#: templates/parts/activity.php:95
+#: templates/parts/activity.php:97
 msgid "Open in a new tab"
 msgstr ""
 
-#: templates/parts/activity.php:148
-#: templates/parts/activity.php:261
+#: templates/parts/activity.php:150
+#: templates/parts/activity.php:263
 msgid "the file"
 msgstr ""
 
 #. translators: %s: linked file name.
-#: templates/parts/activity.php:156
+#: templates/parts/activity.php:158
 #, php-format
 msgid "Click %s link to download the file."
 msgstr ""
 
-#: templates/parts/activity.php:206
+#: templates/parts/activity.php:208
 msgid "this activity"
 msgstr ""
 
 #. translators: %s: linked activity name.
-#: templates/parts/activity.php:214
+#: templates/parts/activity.php:216
 #, php-format
 msgid "Click on %s to open the resource."
 msgstr ""
 
 #. translators: %s: linked file name.
-#: templates/parts/activity.php:269
+#: templates/parts/activity.php:271
 #, php-format
 msgid "Click %s link to view the file."
 msgstr ""
 
-#: templates/parts/activity.php:306
+#: templates/parts/activity.php:308
 msgid "Chapter navigation"
 msgstr ""
 
-#: templates/parts/activity.php:313
+#: templates/parts/activity.php:315
 msgid "Previous"
 msgstr ""
 
-#: templates/parts/activity.php:323
+#: templates/parts/activity.php:325
 msgid "Next"
 msgstr ""
 
-#: templates/parts/activity.php:340
+#: templates/parts/activity.php:342
 msgid "Activity not found."
 msgstr ""
 
-#: templates/parts/activity.php:376
+#: templates/parts/activity.php:378
 msgid "This activity is not available yet."
 msgstr ""
 
-#: templates/parts/activity.php:447
+#: templates/parts/activity.php:449
 msgid "Unable to load this activity. Please try again later."
 msgstr ""
 
-#: templates/parts/activity.php:484
+#: templates/parts/activity.php:486
 msgid "This book has no chapters yet."
 msgstr ""
 
-#: templates/parts/activity.php:506
+#: templates/parts/activity.php:508
 msgid "Chapters"
 msgstr ""
 
-#: templates/parts/activity.php:586
+#: templates/parts/activity.php:588
 msgid "Last modified:"
 msgstr ""
 
-#: templates/parts/activity.php:596
-#: templates/parts/activity.php:604
+#: templates/parts/activity.php:598
+#: templates/parts/activity.php:606
 msgid "This activity has no content yet."
 msgstr ""
 
-#: templates/parts/activity.php:612
+#: templates/parts/activity.php:614
 msgid "This activity cannot be displayed here."
 msgstr ""
 
@@ -244,7 +252,7 @@ msgstr ""
 
 #. translators: %d: section number (1-based) used when a section has no name.
 #: templates/parts/sections.php:445
-#: templates/parts/sidebar.php:274
+#: templates/parts/sidebar.php:276
 #: templates/section-experience.php:47
 #, php-format
 msgid "Section %d"
@@ -278,7 +286,7 @@ msgid "Collapse all"
 msgstr ""
 
 #: templates/parts/sections.php:581
-#: templates/parts/sidebar.php:342
+#: templates/parts/sidebar.php:344
 msgid "Unable to load course content. Please try again later."
 msgstr ""
 
@@ -336,15 +344,15 @@ msgid "Course sections"
 msgstr ""
 
 #. translators: %s: section name.
-#: templates/parts/sidebar.php:285
+#: templates/parts/sidebar.php:287
 #, php-format
 msgid "Toggle %s"
 msgstr ""
 
-#: templates/parts/sidebar.php:334
+#: templates/parts/sidebar.php:336
 msgid "No activities in this section."
 msgstr ""
 
-#: templates/parts/sidebar.php:345
+#: templates/parts/sidebar.php:347
 msgid "No course content available."
 msgstr ""

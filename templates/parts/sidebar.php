@@ -266,6 +266,8 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 					$section_is_active = $active_cmid > 0 && courseexp_activities_contain_cmid( $activities, $active_cmid );
 					$section_locked    = ! courseexp_block_availability( (array) $section )['available'];
 					$is_expanded       = ! $section_locked && ( $is_first_section || $section_is_active );
+					$monitor_status    = isset( $section['progress']['monitoring']['status'] ) ? $section['progress']['monitoring']['status'] : 'untracked';
+					$section_monitored = 'completed' === $monitor_status;
 
 					if ( isset( $section['name'] ) ) {
 						$section_name = $section['name'];
@@ -274,7 +276,7 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 						$section_name = sprintf( __( 'Section %d', 'eb-course-exp' ), $section_index + 1 );
 					}
 					?>
-					<div class="courseexp-section<?php echo $is_expanded ? ' is-expanded' : ''; ?><?php echo $section_is_active ? ' is-active' : ''; ?><?php echo $section_locked ? ' is-locked' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
+					<div class="courseexp-section<?php echo $is_expanded ? ' is-expanded' : ''; ?><?php echo $section_is_active ? ' is-active' : ''; ?><?php echo $section_locked ? ' is-locked' : ''; ?><?php echo $section_monitored ? ' is-monitor-completed' : ''; ?>" data-section-id="<?php echo esc_attr( $section_id ); ?>">
 						<div class="courseexp-section__header">
 							<button
 								type="button"
@@ -297,6 +299,11 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 							<?php endif; ?>
 							<?php if ( $section_locked ) : ?>
 								<?php courseexp_render_lock_icon( 'courseexp-section__lock', 14 ); ?>
+							<?php endif; ?>
+							<?php if ( $section_monitored ) : ?>
+								<span class="courseexp-section__check" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+								</span>
 							<?php endif; ?>
 						</div>
 						<div

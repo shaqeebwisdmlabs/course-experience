@@ -3,6 +3,8 @@
 	--courseexp-accordion-header-hover: var(--courseexp-accent-tint);
 	--courseexp-accordion-border: var(--courseexp-surface-border);
 	--courseexp-activity-hover: #f8f9fa;
+	--courseexp-monitor-completed: #afd137;
+	--courseexp-monitor-completed-bg: color-mix(in srgb, var(--courseexp-monitor-completed) 9%, #fff);
 
 	--courseexp-floating-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
@@ -255,6 +257,31 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 .courseexp-section__header:hover,
 .courseexp-section.is-active .courseexp-section__header {
 	background: var(--courseexp-accordion-header-hover);
+}
+
+.courseexp-section.is-monitor-completed .courseexp-section__header {
+	background: var(--courseexp-monitor-completed-bg);
+}
+
+.courseexp-section.is-monitor-completed.is-active {
+	outline-color: var(--courseexp-monitor-completed);
+}
+
+.courseexp-section.is-monitor-completed .courseexp-section__toggle:hover,
+.courseexp-section.is-monitor-completed .courseexp-section__title-link:hover .courseexp-section__title {
+	color: var(--courseexp-monitor-completed);
+}
+
+.courseexp-section__check {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--courseexp-surface-bg);
+	color: var(--courseexp-monitor-completed);
 }
 
 .courseexp-section__toggle:focus-visible,
