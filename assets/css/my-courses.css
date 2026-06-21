@@ -1,0 +1,93 @@
+:root {
+	--courseexp-radius: 5px;
+	--courseexp-space-sm: 8px;
+	--courseexp-space-md: 12px;
+	--courseexp-cta-padding-x: 14px;
+	--courseexp-cta-min-width: 120px;
+	--courseexp-transition-speed: 0.2s;
+	--courseexp-primary-green: var(--wp--preset--color--primary, #7cc146);
+	--courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
+	--courseexp-on-accent: #fff;
+}
+
+.eb-course-card .eb-course-action-cont {
+	display: none;
+}
+
+.eb-course-card .wdm-course-thumbnail {
+	display: flex;
+	flex-direction: column;
+	max-height: none;
+}
+
+.eb-course-card .wdm-course-image {
+	flex: 0 0 auto;
+}
+
+.eb-course-card .wdm-caption {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+}
+
+.courseexp-cta-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--courseexp-space-sm);
+	margin-top: auto;
+	padding-top: var(--courseexp-space-md);
+}
+
+.courseexp-cta {
+	flex: 1 1 0;
+	min-width: var(--courseexp-cta-min-width);
+	box-sizing: border-box;
+	padding: var(--courseexp-space-sm) var(--courseexp-cta-padding-x);
+	border-radius: calc(var(--courseexp-radius) - 2px);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.4;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	transition: opacity var(--courseexp-transition-speed) ease,
+		background-color var(--courseexp-transition-speed) ease,
+		color var(--courseexp-transition-speed) ease;
+}
+
+.courseexp-cta--student {
+	background-color: var(--courseexp-primary-green);
+	border: 1px solid var(--courseexp-primary-green);
+	color: var(--courseexp-on-accent);
+}
+
+.courseexp-cta--student:hover {
+	opacity: 0.9;
+	color: var(--courseexp-on-accent);
+}
+
+.courseexp-cta--instructor {
+	background-color: transparent;
+	border: 1px solid var(--courseexp-accent-orange);
+	color: var(--courseexp-accent-orange);
+}
+
+.courseexp-cta--instructor:hover {
+	background-color: var(--courseexp-accent-orange);
+	color: var(--courseexp-on-accent);
+}
+
+.courseexp-cta:focus-visible {
+	outline: 2px solid var(--courseexp-accent-orange);
+	outline-offset: 2px;
+}
+
+.courseexp-is-inert {
+	cursor: default;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.courseexp-cta {
+		transition: none;
+	}
+}
