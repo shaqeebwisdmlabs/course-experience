@@ -152,11 +152,22 @@ class CourseExp_Child_Course_Enrollment {
 		// Find parent courses to hide.
 		$parent_courses_to_hide = array();
 		$valid_child_courses    = array();
+		$normal_product_courses = array();
 
 		foreach ( $purchased_product_ids as $product_id ) {
 			// Check if this is a child course product.
 			$is_child = get_post_meta( $product_id, '_ce_is_child_course', true );
 			if ( 'yes' !== $is_child ) {
+				// For normal products, include their linked courses.
+				$eb_options     = get_post_meta( $product_id, 'product_options', true );
+				$linked_courses = isset( $eb_options['moodle_post_course_id'] ) ? (array) $eb_options['moodle_post_course_id'] : array();
+				$linked_courses = array_map( 'intval', $linked_courses );
+
+				foreach ( $linked_courses as $course_id ) {
+					if ( in_array( $course_id, $post__in, true ) ) {
+						$normal_product_courses[] = $course_id;
+					}
+				}
 				continue;
 			}
 
@@ -190,6 +201,7 @@ class CourseExp_Child_Course_Enrollment {
 		// Remove duplicates.
 		$parent_courses_to_hide = array_unique( $parent_courses_to_hide );
 		$valid_child_courses    = array_unique( $valid_child_courses );
+		$normal_product_courses = array_unique( $normal_product_courses );
 
 		// FIX: Only apply filtering if user purchased child course products.
 		// If no child course products purchased, show all enrolled courses (normal behavior).
@@ -214,14 +226,24 @@ class CourseExp_Child_Course_Enrollment {
 			return;
 		}
 
-		// Only show valid child courses from purchased child course products.
-		$courses_to_show = $valid_child_courses;
+		// If child course products purchased, show valid child courses + normal product courses.
+		$courses_to_show = array_merge( $valid_child_courses, $normal_product_courses );
+		$courses_to_show = array_unique( $courses_to_show );
+
+		// FIX: Include manually enrolled courses (courses in post__in not linked to any product).
+		$all_product_linked = array_merge( $valid_child_courses, $normal_product_courses, $parent_courses_to_hide );
+		$manually_enrolled  = array_diff( $post__in, $all_product_linked );
+		if ( ! empty( $manually_enrolled ) ) {
+			$courses_to_show = array_merge( $courses_to_show, $manually_enrolled );
+			$courses_to_show = array_unique( $courses_to_show );
+		}
 
 		// Save parent courses to user meta for other functions (CSS/JS hiding).
 		update_user_meta( $user_id, '_ce_parent_enrolled_courses', $parent_courses_to_hide );
 
-		// Save valid child courses to user meta for the_posts filter.
-		update_user_meta( $user_id, '_ce_valid_child_courses', $valid_child_courses );
+		// Save valid courses to user meta for the_posts filter.
+		$all_valid_courses = array_merge( $valid_child_courses, $normal_product_courses );
+		update_user_meta( $user_id, '_ce_valid_child_courses', array_unique( $all_valid_courses ) );
 
 		// Only show valid child courses.
 		$query->set( 'post__in', array_values( $courses_to_show ) );
