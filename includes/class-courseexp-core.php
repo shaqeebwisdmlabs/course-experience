@@ -31,6 +31,9 @@ class CourseExp_Core {
 		$child_course_enrollment = new CourseExp_Child_Course_Enrollment();
 		$child_course_enrollment->init();
 
+		$moodle_session = new CourseExp_Moodle_Session();
+		$moodle_session->init();
+
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_assets' ) );
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'admin_post_courseexp_set_completion', array( $this, 'handle_set_completion' ) );
@@ -50,6 +53,8 @@ class CourseExp_Core {
 		// Child course functionality.
 		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-child-course-admin.php';
 		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-child-course-enrollment.php';
+
+		require_once COURSEEXP_PLUGIN_DIR . 'includes/class-courseexp-moodle-session.php';
 	}
 
 	/**
