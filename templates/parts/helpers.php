@@ -364,3 +364,26 @@ if ( ! function_exists( 'courseexp_activity_opens_externally' ) ) {
 		return ! $is_popup_url;
 	}
 }
+
+if ( ! function_exists( 'courseexp_set_document_title' ) ) {
+	/**
+	 * Set the browser document title for a course-experience page.
+	 *
+	 * Templates compute their course/section/activity names before get_header()
+	 * runs, so calling this beforehand lets the value drive the <title> tag with
+	 * no extra queries. Returns the title verbatim via pre_get_document_title.
+	 *
+	 * @since 1.2.9
+	 * @param string $title Fully composed document title.
+	 * @return void
+	 */
+	function courseexp_set_document_title( string $title ): void {
+		$title = esc_html( $title );
+		add_filter(
+			'pre_get_document_title',
+			static function () use ( $title ) {
+				return $title;
+			}
+		);
+	}
+}

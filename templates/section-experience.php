@@ -52,6 +52,15 @@ if ( is_array( $sections_data ) && isset( $sections_data['sections'] ) ) {
 	}
 }
 
+courseexp_set_document_title(
+	trim(
+		/* translators: %s: section name. */
+		( $section_name ? sprintf( __( 'Section: %s', 'eb-course-exp' ), $section_name ) . ' | ' : '' )
+		. ( $course_title ? $course_title . ' | ' : '' )
+		. get_bloginfo( 'name' )
+	)
+);
+
 get_header();
 courseexp_render_body_class();
 

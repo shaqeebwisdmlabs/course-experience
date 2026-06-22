@@ -34,6 +34,14 @@ if ( $moodle_course_id > 0 && $moodle_user_id > 0 ) {
 
 $course_title = $course_post ? $course_post->post_title : '';
 
+courseexp_set_document_title(
+	trim(
+		/* translators: %s: course name. */
+		( $course_title ? sprintf( __( 'Course: %s', 'eb-course-exp' ), $course_title ) . ' | ' : '' )
+		. get_bloginfo( 'name' )
+	)
+);
+
 get_header();
 courseexp_render_body_class();
 

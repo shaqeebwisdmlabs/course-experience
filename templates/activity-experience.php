@@ -53,6 +53,18 @@ $completion_ctx      = array(
 );
 $show_completion     = $activity_available && courseexp_completion_is_visible( $activity_completion, $completion_ctx );
 
+$course_short = ( is_array( $course_data_arr ) && ! empty( $course_data_arr['shortname'] ) )
+	? (string) $course_data_arr['shortname']
+	: $course_title;
+
+courseexp_set_document_title(
+	trim(
+		( $course_short ? $course_short . ': ' : '' )
+		. ( $activity_name ? $activity_name . ' | ' : '' )
+		. get_bloginfo( 'name' )
+	)
+);
+
 get_header();
 courseexp_render_body_class();
 

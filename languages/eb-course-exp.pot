@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-21T08:02:32+00:00\n"
+"POT-Creation-Date: 2026-06-22T06:42:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: eb-course-exp\n"
@@ -66,19 +66,19 @@ msgstr ""
 msgid "Select parent courses. User will be enrolled in all selected courses when purchasing this product."
 msgstr ""
 
-#: includes/class-courseexp-child-course-enrollment.php:518
+#: includes/class-courseexp-child-course-enrollment.php:540
 msgid "Parent Course Enrollment (via Child Course):"
 msgstr ""
 
-#: includes/class-courseexp-child-course-enrollment.php:524
+#: includes/class-courseexp-child-course-enrollment.php:546
 msgid "Enrolled"
 msgstr ""
 
-#: includes/class-courseexp-child-course-enrollment.php:527
+#: includes/class-courseexp-child-course-enrollment.php:549
 msgid "Already Enrolled"
 msgstr ""
 
-#: includes/class-courseexp-child-course-enrollment.php:530
+#: includes/class-courseexp-child-course-enrollment.php:552
 msgid "Failed"
 msgstr ""
 
@@ -91,7 +91,7 @@ msgid "View as Instructor"
 msgstr ""
 
 #: templates/activity-experience.php:37
-#: templates/section-experience.php:75
+#: templates/section-experience.php:84
 msgid "Section"
 msgstr ""
 
@@ -99,14 +99,20 @@ msgstr ""
 msgid "Activity"
 msgstr ""
 
-#: templates/activity-experience.php:67
-#: templates/section-experience.php:65
+#: templates/activity-experience.php:79
+#: templates/section-experience.php:74
 msgid "Breadcrumb"
 msgstr ""
 
-#: templates/activity-experience.php:70
-#: templates/section-experience.php:68
+#: templates/activity-experience.php:82
+#: templates/section-experience.php:77
 msgid "Course"
+msgstr ""
+
+#. translators: %s: course name.
+#: templates/course-experience.php:40
+#, php-format
+msgid "Course: %s"
 msgstr ""
 
 #: templates/parts/activity.php:75
@@ -286,7 +292,7 @@ msgid "Collapse all"
 msgstr ""
 
 #: templates/parts/sections.php:581
-#: templates/parts/sidebar.php:344
+#: templates/parts/sidebar.php:349
 msgid "Unable to load course content. Please try again later."
 msgstr ""
 
@@ -349,10 +355,16 @@ msgstr ""
 msgid "Toggle %s"
 msgstr ""
 
-#: templates/parts/sidebar.php:336
+#: templates/parts/sidebar.php:341
 msgid "No activities in this section."
 msgstr ""
 
-#: templates/parts/sidebar.php:347
+#: templates/parts/sidebar.php:352
 msgid "No course content available."
+msgstr ""
+
+#. translators: %s: section name.
+#: templates/section-experience.php:58
+#, php-format
+msgid "Section: %s"
 msgstr ""
