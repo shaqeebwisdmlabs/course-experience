@@ -59,7 +59,6 @@ body.courseexp-page .footer-section {
 }
 
 .courseexp-layout {
-	width: 100%;
 	min-height: 100vh;
 	background: var(--courseexp-surface-bg);
 }
@@ -215,6 +214,7 @@ body.courseexp-page .courseexp-section-page__title {
 	}
 }
 
+/* Astra theme specific styles */
 .courseexp-page #content .ast-container {
 	width: 100%;
 	max-width: 100%;
@@ -226,9 +226,15 @@ body.courseexp-page .courseexp-section-page__title {
 	box-shadow: none;
 }
 
-/* ==========================================================================
-   Hide Parent Courses on My Courses Page
-   ========================================================================== */
+.courseexp-theme-astra .courseexp-layout {
+	width: 100%;
+}
+
+.courseexp-theme-astra .courseexp-activity-row__lock-icon,
+.courseexp-theme-astra .courseexp-restricted-note__icon,
+.courseexp-theme-astra .courseexp-activity-locked__icon {
+	margin-top: 4px;
+}
 
 /* Hide parent courses (enrolled via child course) on My Courses page */
 .eb-my-courses-wrapper .parent-course,
@@ -243,4 +249,3 @@ body.courseexp-page .courseexp-section-page__title {
 .eb-my-courses-wrapper [class*="parent-course"] {
 	display: none !important;
 }
-

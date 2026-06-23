@@ -447,7 +447,7 @@
 .courseexp-activity-row__lock-icon {
 	display: inline-flex;
 	flex-shrink: 0;
-	margin-top: 4px;
+	margin-top: 2px;
 }
 
 .courseexp-subsection {
@@ -558,7 +558,7 @@ body.courseexp-page .courseexp-subsection__title {
 .courseexp-restricted-note__icon {
 	display: inline-flex;
 	flex-shrink: 0;
-	margin-top: 4px;
+	margin-top: 2px;
 }
 
 .courseexp-restricted-note__text {

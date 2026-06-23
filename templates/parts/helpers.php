@@ -25,7 +25,10 @@ if ( ! function_exists( 'courseexp_render_body_class' ) ) {
 	 * @return void
 	 */
 	function courseexp_render_body_class(): void {
-		wp_print_inline_script_tag( "document.body.classList.add('courseexp-page');" );
+		$theme_class = 'courseexp-theme-' . sanitize_html_class( get_stylesheet() );
+		wp_print_inline_script_tag(
+			sprintf( "document.body.classList.add('courseexp-page', %s);", wp_json_encode( $theme_class ) )
+		);
 	}
 }
 

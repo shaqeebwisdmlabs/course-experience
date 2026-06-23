@@ -122,6 +122,7 @@ class CourseExp_Core {
 	public function add_body_class( array $classes ): array {
 		if ( $this->is_courseexp_context() ) {
 			$classes[] = 'courseexp-page';
+			$classes[] = 'courseexp-theme-' . sanitize_html_class( get_stylesheet() );
 		}
 
 		return $classes;
