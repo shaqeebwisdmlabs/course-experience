@@ -29,6 +29,57 @@ if ( ! function_exists( 'courseexp_render_body_class' ) ) {
 	}
 }
 
+if ( ! function_exists( 'courseexp_is_my_courses_page' ) ) {
+	/**
+	 * Whether the current request renders the Edwiser Bridge My Courses listing.
+	 *
+	 * The listing reaches a visitor through four different routes, so matching only
+	 * a raw [eb_my_courses] shortcode in post_content (as earlier code did) misses
+	 * the others and silently disables the My Courses features there:
+	 *  - the WooCommerce My Account "My Courses" endpoint tab (Edwiser Bridge Pro),
+	 *    where the current post is the account page and the listing is injected at
+	 *    runtime — detected by the endpoint query var, not page content;
+	 *  - the page chosen as the My Courses page in Edwiser Bridge settings;
+	 *  - a page built with the edwiser-bridge/my-courses Gutenberg block;
+	 *  - a page with the [eb_my_courses] shortcode in its content.
+	 *
+	 * is_wc_endpoint_url( 'eb_my_courses' ) cannot be used: it only recognises
+	 * endpoints in WooCommerce's own registry, but Edwiser Bridge Pro registers
+	 * eb_my_courses through WordPress core (add_rewrite_endpoint + the query_vars
+	 * filter), so the request's query var is read directly here.
+	 *
+	 * @since 1.3.0
+	 * @return bool
+	 */
+	function courseexp_is_my_courses_page(): bool {
+		global $wp;
+		if ( isset( $wp->query_vars['eb_my_courses'] ) ) {
+			return true;
+		}
+
+		if ( ! is_singular() ) {
+			return false;
+		}
+
+		$post = get_post();
+		if ( ! $post instanceof WP_Post ) {
+			return false;
+		}
+
+		$eb_general         = get_option( 'eb_general', array() );
+		$my_courses_page_id = isset( $eb_general['eb_my_courses_page_id'] ) ? (int) $eb_general['eb_my_courses_page_id'] : 0;
+		if ( $my_courses_page_id > 0 && (int) $post->ID === $my_courses_page_id ) {
+			return true;
+		}
+
+		if ( has_block( 'edwiser-bridge/my-courses', $post ) ) {
+			return true;
+		}
+
+		return has_shortcode( (string) $post->post_content, 'eb_my_courses' );
+	}
+}
+
 if ( ! function_exists( 'courseexp_activity_moduledata' ) ) {
 	/**
 	 * Decode an activity's moduledata bag, which the API may deliver as JSON.

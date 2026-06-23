@@ -140,7 +140,7 @@ class CourseExp_Course_Router {
 	 * @return void
 	 */
 	public function enqueue_my_courses_assets(): void {
-		if ( ! $this->is_my_courses_page() ) {
+		if ( ! courseexp_is_my_courses_page() ) {
 			return;
 		}
 
@@ -183,21 +183,6 @@ class CourseExp_Course_Router {
 				),
 			)
 		);
-	}
-
-	/**
-	 * Whether the current request is the Edwiser My Courses page.
-	 *
-	 * @return bool
-	 */
-	private function is_my_courses_page(): bool {
-		if ( ! is_singular() ) {
-			return false;
-		}
-
-		$post = get_post();
-
-		return $post instanceof WP_Post && has_shortcode( (string) $post->post_content, 'eb_my_courses' );
 	}
 
 	/**

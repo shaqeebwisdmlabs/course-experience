@@ -10,7 +10,7 @@
 	--courseexp-on-accent: #fff;
 }
 
-.eb-course-card .eb-course-action-cont {
+.courseexp-has-cta .eb-course-action-cont {
 	display: none;
 }
 
@@ -64,6 +64,7 @@
 .courseexp-cta--student:hover {
 	opacity: 0.9;
 	color: var(--courseexp-on-accent);
+	text-decoration: none;
 }
 
 .courseexp-cta--instructor {
@@ -75,6 +76,7 @@
 .courseexp-cta--instructor:hover {
 	background-color: var(--courseexp-accent-orange);
 	color: var(--courseexp-on-accent);
+	text-decoration: none;
 }
 
 .courseexp-cta:focus-visible {

@@ -35,6 +35,7 @@
 		group.appendChild( makeButton( urls.student_url, i18n.student, 'student' ) );
 		group.appendChild( makeButton( urls.instructor_url, i18n.instructor, 'instructor' ) );
 		caption.appendChild( group );
+		card.classList.add( 'courseexp-has-cta' );
 	}
 
 	function init() {

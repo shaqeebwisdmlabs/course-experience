@@ -108,13 +108,7 @@ class CourseExp_Moodle_Session {
 			return true;
 		}
 
-		if ( ! is_singular() ) {
-			return false;
-		}
-
-		$post = get_post();
-
-		return $post instanceof WP_Post && has_shortcode( $post->post_content, 'eb_my_courses' );
+		return courseexp_is_my_courses_page();
 	}
 
 	/**
