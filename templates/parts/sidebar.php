@@ -301,8 +301,8 @@ if ( ! function_exists( 'courseexp_render_sidebar_subsection' ) ) {
 								<?php courseexp_render_lock_icon( 'courseexp-section__lock', 14 ); ?>
 							<?php endif; ?>
 							<?php if ( $section_monitored ) : ?>
-								<span class="courseexp-section__check" aria-hidden="true">
-									<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+								<span class="courseexp-section__check" title="<?php esc_attr_e( 'Completed', 'eb-course-exp' ); ?>">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
 								</span>
 							<?php endif; ?>
 						</div>

@@ -10,8 +10,8 @@
 	--courseexp-space-lg: 20px;
 
 	--courseexp-primary-green: var(--wp--preset--color--primary, #7cc146);
-	--courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
-	--courseexp-accent-orange-hover: #c76610;
+	--courseexp-accent-orange: var(--wp--preset--color--secondary, #f47e1f);
+	--courseexp-accent-orange-hover: #ea7813;
 	--courseexp-on-accent: #fff;
 
 	--courseexp-link: #456c32;

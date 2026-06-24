@@ -280,8 +280,7 @@ body.courseexp-sidebar-open .courseexp-mobile-toggle {
 	width: 20px;
 	height: 20px;
 	border-radius: 50%;
-	background: var(--courseexp-surface-bg);
-	color: var(--courseexp-link);
+	color: var(--courseexp-monitor-completed);
 }
 
 .courseexp-section__toggle:focus-visible,

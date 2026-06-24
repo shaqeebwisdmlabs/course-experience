@@ -6,7 +6,7 @@
 	--courseexp-cta-min-width: 120px;
 	--courseexp-transition-speed: 0.2s;
 	--courseexp-primary-green: var(--wp--preset--color--primary, #7cc146);
-	--courseexp-accent-orange: var(--wp--preset--color--secondary, #ea7813);
+	--courseexp-accent-orange: var(--wp--preset--color--secondary, #f47e1f);
 	--courseexp-on-accent: #fff;
 }
 
@@ -14,10 +14,22 @@
 	display: none;
 }
 
+.eb-course-card .eb-course-action-cont {
+	margin-top: auto;
+}
+
+.eb-course-card .wdm-course-grid {
+	max-height: none !important;
+}
+
+.eb-course-card .eb-course-title {
+	height: auto !important;
+}
+
 .eb-course-card .wdm-course-thumbnail {
-	display: flex;
+	display: flex !important;
 	flex-direction: column;
-	max-height: none;
+	max-height: none !important;
 }
 
 .eb-course-card .wdm-course-image {
